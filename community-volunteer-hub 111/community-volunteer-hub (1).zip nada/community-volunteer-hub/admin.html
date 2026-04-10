@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="admin.html" class="active">Admin</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="profile.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="btn-nav-login">Logout</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Admin Dashboard</h1>
+      <p>Manage users, requests, and platform activity</p>
+    </div>
+
+    <div class="admin-page">
+
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#EEF2FF; color:var(--navy);">👥</div>
+          <div>
+            <p class="stat-number">248</p>
+            <p class="stat-label">Total Users</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--green-light); color:var(--green);">📋</div>
+          <div>
+            <p class="stat-number">63</p>
+            <p class="stat-label">Active Requests</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFFBEB; color:var(--orange);">✅</div>
+          <div>
+            <p class="stat-number">412</p>
+            <p class="stat-label">Completed Tasks</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FEE2E2; color:var(--red);">🚨</div>
+          <div>
+            <p class="stat-number">3</p>
+            <p class="stat-label">Pending Reports</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS TABLE -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Manage Users</h2>
+          <input type="text" class="search-input" placeholder="Search users..." id="user-search" oninput="filterTable('users-table', this.value)" style="width:220px;"/>
+        </div>
+        <div class="table-wrap">
+          <table id="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="width:32px;height:32px;font-size:12px;">SJ</div> Sarah Johnson</div></td>
+                <td>sarah@example.com</td>
+                <td><span class="role-badge role-volunteer">Volunteer</span></td>
+                <td><span class="badge badge-open">Active</span></td>
+                <td>Jan 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                </td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="width:32px;height:32px;font-size:12px;">MC</div> Michael Chen</div></td>
+                <td>michael@example.com</td>
+                <td><span class="role-badge role-volunteer">Volunteer</span></td>
+                <td><span class="badge badge-open">Active</span></td>
+                <td>Feb 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                </td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="width:32px;height:32px;font-size:12px;">JD</div> John Doe</div></td>
+                <td>john@example.com</td>
+                <td><span class="role-badge role-user">User</span></td>
+                <td><span class="badge badge-open">Active</span></td>
+                <td>Mar 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                </td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar" style="width:32px;height:32px;font-size:12px;">ED</div> Emily Davis</div></td>
+                <td>emily@example.com</td>
+                <td><span class="role-badge role-volunteer">Volunteer</span></td>
+                <td><span class="badge badge-progress">Suspended</span></td>
+                <td>Mar 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-blue" style="padding:5px 10px;font-size:12px;" onclick="this.closest('tr').querySelector('.badge').className='badge badge-open';this.closest('tr').querySelector('.badge').textContent='Active'">Restore</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REQUESTS TABLE -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Manage Requests</h2>
+          <input type="text" class="search-input" placeholder="Search requests..." id="req-search" oninput="filterTable('requests-table', this.value)" style="width:220px;"/>
+        </div>
+        <div class="table-wrap">
+          <table id="requests-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Posted By</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Need help moving furniture</td>
+                <td>Home Tasks</td>
+                <td>John Doe</td>
+                <td><span class="badge badge-progress">In Progress</span></td>
+                <td>Apr 7, 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Computer won't turn on</td>
+                <td>IT Repair</td>
+                <td>Jane Smith</td>
+                <td><span class="badge badge-open">Open</span></td>
+                <td>Apr 6, 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Garden cleanup before spring</td>
+                <td>Gardening</td>
+                <td>Robert Johnson</td>
+                <td><span class="badge badge-open">Open</span></td>
+                <td>Apr 5, 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Math tutoring for high school</td>
+                <td>Tutoring</td>
+                <td>Alice Brown</td>
+                <td><span class="badge badge-completed">Completed</span></td>
+                <td>Apr 3, 2026</td>
+                <td class="actions-cell">
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
+  </footer>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

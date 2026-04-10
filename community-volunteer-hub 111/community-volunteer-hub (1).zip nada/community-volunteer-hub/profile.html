@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/profile.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 id="page-title">Profile</h1>
+      <p id="page-subtitle">Community Member Details</p>
+    </div>
+
+    <div class="profile-page">
+      <form id="profile-form">
+        <div class="profile-card">
+          <div class="profile-avatar-row">
+            <div class="avatar avatar-lg" id="avatar-initials">??</div>
+            <div class="profile-info">
+              <h3 id="display-name">Loading...</h3>
+              <div class="meta-info">📍 <span id="display-location">Location</span></div>
+              <div class="meta-info">📅 Joined <span id="display-joined">2026</span></div>
+              <div class="stars" id="display-stars">★★★★★</div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:20px;">
+            <label>Bio</label>
+            <textarea id="bio" class="form-control" readonly></textarea>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h2 class="profile-card-title">Skills</h2>
+          <div class="skills-container" id="skills-container"></div>
+        </div>
+
+        <div class="profile-actions" id="edit-actions" style="display:none;">
+          <button type="submit" class="btn-blue">Save Changes</button>
+        </div>
+      </form>
+      <div class="alert-success" id="save-success">✅ Profile saved!</div>
+    </div>
+  </main>
+  <script src="js/profile.js"></script>
+</body>
+</html>

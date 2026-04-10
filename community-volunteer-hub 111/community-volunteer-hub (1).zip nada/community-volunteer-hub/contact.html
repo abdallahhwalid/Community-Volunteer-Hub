@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/forms.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html">My Requests</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="messages.html" class="nav-icon-btn">💬</a>
+      <a href="profile.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="form-page">
+      <div class="form-page-header">
+        <h1>Contact Us</h1>
+        <p>Have a question or feedback? We'd love to hear from you.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 340px; gap:24px; max-width:760px; margin:0 auto;">
+
+        <div class="form-box" style="margin:0;">
+          <p class="form-box-title">Send Us a Message</p>
+          <p class="form-box-sub">Fill out the form below and we'll get back to you within 24 hours.</p>
+
+          <form id="contact-form" novalidate>
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" class="form-control" placeholder="Your name"/>
+              <span class="error-msg" id="name-error"></span>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" class="form-control" placeholder="your@email.com"/>
+              <span class="error-msg" id="email-error"></span>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject *</label>
+              <input type="text" id="subject" class="form-control" placeholder="What is this about?"/>
+              <span class="error-msg" id="subject-error"></span>
+            </div>
+            <div class="form-group">
+              <label for="message">Message *</label>
+              <textarea id="message" class="form-control" style="min-height:140px;" placeholder="Write your message here..."></textarea>
+              <span class="error-msg" id="message-error"></span>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:13px;">Send Message</button>
+            <div class="alert-success" id="success-msg">✅ Message sent! We'll get back to you within 24 hours.</div>
+          </form>
+        </div>
+
+        <!-- CONTACT INFO SIDEBAR -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="form-box" style="margin:0; padding:24px;">
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:16px;">Contact Information</h3>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:18px;">✉</span>
+                <div>
+                  <p style="font-size:12px; color:var(--text-gray); margin-bottom:2px;">Email</p>
+                  <p style="font-size:14px; font-weight:600;">support@communityhelpub.org</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:18px;">📞</span>
+                <div>
+                  <p style="font-size:12px; color:var(--text-gray); margin-bottom:2px;">Phone</p>
+                  <p style="font-size:14px; font-weight:600;">(555) 123-4567</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:18px;">📍</span>
+                <div>
+                  <p style="font-size:12px; color:var(--text-gray); margin-bottom:2px;">Service Area</p>
+                  <p style="font-size:14px; font-weight:600;">Serving communities nationwide</p>
+                </div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:18px;">🕐</span>
+                <div>
+                  <p style="font-size:12px; color:var(--text-gray); margin-bottom:2px;">Response Time</p>
+                  <p style="font-size:14px; font-weight:600;">Within 24 hours</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-box" style="margin:0; padding:24px; background:var(--blue-light); border-color:#C7D2FE;">
+            <h3 style="font-size:14px; font-weight:700; color:var(--navy); margin-bottom:8px;">🛡 Safety Concern?</h3>
+            <p style="font-size:13px; color:var(--navy); line-height:1.6;">If you need to report suspicious behavior or a safety issue, please use the subject line "Safety Report" and we will prioritize your message.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help. Building stronger communities, one good deed at a time.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span><span>📍 Serving communities nationwide</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="requests.html">Become a Volunteer</a></li><li><a href="contact.html">About Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-badges">
+        <div class="footer-badge"><span>🛡</span> Verified Volunteers</div>
+        <div class="footer-badge"><span>🔒</span> Secure Platform</div>
+        <div class="footer-badge"><span>✅</span> Community Approved</div>
+      </div>
+      <p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/validation.js"></script>
+  <script src="js/contact.js"></script>
+</body>
+</html>

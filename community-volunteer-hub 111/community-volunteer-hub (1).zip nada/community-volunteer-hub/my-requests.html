@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Requests – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/requests.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html" class="active">My Requests</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="messages.html" class="nav-icon-btn">💬</a>
+      <a href="profile.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1>My Requests</h1>
+        <p>Manage your help requests and volunteering activities</p>
+      </div>
+      <a href="post-request.html" class="btn-primary">+ Post New Request</a>
+    </div>
+
+    <div class="section" style="padding-top:32px;">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-posted" onclick="switchTab('posted')">Requests I Posted (3)</button>
+        <button class="tab-btn" id="tab-helping" onclick="switchTab('helping')">Requests I'm Helping With (2)</button>
+      </div>
+
+      <!-- TAB: POSTED -->
+      <div id="panel-posted">
+        
+  <!-- 🔥 NEW SECTION: Pending Help Offers -->
+  <div style="margin-bottom:25px;">
+    <h2 style="margin-bottom:10px;">Pending Help Offers</h2>
+    <div id="pending-helpers"></div>
+  </div>
+
+        <div class="my-req-item">
+          <div class="my-req-header">
+            <span class="badge badge-progress">In Progress</span>
+            <span style="font-size:13px; color:var(--text-gray);">Home Tasks</span>
+            <h3>Need help moving furniture</h3>
+          </div>
+          <div class="my-req-meta">
+            <span class="meta-info">📍 Downtown, 0.5 mi</span>
+            <span class="meta-info">🕐 April 10, 2026 at 2:00 PM</span>
+          </div>
+          <div class="helper-box">
+            <div class="helper-info">
+              <span class="helper-label">Being helped by:</span>
+              <span class="helper-name">John Smith</span>
+              <span class="stars" style="font-size:13px;">★★★★☆ <span style="color:var(--text-gray);">4.9</span></span>
+            </div>
+            <button class="btn-ghost" onclick="window.location.href='messages.html'">Message</button>
+          </div>
+          <div class="my-req-actions">
+            <button class="btn-blue" onclick="markCompleted(this)">Mark as Completed</button>
+          </div>
+        </div>
+
+        <div class="my-req-item">
+          <div class="my-req-header">
+            <span class="badge badge-open">Open</span>
+            <span style="font-size:13px; color:var(--text-gray);">Gardening</span>
+            <h3>Garden cleanup before spring</h3>
+          </div>
+          <div class="my-req-meta">
+            <span class="meta-info">📍 My backyard</span>
+            <span class="meta-info">🕐 April 12, 2026 at 9:00 AM</span>
+          </div>
+          <div class="my-req-actions">
+            <button class="btn-ghost">Edit</button>
+            <button class="btn-danger" onclick="cancelRequest(this)">Cancel Request</button>
+          </div>
+        </div>
+
+        <div class="my-req-item">
+          <div class="my-req-header">
+            <span class="badge badge-completed">Completed</span>
+            <span style="font-size:13px; color:var(--text-gray);">IT Repair</span>
+            <h3>Computer repair needed</h3>
+          </div>
+          <div class="my-req-meta">
+            <span class="meta-info">📍 Downtown</span>
+            <span class="meta-info">🕐 March 28, 2026 at 3:00 PM</span>
+          </div>
+          <div class="helper-box">
+            <div class="helper-info">
+              <span class="helper-label">Helped by:</span>
+              <span class="helper-name">Alice Johnson</span>
+              <span class="stars" style="font-size:13px;">★★★★★ <span style="color:var(--text-gray);">5.0</span></span>
+            </div>
+            <button class="btn-ghost" onclick="window.location.href='messages.html'">Message</button>
+          </div>
+          <p style="font-size:13px; color:var(--text-gray);">Completed on March 28, 2026</p>
+        </div>
+
+      </div>
+
+      <!-- TAB: HELPING -->
+      <div id="panel-helping" style="display:none;">
+
+        <div class="my-req-item">
+          <div class="my-req-header">
+            <span class="badge badge-progress">In Progress</span>
+            <span style="font-size:13px; color:var(--text-gray);">Tutoring</span>
+            <h3>Math tutoring for high school</h3>
+          </div>
+          <div class="my-req-meta">
+            <span class="meta-info">📍 Eastside, 2.1 mi</span>
+            <span class="meta-info">🕐 Ongoing at 6:00 PM</span>
+          </div>
+          <div class="helper-box">
+            <div class="helper-info">
+              <span class="helper-label">Requested by:</span>
+              <span class="helper-name">Robert Johnson</span>
+              <span class="stars" style="font-size:13px;">★★★★☆ <span style="color:var(--text-gray);">4.9</span></span>
+            </div>
+            <button class="btn-ghost" onclick="window.location.href='messages.html'">Message</button>
+          </div>
+          <div class="my-req-actions">
+            <button class="btn-blue" onclick="markCompleted(this)">Mark as Completed</button>
+            <button class="btn-ghost" onclick="withdraw(this)">Withdraw</button>
+          </div>
+        </div>
+
+        <div class="my-req-item">
+          <div class="my-req-header">
+            <span class="badge badge-completed">Completed</span>
+            <span style="font-size:13px; color:var(--text-gray);">IT Repair</span>
+            <h3>Smart home setup assistance</h3>
+          </div>
+          <div class="my-req-meta">
+            <span class="meta-info">📍 Westside, 1.5 mi</span>
+            <span class="meta-info">🕐 April 3, 2026 at 1:00 PM</span>
+          </div>
+          <div class="helper-box">
+            <div class="helper-info">
+              <span class="helper-label">Requested by:</span>
+              <span class="helper-name">David Wilson</span>
+              <span class="stars" style="font-size:13px;">★★★☆☆ <span style="color:var(--text-gray);">4.8</span></span>
+            </div>
+            <button class="btn-ghost" onclick="window.location.href='messages.html'">Message</button>
+          </div>
+          <p style="font-size:13px; color:var(--text-gray);">Completed on April 3, 2026</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
+  </footer>
+
+  <script src="js/my-requests.js"></script>
+</body>
+</html>

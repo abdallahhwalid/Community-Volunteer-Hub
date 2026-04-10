@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/forms.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html">My Requests</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
+  </nav>
+
+  <main class="main-content auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="nav-logo-icon" style="width:52px;height:52px;font-size:22px;margin:0 auto 16px;">♥</div>
+        <h1>Create Your Account</h1>
+        <p>Join the community and start helping or getting help</p>
+      </div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" class="form-control" placeholder="e.g., John Doe"/>
+          <span class="error-msg" id="name-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" class="form-control" placeholder="e.g., john@example.com"/>
+          <span class="error-msg" id="email-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" class="form-control" placeholder="At least 6 characters"/>
+          <span class="error-msg" id="password-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password *</label>
+          <input type="password" id="confirm-password" class="form-control" placeholder="Repeat your password"/>
+          <span class="error-msg" id="confirm-password-error"></span>
+        </div>
+        <div class="form-group">
+          <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-weight:400;">
+            <input type="checkbox" id="terms" style="margin-top:3px; width:16px; height:16px;"/>
+            <span style="font-size:14px; color:var(--text-gray);">I agree to the <a href="#" style="color:var(--navy);">Terms of Service</a> and <a href="#" style="color:var(--navy);">Privacy Policy</a></span>
+          </label>
+          <span class="error-msg" id="terms-error"></span>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; padding:14px; font-size:16px;">Create Account</button>
+        <div class="alert-success" id="success-msg">✅ Account created! Redirecting to login...</div>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="login.html">Sign in here</a></p>
+    </div>
+  </main>
+
+  <footer style="padding:20px 40px; text-align:center; border-top:1px solid var(--border);">
+    <p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p>
+  </footer>
+
+  <script src="js/validation.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>

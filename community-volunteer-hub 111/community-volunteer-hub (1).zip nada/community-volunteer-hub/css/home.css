@@ -1,0 +1,108 @@
+/* HOME PAGE STYLES */
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B5BDB 100%);
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="80" cy="20" r="40" fill="rgba(255,255,255,0.04)"/><circle cx="10" cy="80" r="30" fill="rgba(255,255,255,0.03)"/></svg>');
+  background-size: cover;
+}
+
+.hero-content {
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.7s ease both;
+}
+
+.hero-content h1 {
+  font-size: 52px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 32px;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-outline {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.6);
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.btn-hero-outline:hover { background: rgba(255,255,255,0.25); }
+
+/* HOW IT WORKS CARDS */
+.how-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+  transition: all 0.25s;
+}
+.how-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
+
+.how-icon {
+  width: 64px; height: 64px;
+  background: var(--blue-light);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 18px;
+  color: var(--navy);
+}
+
+.how-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+.how-card p { font-size: 14px; color: var(--text-gray); line-height: 1.7; }
+
+/* CTA BANNER */
+.cta-banner {
+  background: linear-gradient(135deg, #1E3A8A 0%, #3B5BDB 100%);
+  padding: 72px 40px;
+  text-align: center;
+}
+.cta-banner h2 { font-size: 36px; font-weight: 800; color: white; margin-bottom: 12px; }
+.cta-banner p { font-size: 17px; color: rgba(255,255,255,0.85); margin-bottom: 28px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

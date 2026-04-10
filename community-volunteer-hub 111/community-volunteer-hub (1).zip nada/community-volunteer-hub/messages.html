@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messages – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/messages.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html">My Requests</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="messages.html" class="nav-icon-btn" style="color:var(--navy);">💬</a>
+      <a href="profile.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Messages</h1>
+      <p>Chat with volunteers and help seekers</p>
+    </div>
+
+    <div class="chat-layout">
+
+      <!-- SIDEBAR: conversations list -->
+      <div class="chat-sidebar">
+        <div class="chat-search-wrap">
+          <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px;">🔍</span>
+          <input type="text" class="chat-search" placeholder="Search conversations..." id="conv-search" oninput="filterConversations()"/>
+        </div>
+
+        <div class="conv-list" id="conv-list">
+          <div class="conv-item active" onclick="openConv(this, 'Sarah Johnson', 'SJ', 'Active now')">
+            <div class="avatar">SJ</div>
+            <div class="conv-info">
+              <div class="conv-header">
+                <span class="conv-name">Sarah Johnson</span>
+                <span class="conv-time">10:30 AM</span>
+              </div>
+              <p class="conv-preview">Great! See you tomorrow at 2 PM.</p>
+            </div>
+          </div>
+          <div class="conv-item" onclick="openConv(this, 'Michael Chen', 'MC', 'Yesterday')">
+            <div class="avatar">MC</div>
+            <div class="conv-info">
+              <div class="conv-header">
+                <span class="conv-name">Michael Chen</span>
+                <span class="conv-time">Yesterday</span>
+              </div>
+              <p class="conv-preview">I can help with that! When do you need it done? 🌱</p>
+            </div>
+          </div>
+          <div class="conv-item" onclick="openConv(this, 'Emily Davis', 'ED', '2 days ago')">
+            <div class="avatar">ED</div>
+            <div class="conv-info">
+              <div class="conv-header">
+                <span class="conv-name">Emily Davis</span>
+                <span class="conv-time">2 days ago</span>
+              </div>
+              <p class="conv-preview">Thank you so much for your help!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT PANEL -->
+      <div class="chat-panel">
+        <div class="chat-panel-header">
+          <div class="avatar">SJ</div>
+          <div>
+            <p class="chat-contact-name" id="chat-contact-name">Sarah Johnson</p>
+            <p class="chat-contact-status" id="chat-contact-status">Active now</p>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg msg-sent">
+            <div class="bubble bubble-sent">Hi! I saw your request for help with moving furniture.</div>
+            <span class="msg-time">10:15 AM</span>
+          </div>
+          <div class="msg msg-received">
+            <div class="bubble bubble-received">Yes! Thank you for reaching out. Are you available this Saturday?</div>
+            <span class="msg-time">10:18 AM</span>
+          </div>
+          <div class="msg msg-sent">
+            <div class="bubble bubble-sent">Saturday works perfectly for me. What time?</div>
+            <span class="msg-time">10:20 AM</span>
+          </div>
+          <div class="msg msg-received">
+            <div class="bubble bubble-received">How about 2 PM? I'm at 123 Oak Street, Downtown.</div>
+            <span class="msg-time">10:25 AM</span>
+          </div>
+          <div class="msg msg-sent">
+            <div class="bubble bubble-sent">Great! See you tomorrow at 2 PM.</div>
+            <span class="msg-time">10:30 AM</span>
+          </div>
+        </div>
+
+        <div class="chat-input-bar">
+          <input type="text" id="msg-input" class="chat-input" placeholder="Type your message..."/>
+          <button class="chat-send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
+  </footer>
+
+  <script src="js/messages.js"></script>
+</body>
+</html>

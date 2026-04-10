@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post a Request – Community Help Hub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/forms.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">♥</div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html">My Requests</a></li>
+    </ul>
+    <div class="nav-icons">
+      <a href="messages.html" class="nav-icon-btn">💬</a>
+      <a href="profile.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="form-page">
+      <div class="form-page-header">
+        <h1>Post a Help Request</h1>
+        <p>Describe what you need help with and our volunteers will reach out</p>
+      </div>
+
+      <div class="form-box">
+        <p class="form-box-title">Request Details</p>
+        <p class="form-box-sub">Be as specific as possible to help volunteers understand your needs</p>
+
+        <form id="post-request-form" novalidate>
+          <div class="form-group">
+            <label for="title">Request Title *</label>
+            <input type="text" id="title" class="form-control" placeholder="e.g., Need help moving furniture"/>
+            <span class="error-msg" id="title-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" class="form-control">
+              <option value="">Select a category</option>
+              <option value="Home Tasks">Home Tasks</option>
+              <option value="IT Repair">IT Repair</option>
+              <option value="Gardening">Gardening</option>
+              <option value="Tutoring">Tutoring</option>
+              <option value="Pet Care">Pet Care</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="error-msg" id="category-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" class="form-control" placeholder="Provide detailed information about what you need help with, including any special requirements or preferences..."></textarea>
+            <p style="font-size:12px; color:var(--text-gray); margin-top:6px;">Include important details like the scope of work, time estimate, and any tools or materials needed</p>
+            <span class="error-msg" id="description-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="location">📍 Location *</label>
+            <input type="text" id="location" class="form-control" placeholder="e.g., Downtown, 123 Main St"/>
+            <span class="error-msg" id="location-error"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="desired-date">📅 Desired Date</label>
+              <input type="date" id="desired-date" class="form-control"/>
+            </div>
+            <div class="form-group">
+              <label for="desired-time">Desired Time</label>
+              <input type="time" id="desired-time" class="form-control"/>
+            </div>
+          </div>
+
+          <label class="flexible-check">
+            <input type="checkbox" id="flexible" style="width:16px;height:16px;"/>
+            I'm flexible with timing and can coordinate with the volunteer
+          </label>
+
+          <div class="safety-box">
+            <h4>⚠ Safety Reminders</h4>
+            <ul>
+              <li>Meet in public places when possible</li>
+              <li>Verify volunteer identity before sharing personal information</li>
+              <li>Trust your instincts and report any suspicious behavior</li>
+            </ul>
+          </div>
+
+          <div class="form-actions">
+            <a href="index.html" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Post Request</button>
+          </div>
+
+          <div class="alert-success" id="success-msg">✅ Your request has been posted! Redirecting to browse...</div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
+  </footer>
+
+  <script src="js/validation.js"></script>
+  <script src="js/post-request.js"></script>
+</body>
+</html>
