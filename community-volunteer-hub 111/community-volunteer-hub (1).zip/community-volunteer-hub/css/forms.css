@@ -105,3 +105,9 @@
   justify-content: flex-end;
   padding-top: 8px;
 }
+
+
+.required-star {
+  color: red; /* You can also use a nicer red like #E53E3E */
+  font-weight: bold;
+}
