@@ -3,58 +3,165 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Profile – Community Help Hub</title>
+  <title>My Profile – Community Help Hub</title>
   <link rel="stylesheet" href="css/style.css"/>
   <link rel="stylesheet" href="css/profile.css"/>
 </head>
 <body>
+
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo" ></div>
+      <div class="nav-logo-icon">♥</div>
       <span class="nav-logo-text">Community Help Hub</span>
     </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="requests.html">Browse</a></li>
+      <li><a href="my-requests.html">My Requests</a></li>
     </ul>
+    <div class="nav-icons">
+      <a href="messages.html" class="nav-icon-btn">💬</a>
+      <a href="profile.html" class="nav-icon-btn" style="color:var(--navy);">👤</a>
+      <a href="login.html" class="btn-nav-login">Login</a>
+      <a href="register.html" class="btn-nav-signup">Sign Up</a>
+    </div>
   </nav>
 
   <main class="main-content">
     <div class="page-header">
-      <h1 id="page-title">Profile</h1>
-      <p id="page-subtitle">Community Member Details</p>
+      <h1>My Profile</h1>
+      <p>Manage your information and skills</p>
     </div>
 
     <div class="profile-page">
       <form id="profile-form">
+
+        <!-- ── PROFILE INFO CARD ── -->
         <div class="profile-card">
+          <h2 class="profile-card-title">Profile Information</h2>
+          <p class="profile-card-sub">Update your photo and personal details</p>
+
+          <!-- AVATAR ROW: photo upload + live preview -->
           <div class="profile-avatar-row">
-            <div class="avatar avatar-lg" id="avatar-initials">??</div>
+
+            <!-- Avatar: shows uploaded photo OR initials -->
+            <div class="avatar-wrap">
+              <div class="avatar avatar-lg" id="avatar-initials">GU</div>
+              <img id="avatar-img" src="" alt="Profile photo" style="display:none;"/>
+              <!-- Hidden real file input -->
+              <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
+              <!-- Visible camera button triggers the file input -->
+              <button type="button" class="avatar-edit-btn" title="Upload photo" onclick="document.getElementById('photo-upload').click()">📷</button>
+            </div>
+
             <div class="profile-info">
-              <h3 id="display-name">Loading...</h3>
+              <h3 id="display-name">Guest User</h3>
               <div class="meta-info">📍 <span id="display-location">Location</span></div>
-              <div class="meta-info">📅 Joined <span id="display-joined">2026</span></div>
-              <div class="stars" id="display-stars">★★★★★</div>
+              <div class="meta-info">📅 Joined 2026</div>
+              <div class="stars">★★★★☆ <span style="color:var(--text-gray);font-size:13px;">4.8</span></div>
             </div>
           </div>
-          <div class="form-group" style="margin-top:20px;">
-            <label>Bio</label>
-            <textarea id="bio" class="form-control" readonly></textarea>
+
+          <!-- Photo upload hint -->
+          <p class="photo-hint">Click the 📷 icon to upload a profile photo (JPG, PNG — max 5MB)</p>
+
+          <div class="form-group">
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" class="form-control" placeholder="Enter your full name" oninput="updatePreview()"/>
+          </div>
+
+          <div class="form-group">
+            <label for="location">📍 Your Location</label>
+            <input type="text" id="location" class="form-control" placeholder="e.g., Cairo, Nasr City" oninput="updatePreview()"/>
+            <span style="font-size:12px;color:var(--text-gray);margin-top:4px;display:block;">This helps volunteers near you find your requests</span>
+          </div>
+
+          <div class="form-group">
+            <label for="bio">Bio <span style="font-weight:400;color:var(--text-gray);">(optional)</span></label>
+            <textarea id="bio" class="form-control" placeholder="Tell the community about yourself. What can you help with? When are you available?" maxlength="200"></textarea>
+            <span id="bio-counter" style="font-size:12px;color:var(--text-gray);margin-top:4px;display:block;">0 / 200 characters</span>
           </div>
         </div>
 
+        <!-- ── ACCOUNT TYPE CARD ── -->
         <div class="profile-card">
-          <h2 class="profile-card-title">Skills</h2>
-          <div class="skills-container" id="skills-container"></div>
+          <h2 class="profile-card-title">Account Type</h2>
+          <p class="profile-card-sub">Choose how you want to use the platform</p>
+          <div class="volunteer-toggle-box">
+            <div>
+              <p style="font-weight:600;font-size:15px;">Volunteer Mode</p>
+              <p style="font-size:13px;color:var(--text-gray);">Enable to browse help requests and offer assistance</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="volunteer-mode" checked/>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
         </div>
 
-        <div class="profile-actions" id="edit-actions" style="display:none;">
-          <button type="submit" class="btn-blue">Save Changes</button>
+        <!-- ── SKILLS CARD ── -->
+        <div class="profile-card">
+          <h2 class="profile-card-title">My Skills</h2>
+          <p class="profile-card-sub">Add skills you can offer to help others. This helps people find you for the right tasks.</p>
+
+          <!-- Quick-pick suggested skills -->
+          <p style="font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:10px;">Quick pick — click to add:</p>
+          <div class="suggested-skills" id="suggested-skills">
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">IT Repair</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Gardening</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Tutoring</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Home Tasks</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Cooking</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Driving</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Pet Care</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Plumbing</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Photography</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Language Help</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Medical Advice</button>
+            <button type="button" class="skill-suggestion" onclick="addSuggestedSkill(this)">Child Care</button>
+          </div>
+
+          <!-- Your added skills show here -->
+          <p style="font-size:13px;font-weight:600;color:var(--text-mid);margin:16px 0 10px;">Your skills:</p>
+          <div class="skills-container" id="skills-container">
+            <span style="font-size:13px;color:var(--text-gray);" id="no-skills-msg">No skills added yet. Click suggestions above or type below.</span>
+          </div>
+
+          <!-- Type a custom skill -->
+          <div style="display:flex;gap:10px;margin-top:14px;">
+            <input type="text" id="skill-input" class="form-control" placeholder="Or type a custom skill and press Enter..." style="flex:1;"/>
+            <button type="button" class="btn-blue" onclick="addSkill()">+ Add</button>
+          </div>
+
+          <div class="tip-box">
+            <strong>💡 Tip:</strong> Add specific skills to increase your chances of being matched with relevant requests. Be honest about your abilities!
+          </div>
         </div>
+
+        <!-- ── SAVE ACTIONS ── -->
+        <div class="profile-actions">
+          <a href="index.html" class="btn-secondary">Cancel</a>
+          <button type="submit" class="btn-blue" style="padding:12px 28px;">Save Changes</button>
+        </div>
+
+        <div class="alert-success" id="save-success">✅ Profile saved successfully!</div>
       </form>
-      <div class="alert-success" id="save-success">✅ Profile saved!</div>
     </div>
   </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon">♥</div><span class="nav-logo-text">Community Help Hub</span></a>
+        <p>Connecting local volunteers with people who need help.</p>
+        <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="requests.html">Browse Requests</a></li><li><a href="post-request.html">Post a Request</a></li><li><a href="contact.html">Contact Us</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Safety Guidelines</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
+  </footer>
+
   <script src="js/profile.js"></script>
 </body>
 </html>
