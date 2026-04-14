@@ -27,7 +27,7 @@ function saveAll() {
   localStorage.setItem("helpRequests", JSON.stringify(helpRequests));
 }
 
-// OPEN THE IMAGE 3 MODAL
+// OPEN THE OFFER MODAL
 function openOfferModal(requestId) {
   const reqStatus = requestsData[requestId]?.status;
   if (reqStatus !== "Open") {
@@ -79,7 +79,12 @@ function confirmHelp() {
 
   saveAll();
   closeOfferModal();
-  alert("Success! Your offer and preferred time have been sent. ✅");
+  
+  // Get the owner's name to pass to the messages page
+  const ownerName = owners[activeRequestId].name;
+  
+  // Redirect to messages with time and user in the URL
+  window.location.href = "messages.html?autoMsg=true&datetime=" + encodeURIComponent(suggestedTime) + "&user=" + encodeURIComponent(ownerName);
 }
 
 // --- FILTER LOGIC ---
@@ -109,3 +114,4 @@ function filterRequests() {
 searchInput.addEventListener('input', filterRequests);
 categoryFilter.addEventListener('change', filterRequests);
 statusFilter.addEventListener('change', filterRequests);
+
