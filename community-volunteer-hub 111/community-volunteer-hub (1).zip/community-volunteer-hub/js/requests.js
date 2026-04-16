@@ -89,7 +89,7 @@ function confirmHelp() {
 
 // --- FILTER LOGIC ---
 const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn'); // The clickable icon
+const searchBtn = document.getElementById('search-btn'); // The clickable search icon
 const categoryFilter = document.getElementById('category-filter');
 const statusFilter = document.getElementById('status-filter');
 const cards = document.querySelectorAll('.req-card');
