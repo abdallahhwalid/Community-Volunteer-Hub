@@ -89,6 +89,7 @@ function confirmHelp() {
 
 // --- FILTER LOGIC ---
 const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn'); // The clickable icon
 const categoryFilter = document.getElementById('category-filter');
 const statusFilter = document.getElementById('status-filter');
 const cards = document.querySelectorAll('.req-card');
@@ -97,6 +98,8 @@ function filterRequests() {
   const searchVal = searchInput.value.toLowerCase();
   const catVal = categoryFilter.value;
   const statusVal = statusFilter.value;
+
+  let visibleCount = 0;
 
   cards.forEach(card => {
     const title = card.querySelector('h3').textContent.toLowerCase();
@@ -107,11 +110,40 @@ function filterRequests() {
     const matchCat = !catVal || category === catVal;
     const matchStatus = !statusVal || status === statusVal;
 
-    card.style.display = (matchSearch && matchCat && matchStatus) ? 'flex' : 'none';
+    if (matchSearch && matchCat && matchStatus) {
+      card.style.display = 'flex';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  // Update the "Showing X requests" text
+  const resultsCountText = document.getElementById('results-count');
+  if (resultsCountText) {
+    resultsCountText.textContent = `Showing ${visibleCount} requests`;
+  }
+}
+
+// 1. Search when the Search Icon is clicked
+if (searchBtn) {
+  searchBtn.addEventListener('click', filterRequests);
+}
+
+// 2. Search when "Enter" is pressed inside the input
+if (searchInput) {
+  searchInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      filterRequests();
+    }
   });
 }
 
-searchInput.addEventListener('input', filterRequests);
-categoryFilter.addEventListener('change', filterRequests);
-statusFilter.addEventListener('change', filterRequests);
-
+// 3. Keep the dropdowns automatically filtering when changed
+if (categoryFilter) {
+  categoryFilter.addEventListener('change', filterRequests);
+}
+if (statusFilter) {
+  statusFilter.addEventListener('change', filterRequests);
+}

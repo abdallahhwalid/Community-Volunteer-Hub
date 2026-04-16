@@ -34,11 +34,18 @@
     </div>
 
     <div class="section" style="padding-top:32px;">
+      
       <div class="filters-bar">
         <div class="search-wrap">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon" id="search-btn" style="cursor: pointer; z-index: 10;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
           <input type="text" id="search-input" class="search-input" placeholder="Search requests..."/>
         </div>
+
         <select id="category-filter" class="filter-select">
           <option value="">All Categories</option>
           <option value="Home Tasks">Home Tasks</option>
@@ -47,6 +54,7 @@
           <option value="Tutoring">Tutoring</option>
           <option value="Pet Care">Pet Care</option>
         </select>
+
         <select id="status-filter" class="filter-select">
           <option value="">All Statuses</option>
           <option value="Open">Open</option>
@@ -102,7 +110,7 @@
           <button class="btn-offer" onclick="openOfferModal(3)">Offer Help</button>
         </div>
         
-        </div>
+      </div>
     </div>
   </main>
 
