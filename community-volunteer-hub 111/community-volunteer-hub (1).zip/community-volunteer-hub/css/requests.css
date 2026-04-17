@@ -1,182 +1,117 @@
 /* =========================================
-   BROWSE REQUESTS GRID (Existing)
+   BROWSE REQUESTS GRID
    ========================================= */
-.requests-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-  gap: 20px; 
-}
-.req-card { 
-  background: white; 
-  border: 1px solid #eee; 
-  padding: 20px; 
-  border-radius: 12px; 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
-  transition: 0.3s; 
-}
-.req-card:hover { 
-  transform: translateY(-5px); 
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
-}
-.btn-offer { 
-  background: #d4a017; 
-  color: white; 
-  border: none; 
-  padding: 10px; 
-  border-radius: 6px; 
-  cursor: pointer; 
-  font-weight: bold; 
-  margin-top: auto; 
-}
-
+.requests-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+.req-card { background:white; border:1px solid #eee; padding:20px; border-radius:12px; display:flex; flex-direction:column; gap:10px; transition:0.3s; }
+.req-card:hover { transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.05); }
+.btn-offer { background:#d4a017; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:auto; }
+ 
 /* =========================================
-   NEW: PROFESSIONAL FILTERS & SEARCH
+   FILTERS & SEARCH
    ========================================= */
-.filters-bar {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
-  align-items: center;
-  flex-wrap: wrap; 
-}
-
-.search-wrap {
-  position: relative;
-  flex-grow: 1; 
-  max-width: 400px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 15px 12px 35px; /* Extra left padding for the icon */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: border-color 0.3s;
-  box-sizing: border-box;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #1a237e; /* Matches the dark blue theme from your navbar */
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #888;
-  font-size: 16px;
-}
-
-.filter-select {
-  padding: 12px 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 15px;
-  background-color: white;
-  cursor: pointer;
-  min-width: 150px;
-}
-
+.filters-bar { display:flex; gap:15px; margin-bottom:30px; align-items:center; flex-wrap:wrap; }
+.search-wrap { position:relative; flex-grow:1; max-width:400px; }
+.search-input { width:100%; padding:12px 15px 12px 35px; border:1px solid #ccc; border-radius:8px; font-size:15px; transition:border-color 0.3s; box-sizing:border-box; }
+.search-input:focus { outline:none; border-color:#1a237e; }
+.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#888; font-size:16px; }
+.filter-select { padding:12px 15px; border:1px solid #ccc; border-radius:8px; font-size:15px; background-color:white; cursor:pointer; min-width:150px; }
+ 
 /* =========================================
-   NEW: MY REQUESTS GRID LAYOUT
+   MY REQUESTS — PANEL GRID
    ========================================= */
 #panel-posted, #panel-helping {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 20px;
-  margin-top: 20px;
 }
-
-.my-req-item {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.my-req-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.my-req-header h3 {
-  margin: 10px 0;
-  font-size: 18px;
-  color: #333;
-}
-
-.my-req-meta {
-  margin-bottom: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 14px;
-  color: #666;
-}
-
-.my-req-actions {
-  margin-top: auto; /* Pushes buttons to the bottom of the card */
-  display: flex;
-  gap: 10px;
-  padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
-}
-
+.pending-section { margin-bottom: 8px; }
+ 
 /* =========================================
-   MODAL STYLES (Existing)
+   PENDING OFFER CARDS
    ========================================= */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+.pending-offer-card { display:flex; align-items:center; gap:12px; background:var(--bg-card,#fff); border:1px solid #e5e7eb; border-radius:12px; padding:12px 16px; margin-bottom:10px; }
+.pending-offer-avatar { width:40px; height:40px; border-radius:50%; background:#dbeafe; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; }
+.pending-offer-info { flex:1; }
+.pending-offer-name { font-weight:600; font-size:14px; margin:0 0 2px; }
+.pending-offer-sub  { font-size:12px; color:#6b7280; margin:0; }
+.pending-offer-actions { display:flex; gap:8px; }
+.btn-confirm { padding:6px 14px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; background:#16a34a; color:#fff; border:none; }
+.btn-confirm:hover { background:#15803d; }
+.btn-reject  { padding:6px 14px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; background:#fff; color:#dc2626; border:1px solid #fca5a5; }
+.btn-reject:hover { background:#fef2f2; }
+ 
+/* =========================================
+   REQUEST CARD
+   ========================================= */
+.my-req-item {
+  background:var(--bg-card,#fff);
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  /* reset any inherited full-width stretch */
+  min-width:0;
 }
-
-.modal-content {
-  background: white;
-  width: 100%;
-  max-width: 500px;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-
-.modal-content h2 { font-size: 24px; margin-bottom: 5px; color: #111; }
-.modal-cat { color: #888; font-size: 14px; margin-bottom: 25px; }
-
-.modal-section { margin-bottom: 20px; }
-.modal-section label, .modal-item label { 
-  display: block; 
-  font-weight: bold; 
-  color: #bbb; 
-  font-size: 12px; 
-  text-transform: uppercase; 
-  margin-bottom: 5px; 
-}
-
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-
-.user-info { display: flex; justify-content: space-between; align-items: center; background: #fafafa; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
-.user-rating { color: #f39c12; font-weight: bold; font-size: 14px; }
-
-.time-picker-box { background: #fff9e6; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
-
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-.btn-secondary { background: #eee; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; }
-.btn-primary { background: #d4a017; color: white; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-.form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; margin-top: 5px; box-sizing: border-box; }
+.my-req-header { display:flex; flex-direction:column; gap:4px; }
+.my-req-header-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.my-req-meta { display:flex; flex-direction:column; gap:4px; }
+.meta-info { font-size:13px; color:#6b7280; }
+.my-req-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:auto; }
+ 
+/* =========================================
+   HELPER BOX
+   ========================================= */
+.helper-box { display:flex; align-items:center; justify-content:space-between; background:#f9fafb; border-radius:10px; padding:10px 14px; gap:8px; }
+.helper-info { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.helper-label { font-size:13px; color:#6b7280; }
+.helper-name  { font-size:13px; font-weight:600; }
+ 
+/* =========================================
+   EDIT FORM
+   ========================================= */
+.edit-form { margin-top:4px; }
+.edit-form-inner { display:flex; flex-direction:column; gap:10px; }
+.edit-label { font-size:12px; font-weight:600; color:#374151; margin-bottom:-6px; }
+.edit-input { width:100%; padding:8px 12px; border-radius:8px; border:1px solid #d1d5db; font-size:14px; box-sizing:border-box; outline:none; transition:border-color .2s; }
+.edit-input:focus { border-color:#3b82f6; }
+.edit-form-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:4px; }
+ 
+/* =========================================
+   CANCEL MODAL
+   ========================================= */
+.modal-overlay { position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(0px); transition:background .3s,backdrop-filter .3s; pointer-events:none; }
+.modal-overlay.visible { background:rgba(0,0,0,.45); backdrop-filter:blur(4px); pointer-events:all; }
+.modal-box { background:#fff; border-radius:20px; padding:36px 32px; max-width:400px; width:90%; text-align:center; transform:scale(.92) translateY(16px); opacity:0; transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s; box-shadow:0 20px 60px rgba(0,0,0,.18); }
+.modal-overlay.visible .modal-box { transform:scale(1) translateY(0); opacity:1; }
+.modal-icon { width:56px; height:56px; border-radius:50%; background:#fef2f2; color:#dc2626; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+.modal-title { font-size:20px; font-weight:700; margin:0 0 10px; color:#111827; }
+.modal-message { font-size:14px; color:#6b7280; line-height:1.6; margin:0 0 24px; }
+.modal-actions { display:flex; gap:12px; justify-content:center; }
+.modal-btn-keep   { flex:1; padding:11px 0; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#f3f4f6; color:#374151; border:1px solid #e5e7eb; transition:background .2s; }
+.modal-btn-keep:hover { background:#e5e7eb; }
+.modal-btn-cancel { flex:1; padding:11px 0; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#dc2626; color:#fff; border:none; transition:background .2s,transform .1s; }
+.modal-btn-cancel:hover  { background:#b91c1c; }
+.modal-btn-cancel:active { transform:scale(.97); }
+ 
+/* =========================================
+   TOAST
+   ========================================= */
+.toast-notification { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:#111827; color:#fff; padding:12px 24px; border-radius:100px; font-size:14px; font-weight:500; z-index:10000; opacity:0; transition:opacity .3s,transform .3s; white-space:nowrap; }
+.toast-notification.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+ 
+/* =========================================
+   MODAL STYLES (Browse/Offer modal)
+   ========================================= */
+.modal-content { background:white; width:100%; max-width:500px; padding:30px; border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.4); }
+.modal-content h2 { font-size:24px; margin-bottom:5px; color:#111; }
+.modal-cat { color:#888; font-size:14px; margin-bottom:25px; }
+.modal-section { margin-bottom:20px; }
+.modal-section label, .modal-item label { display:block; font-weight:bold; color:#bbb; font-size:12px; text-transform:uppercase; margin-bottom:5px; }
+.modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; border-top:1px solid #f0f0f0; padding-top:20px; }
+.user-info { display:flex; justify-content:space-between; align-items:center; background:#fafafa; padding:12px; border-radius:8px; border:1px solid #eee; }
+.user-rating { color:#f39c12; font-weight:bold; font-size:14px; }
+.time-picker-box { background:#fff9e6; padding:15px; border-radius:8px; border:1px solid #ffeeba; }
+.modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+.form-control { width:100%; padding:10px; border:1px solid #ddd; border-radius:5px; font-family:inherit; margin-top:5px; box-sizing:border-box; }
