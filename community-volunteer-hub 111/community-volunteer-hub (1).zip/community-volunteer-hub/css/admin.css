@@ -1,5 +1,3 @@
-/* ADMIN PAGE CSS */
-
 .admin-page { padding: 32px 40px; }
 
 .stats-grid {
@@ -29,7 +27,7 @@
 }
 
 .stat-number { font-size: 28px; font-weight: 800; color: var(--text-dark); line-height: 1; }
-.stat-label { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+.stat-label  { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
 
 .admin-section {
   background: white;
@@ -62,7 +60,7 @@ thead tr {
 }
 
 th {
-  padding: 11px 14px;
+  padding: 13px 14px;
   text-align: left;
   font-size: 12px;
   font-weight: 700;
@@ -81,7 +79,9 @@ td {
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg); }
 
-.actions-cell { display: flex; gap: 8px; align-items: center; }
+.actions-cell { white-space: nowrap; }
+.actions-cell button { margin-right: 8px; }
+.actions-cell button:last-child { margin-right: 0; }
 
 .role-badge {
   display: inline-flex;
@@ -92,8 +92,8 @@ tr:hover td { background: var(--bg); }
   font-weight: 600;
 }
 .role-volunteer { background: #EEF2FF; color: var(--navy); }
-.role-user { background: #F3F4F6; color: var(--text-mid); }
-.role-admin { background: #FEF3C7; color: #92400E; }
+.role-user      { background: #F3F4F6; color: var(--text-mid); }
+.role-admin     { background: #FEF3C7; color: #92400E; }
 
 .search-input {
   padding: 9px 12px;
@@ -105,3 +105,119 @@ tr:hover td { background: var(--bg); }
   transition: border-color 0.2s;
 }
 .search-input:focus { border-color: var(--blue); }
+
+
+/* ── Modals ─────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  text-align: center;
+  animation: slideUp 0.2s ease;
+}
+
+/* View modal overrides */
+.modal-box-view {
+  max-width: 440px;
+  text-align: left;
+  padding: 24px 28px 28px;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-icon { font-size: 36px; margin-bottom: 12px; line-height: 1; display: flex; justify-content: center; }
+.modal-title   { font-size: 17px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
+.modal-message { font-size: 14px; color: var(--text-gray); margin-bottom: 24px; line-height: 1.5; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 10px 0 !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.modal-btn:hover { opacity: 0.85; }
+
+/* View modal header */
+.modal-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.modal-view-header .modal-title { margin: 0; }
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-gray);
+  line-height: 1;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.modal-close-btn:hover { background: var(--bg); color: var(--text-dark); }
+
+/* View modal body */
+.view-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.view-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.view-field:first-child { padding-top: 0; }
+.view-field:last-child  { border-bottom: none; padding-bottom: 0; }
+
+.view-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-gray);
+}
+
+.view-field-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+}

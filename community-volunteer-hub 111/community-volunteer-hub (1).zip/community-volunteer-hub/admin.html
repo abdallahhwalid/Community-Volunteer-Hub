@@ -11,7 +11,7 @@
 
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo" ></logo></div>
+      <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo"></div>
       <span class="nav-logo-text">Community Help Hub</span>
     </a>
     <ul class="nav-links">
@@ -20,8 +20,8 @@
       <li><a href="admin.html" class="active">Admin</a></li>
     </ul>
     <div class="nav-icons">
-      <a href="messages.html" class="nav-icon-btn" title="Messages"><img src="images/messages1.png" alt="messages" style="width:20px;height: 20px;" ></a>
-      <a href="profile.html" class="nav-icon-btn"> <img src="images/profile.png" alt="profile" style="width:25px;height:25px;"> </a>
+      <a href="messages.html" class="nav-icon-btn" title="Messages"><img src="images/messages1.png" alt="messages" style="width:20px;height:20px;"></a>
+      <a href="profile.html" class="nav-icon-btn"><img src="images/profile.png" alt="profile" style="width:25px;height:25px;"></a>
       <a href="login.html" class="btn-nav-login">Logout</a>
     </div>
   </nav>
@@ -37,28 +37,28 @@
       <!-- STATS CARDS -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon" style="background:#EEF2FF; color:var(--navy);">👥</div>
+          <div class="stat-icon" style="background:#EEF2FF;"><img src="images/Total users.png" alt="Total Users" style="width:40px;height:40px;object-fit:contain;"></div>
           <div>
             <p class="stat-number">248</p>
             <p class="stat-label">Total Users</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:var(--green-light); color:var(--green);">📋</div>
+          <div class="stat-icon" style="background:var(--green-light);"><img src="images/Active tasks.png" alt="Active Requests" style="width:40px;height:40px;object-fit:contain;"></div>
           <div>
             <p class="stat-number">63</p>
             <p class="stat-label">Active Requests</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#FFFBEB; color:var(--orange);">✅</div>
+          <div class="stat-icon" style="background:#FFFBEB;"><img src="images/Completed tasks.png" alt="Completed Tasks" style="width:40px;height:40px;object-fit:contain;"></div>
           <div>
             <p class="stat-number">412</p>
             <p class="stat-label">Completed Tasks</p>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#FEE2E2; color:var(--red);">🚨</div>
+          <div class="stat-icon" style="background:#FEE2E2;"><img src="images/Pending reports.png" alt="Pending Reports" style="width:40px;height:40px;object-fit:contain;"></div>
           <div>
             <p class="stat-number">3</p>
             <p class="stat-label">Pending Reports</p>
@@ -92,8 +92,8 @@
                 <td><span class="badge badge-open">Active</span></td>
                 <td>Jan 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
-                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="suspendUser(this)">Suspend</button>
                 </td>
               </tr>
               <tr>
@@ -103,8 +103,8 @@
                 <td><span class="badge badge-open">Active</span></td>
                 <td>Feb 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
-                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="suspendUser(this)">Suspend</button>
                 </td>
               </tr>
               <tr>
@@ -114,8 +114,8 @@
                 <td><span class="badge badge-open">Active</span></td>
                 <td>Mar 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
-                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Suspend</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                  <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="suspendUser(this)">Suspend</button>
                 </td>
               </tr>
               <tr>
@@ -125,8 +125,8 @@
                 <td><span class="badge badge-progress">Suspended</span></td>
                 <td>Mar 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
-                  <button class="btn-blue" style="padding:5px 10px;font-size:12px;" onclick="this.closest('tr').querySelector('.badge').className='badge badge-open';this.closest('tr').querySelector('.badge').textContent='Active'">Restore</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                  <button class="btn-blue" style="padding:5px 10px;font-size:12px;" onclick="restoreUser(this)">Restore</button>
                 </td>
               </tr>
             </tbody>
@@ -160,7 +160,7 @@
                 <td><span class="badge badge-progress">In Progress</span></td>
                 <td>Apr 7, 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
                   <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
                 </td>
               </tr>
@@ -171,7 +171,7 @@
                 <td><span class="badge badge-open">Open</span></td>
                 <td>Apr 6, 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
                   <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
                 </td>
               </tr>
@@ -182,7 +182,7 @@
                 <td><span class="badge badge-open">Open</span></td>
                 <td>Apr 5, 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
                   <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
                 </td>
               </tr>
@@ -193,7 +193,7 @@
                 <td><span class="badge badge-completed">Completed</span></td>
                 <td>Apr 3, 2026</td>
                 <td class="actions-cell">
-                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;">View</button>
+                  <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
                   <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="removeRow(this)">Delete</button>
                 </td>
               </tr>
@@ -208,7 +208,7 @@
   <footer>
     <div class="footer-grid">
       <div class="footer-brand">
-        <a href="index.html" class="nav-logo"><div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo" ></div><span class="nav-logo-text">Community Help Hub</span></a>
+        <a href="index.html" class="nav-logo"><div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo"></div><span class="nav-logo-text">Community Help Hub</span></a>
         <p>Connecting local volunteers with people who need help.</p>
         <div class="footer-contact"><span>✉ support@communityhelpub.org</span><span>📞 (555) 123-4567</span></div>
       </div>
@@ -217,6 +217,30 @@
     </div>
     <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
   </footer>
+
+  <!-- ── Confirm Modal ── -->
+  <div id="confirm-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon" id="modal-icon">⚠️</div>
+      <h3 class="modal-title" id="modal-title">Are you sure?</h3>
+      <p class="modal-message" id="modal-message">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost modal-btn" id="modal-cancel">Cancel</button>
+        <button class="btn-danger modal-btn" id="modal-continue">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── View Details Modal ── -->
+  <div id="view-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-box-view">
+      <div class="modal-view-header">
+        <h3 class="modal-title">Details</h3>
+        <button id="view-modal-close" class="modal-close-btn">✕</button>
+      </div>
+      <div id="view-modal-body"></div>
+    </div>
+  </div>
 
   <script src="js/admin.js"></script>
 </body>
