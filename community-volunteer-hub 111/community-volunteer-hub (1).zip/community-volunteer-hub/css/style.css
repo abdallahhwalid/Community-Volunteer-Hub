@@ -78,6 +78,7 @@ body {
 .nav-logo-text {
   font-size: 18px;
   font-weight: 700;
+  font-family: 'DM Serif Display', serif;
   color: var(--navy);
   white-space: nowrap; /* Forces the text to stay on one line */
 }
@@ -101,6 +102,7 @@ body {
 .nav-links a:hover, .nav-links a.active {
   color: var(--navy);
   background: var(--blue-light);
+  
 }
 
 .nav-icons {
