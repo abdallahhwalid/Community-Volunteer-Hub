@@ -15,13 +15,14 @@
     </a>
   </nav>
 
-  <main class="main-content auth-page">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="nav-logo-icon" style="width:52px;height:52px;font-size:22px;margin:0 auto 16px;">♥</div>
+<main class="main-content auth-page">
+    <div class="auth-card">  <div class="auth-header">
+        <img src="images/logo.png" alt="Community Help Hub logo" style="height: 120px; margin: 0 auto 16px; display: block;">
         <h1>Welcome Back</h1>
         <p>Sign in to your account</p>
       </div>
+
+      <form id="login-form" novalidate>
 
       <form id="login-form" novalidate>
         <div class="form-group">
@@ -55,7 +56,7 @@
     
     <div id="step-1-email">
       <div class="form-group">
-        <input type="email" id="recovery-email" class="form-control" placeholder="your@email.com"/>
+        <input type="email" id="recovery-email" class="form-control" placeholder="enter your email"/>
         <span class="error-msg" id="recovery-email-error" style="color:red; font-size:12px; display:block; margin-top:5px;"></span>
       </div>
       <button id="send-recovery-btn" class="btn-primary" style="width:100%; padding:12px;">Send Code</button>
@@ -64,7 +65,7 @@
     <div id="step-2-reset" style="display:none;">
       <div class="form-group">
         <label style="font-size:14px; font-weight:500;">Verification Code</label>
-        <input type="text" id="recovery-code" class="form-control" placeholder="Enterq code"/>
+        <input type="text" id="recovery-code" class="form-control" placeholder="Enter code"/>
       </div>
       <div class="form-group">
         <label style="font-size:14px; font-weight:500;">New Password</label>
