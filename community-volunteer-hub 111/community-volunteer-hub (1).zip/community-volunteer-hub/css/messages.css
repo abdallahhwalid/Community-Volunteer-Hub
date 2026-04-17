@@ -28,7 +28,7 @@
 }
 .chat-search {
   width: 100%;
-  padding: 9px 12px 9px 32px;
+  padding: 9px 12px 9px 36px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -134,14 +134,13 @@
 
 .chat-send-btn {
   width: 40px; height: 40px;
-  background: var(--orange);
+  background: transparent;
   border: none;
   border-radius: 50%;
-  color: white;
-  font-size: 16px;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
   flex-shrink: 0;
+  padding: 0;
 }
-.chat-send-btn:hover { background: var(--orange-dark); }
+.chat-send-btn:hover { opacity: 0.75; }

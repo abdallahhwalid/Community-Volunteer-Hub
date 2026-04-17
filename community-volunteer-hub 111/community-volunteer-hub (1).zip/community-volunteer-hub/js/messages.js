@@ -66,6 +66,16 @@ function sendMessage() {
   msg.innerHTML = '<div class="bubble bubble-sent">' + text + '</div><span class="msg-time">' + timeDisplay + '</span>';
   container.appendChild(msg);
 
+  // ── Update sidebar preview with last sent message ──
+  const activeConv = document.querySelector('.conv-item.active');
+  if (activeConv) {
+    const preview = activeConv.querySelector('.conv-preview');
+    if (preview) preview.textContent = text;
+
+    const timeEl = activeConv.querySelector('.conv-time');
+    if (timeEl) timeEl.textContent = timeDisplay;
+  }
+
   input.value = '';
   container.scrollTop = container.scrollHeight;
 }
