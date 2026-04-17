@@ -70,6 +70,7 @@ function cancelRequest(btn) { showCancelModal(btn.closest('.my-req-item')); }
 function showCancelModal(item) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
+  overlay.style.display = 'flex';
   overlay.innerHTML = `
     <div class="modal-box">
       <div class="modal-icon">
@@ -84,14 +85,11 @@ function showCancelModal(item) {
     </div>`;
   overlay._targetItem = item;
   document.body.appendChild(overlay);
-  requestAnimationFrame(() => overlay.classList.add('visible'));
 }
  
 function closeModal() {
-  const overlay = document.querySelector('.modal-overlay');
-  if (!overlay) return;
-  overlay.classList.remove('visible');
-  setTimeout(() => overlay.remove(), 300);
+  const overlay = document.querySelector('.modal-overlay:not(#offer-modal)');
+  if (overlay) overlay.remove();
 }
  
 function confirmCancel(btn) {
