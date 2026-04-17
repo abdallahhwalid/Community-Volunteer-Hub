@@ -37,11 +37,41 @@ document.getElementById('view-modal').addEventListener('click', function (e) {
   if (e.target === this) closeViewModal();
 });
 
-// ── Filter table rows ─────────────────────────────────
-function filterTable(tableId, searchVal) {
-  const val = searchVal.toLowerCase();
-  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(function (row) {
-    row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+// ── Filter users table ────────────────────────────────
+function filterUsers() {
+  const search = document.getElementById('user-search').value.toLowerCase();
+  const role   = document.getElementById('user-role-filter').value.toLowerCase();
+  const status = document.getElementById('user-status-filter').value.toLowerCase();
+
+  document.querySelectorAll('#users-table tbody tr').forEach(function (row) {
+    const text       = row.textContent.toLowerCase();
+    const roleCell   = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
+    const statusCell = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+
+    const matchSearch = text.includes(search);
+    const matchRole   = role   === '' || roleCell === role;
+    const matchStatus = status === '' || statusCell === status;
+
+    row.style.display = (matchSearch && matchRole && matchStatus) ? '' : 'none';
+  });
+}
+
+// ── Filter requests table ─────────────────────────────
+function filterRequests() {
+  const search   = document.getElementById('req-search').value.toLowerCase();
+  const category = document.getElementById('req-category-filter').value.toLowerCase();
+  const status   = document.getElementById('req-status-filter').value.toLowerCase();
+
+  document.querySelectorAll('#requests-table tbody tr').forEach(function (row) {
+    const text         = row.textContent.toLowerCase();
+    const categoryCell = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
+    const statusCell   = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+
+    const matchSearch   = text.includes(search);
+    const matchCategory = category === '' || categoryCell === category;
+    const matchStatus   = status   === '' || statusCell   === status;
+
+    row.style.display = (matchSearch && matchCategory && matchStatus) ? '' : 'none';
   });
 }
 

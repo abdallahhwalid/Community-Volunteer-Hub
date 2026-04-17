@@ -106,6 +106,34 @@ tr:hover td { background: var(--bg); }
 }
 .search-input:focus { border-color: var(--blue); }
 
+/* ── Filter bar ──────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-bar .search-input {
+  width: 200px;
+}
+
+.filter-select {
+  padding: 9px 32px 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-dark);
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.filter-select:focus { border-color: var(--blue); }
+
 
 /* ── Modals ─────────────────────────────────────────── */
 .modal-overlay {
@@ -148,7 +176,7 @@ tr:hover td { background: var(--bg); }
   to   { transform: translateY(0);    opacity: 1; }
 }
 
-.modal-icon { font-size: 36px; margin-bottom: 12px; line-height: 1; display: flex; justify-content: center; }
+.modal-icon    { font-size: 36px; margin-bottom: 12px; }
 .modal-title   { font-size: 17px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; }
 .modal-message { font-size: 14px; color: var(--text-gray); margin-bottom: 24px; line-height: 1.5; }
 

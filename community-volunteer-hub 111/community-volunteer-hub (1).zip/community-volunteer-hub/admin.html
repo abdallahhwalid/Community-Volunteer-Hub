@@ -70,7 +70,20 @@
       <div class="admin-section">
         <div class="admin-section-header">
           <h2>Manage Users</h2>
-          <input type="text" class="search-input" placeholder="Search users..." id="user-search" oninput="filterTable('users-table', this.value)" style="width:220px;"/>
+          <div class="filter-bar">
+            <input type="text" class="search-input" placeholder="Search users..." id="user-search" oninput="filterUsers()"/>
+            <select class="filter-select" id="user-role-filter" onchange="filterUsers()">
+              <option value="">All Roles</option>
+              <option value="Volunteer">Volunteer</option>
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <select class="filter-select" id="user-status-filter" onchange="filterUsers()">
+              <option value="">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
         </div>
         <div class="table-wrap">
           <table id="users-table">
@@ -138,7 +151,22 @@
       <div class="admin-section">
         <div class="admin-section-header">
           <h2>Manage Requests</h2>
-          <input type="text" class="search-input" placeholder="Search requests..." id="req-search" oninput="filterTable('requests-table', this.value)" style="width:220px;"/>
+          <div class="filter-bar">
+            <input type="text" class="search-input" placeholder="Search requests..." id="req-search" oninput="filterRequests()"/>
+            <select class="filter-select" id="req-category-filter" onchange="filterRequests()">
+              <option value="">All Categories</option>
+              <option value="Home Tasks">Home Tasks</option>
+              <option value="IT Repair">IT Repair</option>
+              <option value="Gardening">Gardening</option>
+              <option value="Tutoring">Tutoring</option>
+            </select>
+            <select class="filter-select" id="req-status-filter" onchange="filterRequests()">
+              <option value="">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
         </div>
         <div class="table-wrap">
           <table id="requests-table">
