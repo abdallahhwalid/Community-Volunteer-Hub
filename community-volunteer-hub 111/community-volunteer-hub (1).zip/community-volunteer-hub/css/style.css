@@ -265,6 +265,9 @@ body {
   padding: 20px;
   box-shadow: var(--card-shadow);
   transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
 
@@ -431,7 +434,7 @@ footer {
 
 /* ── GRID HELPERS ── */
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: start; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
 
 /* ── TABS ── */

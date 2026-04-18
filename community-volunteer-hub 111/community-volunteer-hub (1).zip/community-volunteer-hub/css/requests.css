@@ -4,7 +4,7 @@
 .requests-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
 .req-card { background:white; border:1px solid #eee; padding:20px; border-radius:12px; display:flex; flex-direction:column; gap:10px; transition:0.3s; }
 .req-card:hover { transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.05); }
-.btn-offer { background:#d4a017; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:auto; }
+.btn-offer { background: var(--orange); color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; margin-top:auto; }
 
 /* =========================================
    FILTERS & SEARCH
