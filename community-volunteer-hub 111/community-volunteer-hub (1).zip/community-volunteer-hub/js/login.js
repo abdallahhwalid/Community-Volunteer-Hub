@@ -117,21 +117,28 @@ confirmResetBtn.addEventListener('click', function() {
     const codeInput = document.getElementById('recovery-code').value.trim();
     const newPasswordInput = document.getElementById('new-password').value.trim();
     const newPasswordError = document.getElementById('new-password-error');
+    const codeError = document.getElementById('recovery-code-error'); 
     
-    // Ensure they typed a code
+    if (codeError) codeError.textContent = "";
+    if (newPasswordError) newPasswordError.textContent = "";
+
+    // 1. Check Verification Code
     if (codeInput === "") {
-        newPasswordError.textContent = "Please enter the verification code.";
+        codeError.textContent = "Please enter the verification code."; 
+        return;
+    } else if (codeInput.length < 6) {
+        
+        codeError.textContent = "Verification code must be at least 6 characters.";
         return;
     }
-
-    // Validate New Password
+    
+    // 2. Check New Password
     if (newPasswordInput.length < 6) {
         newPasswordError.textContent = "New password must be at least 6 characters.";
-        return; // Stop here if wrong
+        return; 
     }
     
     // If everything is correct, show success!
-    newPasswordError.textContent = "";
     step2Div.style.display = 'none';
     recoveryDesc.textContent = '';
     recoverySuccessMsg.style.display = 'block';
