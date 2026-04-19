@@ -2,7 +2,6 @@
 
 /* HERO */
 .hero {
-  /* background: linear-gradient(135deg, #1E3A8A 0%, #3B5BDB 100%); */
   background: linear-gradient(135deg, rgba(30,58,138,0.85) 0%, rgba(59,91,219,0.85) 100%), url('../images/hero-background.jpeg') center/cover no-repeat;
   min-height: 480px;
   display: flex;
@@ -65,6 +64,25 @@
 }
 .btn-hero-outline:hover { background: rgba(255,255,255,0.25); }
 
+/* SECTION VARIANTS */
+.section-white { background: white; }
+.section-bg    { background: var(--bg); }
+
+/* CONTAINER VARIANTS */
+.container-center { text-align: center; }
+
+/* SECTION HEADER ROW */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.section-title-sm { margin-bottom: 4px; }
+
+.section-desc { color: var(--text-gray); }
+
 /* HOW IT WORKS CARDS */
 .how-card {
   background: white;
@@ -94,6 +112,71 @@
 }
 .how-card p { font-size: 14px; color: var(--text-gray); line-height: 1.7; }
 
+/* RECENT REQUESTS CARDS */
+.grid-stretch { align-items: stretch; }
+
+.card-full { height: 100%; }
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-time {
+  font-size: 12px;
+  color: var(--text-gray);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.card-category {
+  font-size: 13px;
+  color: var(--text-gray);
+}
+
+.btn-offer-full {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* VOLUNTEER CARDS */
+.volunteer-card {
+  text-align: center;
+  padding: 28px 20px;
+}
+
+.volunteer-avatar {
+  margin: 0 auto 14px;
+}
+
+.volunteer-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.volunteer-skill {
+  font-size: 13px;
+  color: var(--text-gray);
+  margin: 4px 0 10px;
+}
+
+.volunteer-rating {
+  color: var(--text-gray);
+  font-size: 13px;
+}
+
+.btn-profile {
+  margin-top: 15px;
+  display: inline-block;
+  font-size: 13px;
+  padding: 8px 16px;
+}
+
 /* CTA BANNER */
 .cta-banner {
   background: linear-gradient(135deg, #1E3A8A 0%, #3B5BDB 100%);
@@ -101,7 +184,12 @@
   text-align: center;
 }
 .cta-banner h2 { font-size: 36px; font-weight: 800; color: white; margin-bottom: 12px; }
-.cta-banner p { font-size: 17px; color: rgba(255,255,255,0.85); margin-bottom: 28px; }
+.cta-banner p  { font-size: 17px; color: rgba(255,255,255,0.85); margin-bottom: 28px; }
+
+.btn-cta {
+  font-size: 16px;
+  padding: 14px 36px;
+}
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }

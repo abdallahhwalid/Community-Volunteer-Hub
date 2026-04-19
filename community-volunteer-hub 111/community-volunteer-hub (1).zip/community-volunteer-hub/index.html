@@ -12,7 +12,7 @@
 
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo" ></div>
+      <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo"></div>
       <span class="nav-logo-text">Community Help Hub</span>
     </a>
     <ul class="nav-links">
@@ -21,14 +21,14 @@
       <li><a href="my-requests.html">My Requests</a></li>
     </ul>
     <div class="nav-icons">
-      <a href="messages.html" class="nav-icon-btn" title="Messages"><img src="images/messages1.png" alt="messages" style="width:20px;height: 20px;" ></a>
-      <a href="profile.html" class="nav-icon-btn"> <img src="images/profile.png" alt="profile" style="width:25px;height:25px;"> </a>
+      <a href="messages.html" class="nav-icon-btn" title="Messages"><img src="images/messages1.png" alt="messages" class="nav-icon-img-sm"></a>
+      <a href="profile.html" class="nav-icon-btn"><img src="images/profile.png" alt="profile" class="nav-icon-img-md"></a>
       <a href="login.html" class="btn-nav-login">Login</a>
       <a href="register.html" class="btn-nav-signup">Sign Up</a>
     </div>
   </nav>
 
-<div id="offer-modal" class="modal-overlay" style="display:none;">
+  <div id="offer-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h2 id="modal-title"></h2>
       <p id="modal-category" class="modal-cat"></p>
@@ -53,14 +53,16 @@
           <span class="user-rating">★★★★☆ 4.8</span>
         </div>
       </div>
+      <div class="modal-section time-picker-box">
+        <label>Set your convenient time</label>
+        <input type="datetime-local" id="suggested-time" class="form-control">
+      </div>
       <div class="modal-footer">
-        <button class="btn-secondary" onclick="document.getElementById('offer-modal').style.display='none'">Cancel</button>
-        <button class="btn-primary" onclick="window.location.href='requests.html'">See All Requests</button>
+        <button class="btn-secondary" id="modal-cancel-btn">Cancel</button>
+        <button class="btn-primary" id="confirm-help-btn">Contact to Help</button>
       </div>
     </div>
   </div>
-
-
 
   <main class="main-content">
 
@@ -75,28 +77,28 @@
       </div>
     </section>
 
-    <section class="section" style="background: white;">
-      <div class="container" style="text-align:center;">
+    <section class="section section-white">
+      <div class="container container-center">
         <h2 class="section-title">How It Works</h2>
         <p class="section-sub">Getting help or helping others is simple</p>
         <div class="grid-3">
           <div class="how-card">
             <div class="how-icon">
-              <img src="images/sign up.PNG" alt="Sign Up" >
+              <img src="images/sign up.PNG" alt="Sign Up">
             </div>
             <h3>1. Sign Up</h3>
             <p>Create your free account and add your skills if you want to volunteer.</p>
           </div>
           <div class="how-card">
             <div class="how-icon">
-              <img src="images/post and browse.PNG" alt="Post & Browse" >
+              <img src="images/post and browse.PNG" alt="Post & Browse">
             </div>
             <h3>2. Post or Browse</h3>
             <p>Post a help request or browse existing requests to find someone to help.</p>
           </div>
           <div class="how-card">
             <div class="how-icon">
-              <img src="images/connect and help.PNG" alt="Connect & Help" >
+              <img src="images/connect and help.PNG" alt="Connect & Help">
             </div>
             <h3>3. Connect & Help</h3>
             <p>Message each other to coordinate, complete the task, and rate your experience.</p>
@@ -105,75 +107,72 @@
       </div>
     </section>
 
-    <section class="section" style="background: var(--bg);">
+    <section class="section section-bg">
       <div class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
+        <div class="section-header">
           <div>
-            <h2 class="section-title" style="margin-bottom:4px;">Recent Help Requests</h2>
-            <p style="color:var(--text-gray);">People in your community need your help</p>
+            <h2 class="section-title section-title-sm">Recent Help Requests</h2>
+            <p class="section-desc">People in your community need your help</p>
           </div>
           <a href="requests.html" class="btn-ghost">View All</a>
         </div>
-        <div class="grid-4" style="align-items: stretch;">
-          <div class="card" style="height: 100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="grid-4 grid-stretch">
+          <div class="card card-full">
+            <div class="card-top-row">
               <span class="badge badge-open">Open</span>
-              <span style="font-size:12px; color:var(--text-gray);">2 hours ago</span>
+              <span class="card-time">2 hours ago</span>
             </div>
-            <h4 style="font-size:15px; font-weight:700;">Need help moving furniture</h4>
-            <p style="font-size:13px; color:var(--text-gray);">Home Tasks</p>
+            <h4 class="card-title">Need help moving furniture</h4>
+            <p class="card-category">Home Tasks</p>
             <div class="meta-info">📍 Downtown</div>
-            <button class="btn-offer" style="margin-top:auto; width:100%;">Offer Help</button>
+            <button class="btn-offer btn-offer-full">Offer Help</button>
           </div>
-          <div class="card" style="height: 100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="card card-full">
+            <div class="card-top-row">
               <span class="badge badge-open">Open</span>
-              <span style="font-size:12px; color:var(--text-gray);">5 hours ago</span>
+              <span class="card-time">5 hours ago</span>
             </div>
-            <h4 style="font-size:15px; font-weight:700;">Computer repair</h4>
-            <p style="font-size:13px; color:var(--text-gray);">IT Repair</p>
+            <h4 class="card-title">Computer repair</h4>
+            <p class="card-category">IT Repair</p>
             <div class="meta-info">📍 Westside</div>
-            <button class="btn-offer" style="margin-top:auto; width:100%;">Offer Help</button>
+            <button class="btn-offer btn-offer-full">Offer Help</button>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" style="background: white;">
-      <div class="container" style="text-align:center;">
+    <section class="section section-white">
+      <div class="container container-center">
         <h2 class="section-title">Top Volunteers</h2>
         <p class="section-sub">Meet our most helpful community members</p>
         <div class="grid-4">
-          <div class="card" style="text-align:center; padding:28px 20px;">
-            <div class="avatar avatar-lg" style="margin:0 auto 14px;">SJ</div>
-            <h4 style="font-size:15px; font-weight:700;">Sarah Johnson</h4>
-            <p style="font-size:13px; color:var(--text-gray); margin:4px 0 10px;">IT Repair</p>
-            <div class="stars">★★★★☆ <span style="color:var(--text-gray); font-size:13px;">4.9</span></div>
-            <a href="profile.html?user=sarah" class="btn-primary" style="margin-top:15px; display:inline-block; font-size:13px; padding:8px 16px;">View Profile</a>
+          <div class="card volunteer-card">
+            <div class="avatar avatar-lg volunteer-avatar">SJ</div>
+            <h4 class="volunteer-name">Sarah Johnson</h4>
+            <p class="volunteer-skill">IT Repair</p>
+            <div class="stars">★★★★☆ <span class="volunteer-rating">4.9</span></div>
+            <a href="profile.html?user=sarah" class="btn-primary btn-profile">View Profile</a>
           </div>
-
-          <div class="card" style="text-align:center; padding:28px 20px;">
-            <div class="avatar avatar-lg" style="margin:0 auto 14px;">MC</div>
-            <h4 style="font-size:15px; font-weight:700;">Michael Chen</h4>
-            <p style="font-size:13px; color:var(--text-gray); margin:4px 0 10px;">Gardening</p>
-            <div class="stars">★★★★☆ <span style="color:var(--text-gray); font-size:13px;">4.8</span></div>
-            <a href="profile.html?user=michael" class="btn-primary" style="margin-top:15px; display:inline-block; font-size:13px; padding:8px 16px;">View Profile</a>
+          <div class="card volunteer-card">
+            <div class="avatar avatar-lg volunteer-avatar">MC</div>
+            <h4 class="volunteer-name">Michael Chen</h4>
+            <p class="volunteer-skill">Gardening</p>
+            <div class="stars">★★★★☆ <span class="volunteer-rating">4.8</span></div>
+            <a href="profile.html?user=michael" class="btn-primary btn-profile">View Profile</a>
           </div>
-
-          <div class="card" style="text-align:center; padding:28px 20px;">
-            <div class="avatar avatar-lg" style="margin:0 auto 14px;">ED</div>
-            <h4 style="font-size:15px; font-weight:700;">Emily Davis</h4>
-            <p style="font-size:13px; color:var(--text-gray); margin:4px 0 10px;">Tutoring</p>
-            <div class="stars">★★★★★ <span style="color:var(--text-gray); font-size:13px;">5.0</span></div>
-            <a href="profile.html?user=emily" class="btn-primary" style="margin-top:15px; display:inline-block; font-size:13px; padding:8px 16px;">View Profile</a>
+          <div class="card volunteer-card">
+            <div class="avatar avatar-lg volunteer-avatar">ED</div>
+            <h4 class="volunteer-name">Emily Davis</h4>
+            <p class="volunteer-skill">Tutoring</p>
+            <div class="stars">★★★★★ <span class="volunteer-rating">5.0</span></div>
+            <a href="profile.html?user=emily" class="btn-primary btn-profile">View Profile</a>
           </div>
-
-          <div class="card" style="text-align:center; padding:28px 20px;">
-            <div class="avatar avatar-lg" style="margin:0 auto 14px;">JW</div>
-            <h4 style="font-size:15px; font-weight:700;">James Wilson</h4>
-            <p style="font-size:13px; color:var(--text-gray); margin:4px 0 10px;">Home Tasks</p>
-            <div class="stars">★★★★☆ <span style="color:var(--text-gray); font-size:13px;">4.7</span></div>
-            <a href="profile.html?user=james" class="btn-primary" style="margin-top:15px; display:inline-block; font-size:13px; padding:8px 16px;">View Profile</a>
+          <div class="card volunteer-card">
+            <div class="avatar avatar-lg volunteer-avatar">JW</div>
+            <h4 class="volunteer-name">James Wilson</h4>
+            <p class="volunteer-skill">Home Tasks</p>
+            <div class="stars">★★★★☆ <span class="volunteer-rating">4.7</span></div>
+            <a href="profile.html?user=james" class="btn-primary btn-profile">View Profile</a>
           </div>
         </div>
       </div>
@@ -182,12 +181,12 @@
     <section class="cta-banner">
       <h2>Ready to Make a Difference?</h2>
       <p>Join thousands of community members helping each other every day.</p>
-      <a href="register.html" class="btn-primary" style="font-size:16px; padding:14px 36px;">Get Started Today</a>
+      <a href="register.html" class="btn-primary btn-cta">Get Started Today</a>
     </section>
 
   </main>
 
-   <footer>
+  <footer>
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="index.html" class="nav-logo">
@@ -205,26 +204,5 @@
 
   <script src="js/home.js"></script>
   <script src="js/nav-auth.js"></script>
-  <!-- <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const userName = localStorage.getItem('userName');
-    const userRole = localStorage.getItem('userRole');
-    const authDiv = document.querySelector('.nav-icons');
-    
-    if (userName && authDiv) {
-      authDiv.innerHTML = `
-        <a href="messages.html" class="nav-icon-btn">
-          <img src="images/messages1.png" alt="messages" style="width:20px;height:20px;">
-        </a>
-        <a href="profile.html" class="nav-icon-btn">
-          <img src="images/profile.png" alt="profile" style="width:25px;height:25px;">
-        </a>
-        ${userRole === 'Admin' ? '<a href="admin.html" class="btn-secondary" style="margin-left:8px; padding:8px 14px; font-size:14px;">Manage</a>' : ''}
-        <span style="font-weight:600; color:var(--navy); margin-left:10px;">Hi, ${userName.split(' ')[0]}</span>
-        <a href="#" onclick="localStorage.clear(); location.reload();" style="font-size:12px; margin-left:10px; color:red;">Logout</a>
-      `;
-    }
-  });
-  </script> -->
 </body>
 </html>
