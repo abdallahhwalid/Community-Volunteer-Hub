@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/requests.css"/>
 </head>
 <body>
-
+ 
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
       <div class="nav-logo-icon"><img src="images/logo.png" alt="Community Help Hub logo" ></div>
@@ -26,13 +26,13 @@
       <a href="register.html" class="btn-nav-signup">Sign Up</a>
     </div>
   </nav>
-
+ 
   <main class="main-content">
     <div class="page-header">
       <h1>Browse Help Requests</h1>
       <p>Find opportunities to help people in your community</p>
     </div>
-
+ 
     <div class="section" style="padding-top:32px;">
       
       <div class="filters-bar">
@@ -45,7 +45,7 @@
           </span>
           <input type="text" id="search-input" class="search-input" placeholder="Search requests..."/>
         </div>
-
+ 
         <select id="category-filter" class="filter-select">
           <option value="">All Categories</option>
           <option value="Home Tasks">Home Tasks</option>
@@ -53,18 +53,20 @@
           <option value="Gardening">Gardening</option>
           <option value="Tutoring">Tutoring</option>
           <option value="Pet Care">Pet Care</option>
+          <option value="Transportation">Transportation</option>
         </select>
-
+ 
         <select id="status-filter" class="filter-select">
           <option value="">All Statuses</option>
           <option value="Open">Open</option>
           <option value="In Progress">In Progress</option>
         </select>
       </div>
-
-      <p id="results-count" style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">Showing 6 requests</p>
-
+ 
+      <p id="results-count" style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">Showing 3 requests</p>
+ 
       <div class="requests-grid" id="requests-grid">
+ 
         <div class="req-card" data-id="1" data-category="Home Tasks" data-status="Open">
           <div class="req-card-top">
             <span class="badge badge-open">Open</span>
@@ -79,7 +81,7 @@
           </div>
           <button class="btn-offer" onclick="openOfferModal(1)">Offer Help</button>
         </div>
-
+ 
         <div class="req-card" data-id="2" data-category="IT Repair" data-status="Open">
           <div class="req-card-top">
             <span class="badge badge-open">Open</span>
@@ -94,7 +96,7 @@
           </div>
           <button class="btn-offer" onclick="openOfferModal(2)">Offer Help</button>
         </div>
-
+ 
         <div class="req-card" data-id="3" data-category="Gardening" data-status="In Progress">
           <div class="req-card-top">
             <span class="badge badge-progress">In Progress</span>
@@ -109,11 +111,12 @@
           </div>
           <button class="btn-offer" onclick="openOfferModal(3)">Offer Help</button>
         </div>
-        
+ 
+ 
       </div>
     </div>
   </main>
-
+ 
   <div id="offer-modal" class="modal-overlay">
     <div class="modal-content">
       <h2 id="modal-title">Help with Furniture Moving</h2>
@@ -123,7 +126,7 @@
         <label>Description</label>
         <p id="modal-desc">Detailed description goes here...</p>
       </div>
-
+ 
       <div class="modal-grid">
         <div class="modal-item">
           <label>Location</label>
@@ -134,7 +137,7 @@
           <p id="modal-time-orig">Sunday, March 23</p>
         </div>
       </div>
-
+ 
       <div class="modal-section">
         <label>Requested by</label>
         <div class="user-info">
@@ -142,12 +145,12 @@
           <span class="user-rating">★★★★☆ 4.8</span>
         </div>
       </div>
-
+ 
       <div class="modal-section time-picker-box">
         <label>Set your convenient time</label>
         <input type="datetime-local" id="suggested-time" class="form-control">
       </div>
-
+ 
       <div class="modal-footer">
         <button class="btn-secondary" onclick="closeOfferModal()">Cancel</button>
         <button class="btn-primary" onclick="confirmHelp()">Contact to Help</button>
@@ -155,7 +158,7 @@
     </div>
   </div>
   
-   <footer>
+  <footer>
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="index.html" class="nav-logo">
@@ -170,8 +173,9 @@
     </div>
     <div class="footer-bottom"><p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p></div>
   </footer>
-
+ 
   <script src="js/requests.js"></script>
   <script src="js/nav-auth.js"></script>
 </body>
 </html>
+ 
