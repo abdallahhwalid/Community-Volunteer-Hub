@@ -474,3 +474,161 @@ footer {
   margin-top: 16px;
 }
 .alert-success.show { display: block; }
+
+
+
+/* =========================================
+   📱 MOBILE RESPONSIVENESS (MEDIA QUERIES)
+   ========================================= */
+@media screen and (max-width: 768px) {
+  
+  /* 1. Global Spacing: Reduce 40px paddings to 20px for smaller screens */
+  .navbar, .container, .section, .page-header, footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+ /* 2. Fix the Navbar: Make it sleek and compact for mobile */
+  .navbar {
+    height: auto;
+    flex-direction: column;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    gap: 10px;
+  }
+  
+  .nav-logo {
+    gap: 6px;
+  }
+  
+  .nav-logo img {
+    height: 35px; /* Shrunk down significantly for a professional mobile look */
+  }
+  
+  .nav-logo-text {
+    font-size: 16px; /* Slightly smaller title */
+  }
+  
+  .nav-links, .nav-icons {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px; /* Tighter spacing between links and buttons */
+  }
+  
+  .nav-links a {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  
+  .btn-nav-login, .btn-nav-signup {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  /* 3. Fix the Footer Grid: Turn 3 columns into 1 stacked column */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  /* 4. Fix Main Layout Grids: Force all cards to stack in 1 column */
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* 5. Adjust Header Typography & Section Spacing for Mobile */
+  .page-header {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+  .page-header h1 {
+    font-size: 24px;
+  }
+  .section {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  
+  /* 6. Tabs Fix: Allow tabs to wrap if there are too many */
+  .tabs {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* ── STATIC TEXT PAGES (About, Privacy, Safety) ── */
+.static-page-card {
+  max-width: 800px;
+  margin: 0 auto 60px;
+  padding: 40px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  line-height: 1.8;
+  color: var(--text-mid);
+}
+
+.static-page-card h3 {
+  font-size: 24px;
+  color: var(--navy);
+  margin-bottom: 12px;
+  margin-top: 32px;
+}
+
+.static-page-card h3:first-child {
+  margin-top: 0;
+}
+
+.static-page-card p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.static-page-card hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+.static-page-card ul {
+  margin-bottom: 30px;
+  padding-left: 24px;
+}
+
+.static-page-card li {
+  margin-bottom: 12px;
+}
+
+/* Call to Action Box inside static pages */
+.cta-box {
+  text-align: center;
+  margin-top: 48px;
+  padding: 32px 20px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.cta-box h4 {
+  margin-bottom: 8px;
+  color: var(--navy);
+  font-size: 20px;
+}
+
+.cta-box p {
+  margin-bottom: 20px;
+}
+/* ── NAVBAR ICONS FIX ── */
+.nav-icon-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain; /* Prevents the icons from getting stretched */
+}
+
+/* Make sure the card shrinks nicely on mobile */
+@media screen and (max-width: 768px) {
+  .static-page-card {
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+}
