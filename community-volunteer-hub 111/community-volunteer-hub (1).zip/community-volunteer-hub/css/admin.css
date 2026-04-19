@@ -350,3 +350,43 @@ tr:hover td { background: var(--bg); }
   color: var(--green);
   margin-bottom: 4px;
 }
+
+
+/* =============================================
+   RESPONSIVE — admin.css
+   ============================================= */
+
+@media (max-width: 768px) {
+
+  .admin-page { padding: 16px; }
+
+  /* Stats grid: 2 columns on tablet */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Section header stacks */
+  .admin-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* Filter bar wraps */
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-bar .search-input,
+  .filter-select { width: 100%; }
+
+  /* Tables: allow horizontal scroll */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 560px; }
+
+  /* Inbox cards */
+  .inbox-card-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .inbox-card-header > div:last-child { width: 100%; justify-content: flex-start; }
+}
+
+@media (max-width: 480px) {
+  /* Stats grid: 1 column on mobile */
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-number { font-size: 22px; }
+  .admin-section { padding: 16px; }
+}

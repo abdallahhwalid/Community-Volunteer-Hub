@@ -144,3 +144,31 @@
   padding: 0;
 }
 .chat-send-btn:hover { opacity: 0.75; }
+
+/* =============================================
+   RESPONSIVE — messages.css
+   ============================================= */
+
+@media (max-width: 768px) {
+
+  .chat-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+    margin: 12px 16px;
+  }
+
+  /* Hide sidebar by default on mobile, show chat panel */
+  .chat-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 240px;
+  }
+
+  .chat-messages { min-height: 300px; }
+}
+
+@media (max-width: 480px) {
+  .chat-layout { margin: 8px; }
+  .bubble { font-size: 13px; padding: 9px 13px; }
+  .chat-panel-header { padding: 12px 14px; }
+}
