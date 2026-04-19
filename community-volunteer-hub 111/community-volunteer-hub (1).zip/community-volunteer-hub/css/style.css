@@ -68,7 +68,7 @@ body {
   display: block;
 }
 
-/* Hide the blue background box since the new logo has its own text */
+
 .nav-logo-icon {
   background: transparent;
   width: auto;
