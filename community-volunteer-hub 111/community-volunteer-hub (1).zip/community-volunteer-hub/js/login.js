@@ -1,4 +1,3 @@
-
 //  LOGIN FORM LOGIC
 document.getElementById('login-form').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -73,19 +72,19 @@ const confirmResetBtn = document.getElementById('confirm-reset-btn');
 // Open Modal
 forgotPasswordLink.addEventListener('click', function(event) {
     event.preventDefault(); 
-    recoveryModal.style.display = 'flex'; 
+    recoveryModal.classList.remove('hidden'); 
 });
 
 // Close Modal & Reset Form back to Step 1
 closeModalBtn.addEventListener('click', function() {
-    recoveryModal.style.display = 'none'; 
+    recoveryModal.classList.add('hidden'); 
     resetModalState();
 });
 
 function resetModalState() {
-    step1Div.style.display = 'block';
-    step2Div.style.display = 'none';
-    recoverySuccessMsg.style.display = 'none';
+    step1Div.classList.remove('hidden');
+    step2Div.classList.add('hidden');
+    recoverySuccessMsg.classList.add('hidden');
     document.getElementById('recovery-email').value = '';
     document.getElementById('recovery-code').value = '';
     document.getElementById('new-password').value = '';
@@ -107,8 +106,8 @@ sendRecoveryBtn.addEventListener('click', function() {
     
     // If correct, hide Step 1 and show Step 2
     emailError.textContent = "";
-    step1Div.style.display = 'none';
-    step2Div.style.display = 'block';
+    step1Div.classList.add('hidden');
+    step2Div.classList.remove('hidden');
     recoveryDesc.textContent = 'Enter the code we sent to your email, and create a new password.';
 });
 
@@ -139,13 +138,13 @@ confirmResetBtn.addEventListener('click', function() {
     }
     
     // If everything is correct, show success!
-    step2Div.style.display = 'none';
+    step2Div.classList.add('hidden');
     recoveryDesc.textContent = '';
-    recoverySuccessMsg.style.display = 'block';
+    recoverySuccessMsg.classList.remove('hidden');
     
     // Automatically close the modal after 3 seconds so they can log in
     setTimeout(() => {
-        recoveryModal.style.display = 'none';
+        recoveryModal.classList.add('hidden');
         resetModalState();
     }, 3000);
 });
