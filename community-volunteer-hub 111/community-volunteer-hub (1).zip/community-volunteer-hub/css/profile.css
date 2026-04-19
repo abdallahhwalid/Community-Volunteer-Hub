@@ -204,3 +204,33 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+/* Nav Icons */
+.nav-icon-img-sm { width: 20px; height: 20px; }
+.nav-icon-img-md { width: 25px; height: 25px; }
+
+/* Utilities */
+.d-none { display: none; }
+
+/* Profile Info Text */
+.rating-text { color: var(--text-gray); font-size: 13px; }
+.form-hint { font-size: 12px; color: var(--text-gray); margin-top: 4px; display: block; }
+.text-optional { font-weight: 400; color: var(--text-gray); }
+
+/* Volunteer Mode Toggle Text */
+.mode-title { font-weight: 600; font-size: 15px; }
+.mode-desc { font-size: 13px; color: var(--text-gray); }
+
+/* Skills Section */
+.skills-label { font-size: 13px; font-weight: 600; color: var(--text-mid); }
+.skills-label-top { margin-bottom: 10px; }
+.skills-label-mid { margin: 16px 0 10px; }
+.no-skills-text { font-size: 13px; color: var(--text-gray); }
+
+/* Custom Skill Input */
+.custom-skill-row { display: flex; gap: 10px; margin-top: 14px; }
+.skill-input-flex { flex: 1; }
+
+/* Save Button */
+.btn-save { padding: 12px 28px; }

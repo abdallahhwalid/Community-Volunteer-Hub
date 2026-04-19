@@ -1,4 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('userName') === 'System Administrator') {
+    localStorage.setItem('userName', 'Admin');
+  }
   const userName = localStorage.getItem('userName');
   const userRole = localStorage.getItem('userRole');
   const authDiv = document.querySelector('.nav-icons');

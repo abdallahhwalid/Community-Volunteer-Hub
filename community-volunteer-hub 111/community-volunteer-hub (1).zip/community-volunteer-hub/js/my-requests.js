@@ -1,12 +1,12 @@
 let currentUserId = 101;
 let requestsData = JSON.parse(localStorage.getItem("requestsData")) || {};
 let helpRequests = JSON.parse(localStorage.getItem("helpRequests")) || [];
- 
+
 const saveAll = () => {
   localStorage.setItem("requestsData", JSON.stringify(requestsData));
   localStorage.setItem("helpRequests", JSON.stringify(helpRequests));
 };
- 
+
 function loadPendingHelpers() {
   const container = document.getElementById("pending-helpers");
   if (!container) return;
@@ -29,7 +29,7 @@ function loadPendingHelpers() {
       container.appendChild(div);
     });
 }
- 
+
 function confirmHelp(id) {
   const req = helpRequests.find(r => r.id == id);
   if (!req) return;
@@ -40,14 +40,14 @@ function confirmHelp(id) {
   alert("Helper confirmed!");
   location.href = `messages.html?user=${req.helperId}&request=${req.requestId}`;
 }
- 
+
 function rejectHelp(id) {
   const req = helpRequests.find(r => r.id == id);
   if (req) { req.status = "rejected"; saveAll(); loadPendingHelpers(); }
 }
- 
+
 loadPendingHelpers();
- 
+
 function switchTab(tab) {
   document.getElementById('panel-posted').style.display  = tab === 'posted'  ? 'flex' : 'none';
   document.getElementById('panel-helping').style.display = tab === 'helping' ? 'flex' : 'none';
@@ -55,7 +55,7 @@ function switchTab(tab) {
   document.getElementById('tab-helping').classList.toggle('active', tab === 'helping');
 }
 document.getElementById('panel-posted').style.display = 'flex';
- 
+
 function markCompleted(btn) {
   const item = btn.closest('.my-req-item');
   const badge = item.querySelector('.badge');
@@ -63,54 +63,80 @@ function markCompleted(btn) {
   badge.textContent = 'Completed';
   btn.closest('.my-req-actions').innerHTML = '<p style="font-size:13px;color:var(--text-gray);">Marked as completed</p>';
 }
- 
-/* ── Cancel modal ── */
-function cancelRequest(btn) { showCancelModal(btn.closest('.my-req-item')); }
- 
-function showCancelModal(item) {
+
+/* ── Pop-in keyframe ── */
+const _style = document.createElement('style');
+_style.textContent = `@keyframes popIn { from { transform:scale(0.88) translateY(16px); opacity:0; } to { transform:scale(1) translateY(0); opacity:1; } }`;
+document.head.appendChild(_style);
+
+/* ── Shared modal builder ── */
+function showConfirmModal({ icon, iconBg, title, message, cancelLabel, confirmLabel, confirmBg, confirmHover, onConfirm }) {
+  closeModal();
   const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.style.display = 'flex';
+  overlay.id = 'popup-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </div>
-      <h3 class="modal-title">Cancel Request?</h3>
-      <p class="modal-message">This will permanently delete your request. Volunteers who offered to help will be notified. This action cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="modal-btn-keep"   onclick="closeModal()">Keep Request</button>
-        <button class="modal-btn-cancel" onclick="confirmCancel(this)">Yes, Cancel It</button>
+    <div style="background:#fff;border-radius:20px;padding:40px 36px;max-width:420px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.18);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
+      <div style="width:64px;height:64px;border-radius:50%;background:${iconBg};display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;">${icon}</div>
+      <h3 style="font-size:20px;font-weight:700;color:#111827;margin:0 0 10px;">${title}</h3>
+      <p style="font-size:14px;color:#6b7280;line-height:1.6;margin:0 0 28px;">${message}</p>
+      <div style="display:flex;gap:12px;">
+        <button id="modal-cancel-btn" style="flex:1;padding:13px 0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:#f3f4f6;color:#374151;border:1.5px solid #e5e7eb;">${cancelLabel}</button>
+        <button id="modal-confirm-btn" style="flex:1;padding:13px 0;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:${confirmBg};color:#fff;border:none;">${confirmLabel}</button>
       </div>
     </div>`;
-  overlay._targetItem = item;
   document.body.appendChild(overlay);
+  overlay.querySelector('#modal-cancel-btn').onclick = closeModal;
+  overlay.querySelector('#modal-confirm-btn').onclick = () => { closeModal(); onConfirm(); };
+  overlay.querySelector('#modal-confirm-btn').onmouseenter = function() { this.style.background = confirmHover; };
+  overlay.querySelector('#modal-confirm-btn').onmouseleave = function() { this.style.background = confirmBg; };
+  overlay.onclick = e => { if (e.target === overlay) closeModal(); };
 }
- 
+
 function closeModal() {
-  const overlay = document.querySelector('.modal-overlay:not(#offer-modal)');
-  if (overlay) overlay.remove();
+  const m = document.getElementById('popup-modal');
+  if (m) m.remove();
 }
- 
-function confirmCancel(btn) {
-  const item = btn.closest('.modal-overlay')._targetItem;
-  closeModal();
-  removeCard(item);
+
+/* ── Cancel Request ── */
+function cancelRequest(btn) {
+  const item = btn.closest('.my-req-item');
+  showConfirmModal({
+    icon: '🚫',
+    iconBg: '#fef2f2',
+    title: 'Cancel Request?',
+    message: 'This will permanently delete your request. Volunteers who offered to help will be notified. This action cannot be undone.',
+    cancelLabel: 'Keep Request',
+    confirmLabel: 'Cancel Request',
+    confirmBg: '#dc2626',
+    confirmHover: '#b91c1c',
+    onConfirm: () => removeCard(item)
+  });
 }
- 
-/* ── Withdraw: now deletes the card ── */
+
+/* ── Withdraw ── */
 function withdraw(btn) {
-  if (confirm('Are you sure you want to withdraw from this request?'))
-    removeCard(btn.closest('.my-req-item'));
+  const item = btn.closest('.my-req-item');
+  showConfirmModal({
+    icon: '↩️',
+    iconBg: '#fff7ed',
+    title: 'Withdraw from Request?',
+    message: 'You will be removed as a helper. The request owner will be notified and can accept another volunteer.',
+    cancelLabel: 'Stay',
+    confirmLabel: 'Withdraw',
+    confirmBg: '#ea580c',
+    confirmHover: '#c2410c',
+    onConfirm: () => removeCard(item)
+  });
 }
- 
+
 /* ── Shared card-removal animation ── */
 function removeCard(item) {
   if (!item) return;
   Object.assign(item.style, { transition:'all .4s ease', opacity:'0', transform:'scale(0.95)' });
   setTimeout(() => item.remove(), 400);
 }
- 
+
 /* ── Edit ── */
 function editRequest(btn) {
   const item = btn.closest('.my-req-item');
@@ -119,7 +145,7 @@ function editRequest(btn) {
   const titleEl = get('.req-title'), locationEl = get('.req-location'), dateEl = get('.req-date');
   const actions = get('.my-req-actions');
   actions.style.display = 'none';
- 
+
   const form = document.createElement('div');
   form.className = 'edit-form';
   form.innerHTML = `
@@ -138,13 +164,13 @@ function editRequest(btn) {
   Object.assign(form, { _originalActions: actions, _titleEl: titleEl, _locationEl: locationEl, _dateEl: dateEl });
   item.appendChild(form);
 }
- 
+
 function cancelEdit(btn) {
   const form = btn.closest('.edit-form');
   form._originalActions.style.display = '';
   form.remove();
 }
- 
+
 function saveEdit(btn) {
   const form = btn.closest('.edit-form');
   const val  = id => form.querySelector(id).value.trim();
@@ -155,7 +181,7 @@ function saveEdit(btn) {
   showToast('Request updated successfully!');
   form.remove();
 }
- 
+
 /* ── Toast ── */
 function showToast(msg) {
   const t = Object.assign(document.createElement('div'), { className:'toast-notification', textContent:msg });

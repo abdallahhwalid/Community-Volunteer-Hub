@@ -249,3 +249,104 @@ tr:hover td { background: var(--bg); }
   font-weight: 500;
   color: var(--text-dark);
 }
+/* ── Inbox Cards ─────────────────────────────────────── */
+.inbox-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  margin-bottom: 14px;
+  background: white;
+  transition: box-shadow 0.2s;
+}
+.inbox-card:last-child { margin-bottom: 0; }
+.inbox-card.unread { border-left: 4px solid var(--blue); background: #FAFBFF; }
+.inbox-card:hover { box-shadow: var(--card-shadow-hover); }
+
+.inbox-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.inbox-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.inbox-meta {
+  font-size: 12px;
+  color: var(--text-gray);
+  margin-top: 2px;
+  display: block;
+}
+
+.inbox-subject {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 8px;
+}
+
+.inbox-body {
+  font-size: 14px;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.inbox-reply-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.inbox-reply-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+.inbox-reply-area {
+  margin-bottom: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.inbox-reply-input {
+  width: 100%;
+  min-height: 90px;
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-dark);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.inbox-reply-input:focus { border-color: var(--blue); }
+
+.inbox-reply-sent {
+  background: var(--green-light);
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #065F46;
+  margin-bottom: 10px;
+}
+
+.inbox-reply-sent .reply-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--green);
+  margin-bottom: 4px;
+}
