@@ -1,3 +1,5 @@
+
+
 window.onload = function () {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -6,13 +8,12 @@ window.onload = function () {
     const userName    = urlParams.get('user');
 
     if (datetimeVal && userName) {
-      const dateObj    = new Date(datetimeVal);
-      const dayName    = dateObj.toLocaleDateString(undefined, { weekday: 'long' });
-      const timeString = dateObj.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+      const dateObj     = new Date(datetimeVal);
+      const dayName     = dateObj.toLocaleDateString(undefined, { weekday: 'long' });
+      const timeString  = dateObj.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
       const autoMessage = `Hi! I saw your request and I can help on ${dayName} at ${timeString} 😊`;
       const initials    = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
-      // ── Add or find the contact in the sidebar ──
       const convList = document.getElementById('conv-list');
       let existing = [...convList.querySelectorAll('.conv-item')].find(
         el => el.querySelector('.conv-name')?.textContent === userName
@@ -30,14 +31,12 @@ window.onload = function () {
             </div>
             <p class="conv-preview">${autoMessage}</p>
           </div>`;
-        existing.onclick = () => openConvEl(existing, userName, initials, 'Active now');
-        convList.prepend(existing); // add to top of list
+        existing.onclick = () => openConv(existing, userName, initials, 'Active now');
+        convList.prepend(existing);
       }
 
-      // ── Open that conversation ──
-      openConvEl(existing, userName, initials, 'Active now');
+      openConv(existing, userName, initials, 'Active now');
 
-      // ── Send the auto message ──
       setTimeout(() => {
         document.getElementById('msg-input').value = autoMessage;
         sendMessage();
@@ -47,13 +46,13 @@ window.onload = function () {
   }
 };
 
-/* ── Send a message ── */
+
 function sendMessage() {
   const input = document.getElementById('msg-input');
   const text  = input.value.trim();
   if (!text) return;
 
-  const container = document.getElementById('chat-messages');
+  const container   = document.getElementById('chat-messages');
   const timeDisplay = getTimeString();
 
   const msg = document.createElement('div');
@@ -62,7 +61,6 @@ function sendMessage() {
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
 
-  // Update sidebar preview
   const activeConv = document.querySelector('.conv-item.active');
   if (activeConv) {
     const preview = activeConv.querySelector('.conv-preview');
@@ -78,16 +76,12 @@ document.getElementById('msg-input').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
 });
 
-/* ── Open a conversation (used by hardcoded sidebar items) ── */
+/* ── Open a conversation ── */
 function openConv(el, name, initials, status) {
-  openConvEl(el, name, initials, status);
-}
-
-function openConvEl(el, name, initials, status) {
   document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
 
-  document.getElementById('chat-contact-name').textContent = name;
+  document.getElementById('chat-contact-name').textContent   = name;
   document.getElementById('chat-contact-status').textContent = status;
 
   const avatarEl = document.querySelector('.chat-panel-header .avatar');
@@ -106,7 +100,7 @@ function filterConversations() {
   });
 }
 
-/* ── Helper ── */
+
 function getTimeString() {
   const now  = new Date();
   let h      = now.getHours(), m = now.getMinutes();

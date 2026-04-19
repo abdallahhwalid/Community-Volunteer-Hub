@@ -1,3 +1,5 @@
+// ADMIN PAGE JAVASCRIPT
+
 // ── Custom modal confirm ──────────────────────────────
 let _modalCallback = null;
 
@@ -77,15 +79,15 @@ function filterRequests() {
 
 // ── View row details ──────────────────────────────────
 function viewRow(btn) {
-  const row    = btn.closest('tr');
-  const cells  = row.querySelectorAll('td');
+  const row     = btn.closest('tr');
+  const cells   = row.querySelectorAll('td');
   const isUsers = row.closest('table').id === 'users-table';
-  const body   = document.getElementById('view-modal-body');
+  const body    = document.getElementById('view-modal-body');
 
   let html = '<div class="view-grid">';
 
   if (isUsers) {
-    const nameEl = cells[0].cloneNode(true);
+    const nameEl    = cells[0].cloneNode(true);
     const avatarDiv = nameEl.querySelector('.avatar');
     if (avatarDiv) avatarDiv.remove();
     const name   = nameEl.textContent.trim();
@@ -128,8 +130,8 @@ function field(icon, label, value) {
 
 // ── Suspend user ──────────────────────────────────────
 function suspendUser(btn) {
-  const row    = btn.closest('tr');
-  const nameEl = row.querySelector('td:first-child').cloneNode(true);
+  const row       = btn.closest('tr');
+  const nameEl    = row.querySelector('td:first-child').cloneNode(true);
   const avatarDiv = nameEl.querySelector('.avatar');
   if (avatarDiv) avatarDiv.remove();
   const name = nameEl.textContent.trim();
@@ -146,8 +148,8 @@ function suspendUser(btn) {
       row.style.opacity = '0.55';
       const badge = row.querySelector('.badge');
       if (badge) { badge.className = 'badge badge-progress'; badge.textContent = 'Suspended'; }
-      btn.textContent = 'Restore';
-      btn.className   = 'btn-blue';
+      btn.textContent   = 'Restore';
+      btn.className     = 'btn-blue';
       btn.style.cssText = 'padding:5px 10px;font-size:12px;';
       btn.onclick = function () { restoreUser(btn); };
     }
@@ -156,8 +158,8 @@ function suspendUser(btn) {
 
 // ── Restore user ──────────────────────────────────────
 function restoreUser(btn) {
-  const row    = btn.closest('tr');
-  const nameEl = row.querySelector('td:first-child').cloneNode(true);
+  const row       = btn.closest('tr');
+  const nameEl    = row.querySelector('td:first-child').cloneNode(true);
   const avatarDiv = nameEl.querySelector('.avatar');
   if (avatarDiv) avatarDiv.remove();
   const name = nameEl.textContent.trim();
@@ -174,8 +176,8 @@ function restoreUser(btn) {
       row.style.opacity = '1';
       const badge = row.querySelector('.badge');
       if (badge) { badge.className = 'badge badge-open'; badge.textContent = 'Active'; }
-      btn.textContent = 'Suspend';
-      btn.className   = 'btn-danger';
+      btn.textContent   = 'Suspend';
+      btn.className     = 'btn-danger';
       btn.style.cssText = 'padding:5px 10px;font-size:12px;';
       btn.onclick = function () { suspendUser(btn); };
     }
@@ -194,10 +196,96 @@ function removeRow(btn) {
     },
     function () {
       const row = btn.closest('tr');
-      row.style.transition  = 'opacity 0.3s, transform 0.3s';
-      row.style.opacity     = '0';
-      row.style.transform   = 'translateX(20px)';
+      row.style.transition = 'opacity 0.3s, transform 0.3s';
+      row.style.opacity    = '0';
+      row.style.transform  = 'translateX(20px)';
       setTimeout(function () { row.remove(); }, 300);
     }
   );
+}
+
+// ── Filter inbox messages ─────────────────────────────
+function filterMessages() {
+  const status = document.getElementById('msg-status-filter').value.toLowerCase();
+  document.querySelectorAll('#inbox-list .inbox-card').forEach(function (card) {
+    const cardStatus = card.getAttribute('data-status');
+    card.style.display = (status === '' || cardStatus === status) ? '' : 'none';
+  });
+}
+
+// ── Mark message as read ──────────────────────────────
+function markRead(btn) {
+  const card  = btn.closest('.inbox-card');
+  const badge = card.querySelector('.badge');
+  if (badge) { badge.className = 'badge badge-completed'; badge.textContent = 'Read'; }
+  card.classList.remove('unread');
+  card.setAttribute('data-status', 'read');
+  btn.remove();
+}
+
+// ── Delete inbox message ──────────────────────────────
+function deleteMessage(btn) {
+  showConfirm(
+    {
+      title: 'Delete this message?',
+      message: 'This message will be permanently removed.',
+      icon: '<img src="images/Delete.png" alt="delete" style="width:40px;height:40px;object-fit:contain;">',
+      continueBtnClass: 'btn-danger',
+      continueBtnText: 'Delete',
+    },
+    function () {
+      const card = btn.closest('.inbox-card');
+      card.style.transition = 'opacity 0.3s, transform 0.3s';
+      card.style.opacity    = '0';
+      card.style.transform  = 'translateX(20px)';
+      setTimeout(function () { card.remove(); }, 300);
+    }
+  );
+}
+
+// ── Toggle reply area ─────────────────────────────────
+function toggleReply(btn) {
+  const card      = btn.closest('.inbox-card');
+  const replyArea = card.querySelector('.inbox-reply-area');
+  const isVisible = replyArea.style.display !== 'none';
+  replyArea.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible) card.querySelector('.inbox-reply-input').focus();
+}
+
+// ── Cancel reply ──────────────────────────────────────
+function cancelReply(btn) {
+  const card      = btn.closest('.inbox-card');
+  const replyArea = card.querySelector('.inbox-reply-area');
+  card.querySelector('.inbox-reply-input').value = '';
+  replyArea.style.display = 'none';
+}
+
+// ── Send reply ────────────────────────────────────────
+function sendReply(btn) {
+  const card       = btn.closest('.inbox-card');
+  const input      = card.querySelector('.inbox-reply-input');
+  const text       = input.value.trim();
+  if (!text) return;
+
+  const replyArea  = card.querySelector('.inbox-reply-area');
+  const replySent  = card.querySelector('.inbox-reply-sent');
+  const now        = new Date();
+  const timeStr    = now.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                   + ' at ' + now.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+
+  replySent.innerHTML = `<div class="reply-label">✅ Replied by Community Help Hub Support Team · ${timeStr}</div>${text}`;
+  replySent.style.display = 'block';
+  input.value = '';
+  replyArea.style.display = 'none';
+
+  // Also mark as read automatically after replying
+  const badge = card.querySelector('.badge');
+  if (badge && badge.textContent === 'Unread') {
+    badge.className = 'badge badge-completed';
+    badge.textContent = 'Read';
+    card.classList.remove('unread');
+    card.setAttribute('data-status', 'read');
+    const markReadBtn = card.querySelector('.btn-ghost');
+    if (markReadBtn && markReadBtn.textContent === 'Mark Read') markReadBtn.remove();
+  }
 }
