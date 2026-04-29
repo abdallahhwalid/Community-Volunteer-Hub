@@ -93,7 +93,8 @@ function confirmHelp() {
   saveAll();
   closeOfferModal();
   const ownerName = owners[activeRequestId].name;
-  location.href = "messages.html?autoMsg=true&datetime=" + encodeURIComponent(suggestedTime) + "&user=" + encodeURIComponent(ownerName);
+  const requestTitle = document.getElementById('modal-title').innerText;
+  location.href = "messages.html?autoMsg=true&datetime=" + encodeURIComponent(suggestedTime) + "&user=" + encodeURIComponent(ownerName) + "&requestId=" + activeRequestId + "&requestTitle=" + encodeURIComponent(requestTitle);
 }
  
 /* ── Disable Offer Help buttons for In Progress requests ── */

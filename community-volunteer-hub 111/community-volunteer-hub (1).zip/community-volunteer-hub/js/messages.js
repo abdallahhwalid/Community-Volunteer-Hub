@@ -1,5 +1,3 @@
-
-
 window.onload = function () {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -11,7 +9,10 @@ window.onload = function () {
       const dateObj     = new Date(datetimeVal);
       const dayName     = dateObj.toLocaleDateString(undefined, { weekday: 'long' });
       const timeString  = dateObj.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
-      const autoMessage = `Hi! I saw your request and I can help on ${dayName} at ${timeString} 😊`;
+      const requestId    = urlParams.get('requestId');
+    const requestTitle = urlParams.get('requestTitle');
+    const requestInfo  = requestId && requestTitle ? ` regarding request #${requestId} – "${requestTitle}"` : '';
+    const autoMessage  = `Hi! I saw your request${requestInfo} and I can help on ${dayName} at ${timeString} 😊`;
       const initials    = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
       const convList = document.getElementById('conv-list');
