@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post a Request – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/forms.css"/>
+</head>
+<body>
+
+  <%- include('partials/nav') %>
+
+  <main class="main-content">
+    <div class="form-page">
+      <div class="form-page-header">
+        <h1>Post a Help Request</h1>
+        <p>Describe what you need help with and our volunteers will reach out</p>
+      </div>
+
+      <div class="form-box">
+        <p class="form-box-title">Request Details</p>
+        <p class="form-box-sub">Be as specific as possible to help volunteers understand your needs</p>
+
+        <% if (errors && errors.length > 0) { %>
+          <div style="background:#fee2e2; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px; margin-bottom:20px;">
+            <% errors.forEach(err => { %>
+              <p style="color:#dc2626; font-size:14px; margin:0 0 4px;">⚠ <%= err %></p>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <form method="POST" action="/requests" novalidate>
+
+          <div class="form-group">
+            <label for="title">Request Title *</label>
+            <input type="text" id="title" name="title" class="form-control"
+              placeholder="e.g., Need help moving furniture" value="<%= old.title || '' %>"/>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" name="category" class="form-control">
+              <option value="">Select a category</option>
+              <% ['Home Tasks','IT Repair','Gardening','Tutoring','Pet Care','Transportation','Other'].forEach(cat => { %>
+                <option value="<%= cat %>" <%= old.category === cat ? 'selected' : '' %>><%= cat %></option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" class="form-control"
+              placeholder="Provide detailed information..."><%= old.description || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="location">📍 Location *</label>
+            <input type="text" id="location" name="location" class="form-control"
+              placeholder="e.g., Downtown, 123 Main St" value="<%= old.location || '' %>"/>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="desired-date">📅 Desired Date</label>
+              <input type="date" id="desired-date" name="desiredDate" class="form-control" value="<%= old.desiredDate || '' %>"/>
+            </div>
+            <div class="form-group">
+              <label for="desired-time">Desired Time</label>
+              <input type="time" id="desired-time" name="desiredTime" class="form-control" value="<%= old.desiredTime || '' %>"/>
+            </div>
+          </div>
+
+          <label class="flexible-check">
+            <input type="checkbox" name="flexible" style="width:16px;height:16px;" <%= old.flexible === 'on' ? 'checked' : '' %>/>
+            I'm flexible with timing
+          </label>
+
+          <div class="safety-box">
+            <h4>⚠ Safety Reminders</h4>
+            <ul>
+              <li>Meet in public places when possible</li>
+              <li>Verify volunteer identity before sharing personal information</li>
+              <li>Trust your instincts and report any suspicious behavior</li>
+            </ul>
+          </div>
+
+          <div class="form-actions">
+            <a href="/requests" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-primary">Post Request</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+</body>
+</html>

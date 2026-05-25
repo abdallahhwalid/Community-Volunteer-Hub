@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse Requests – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/requests.css"/>
+</head>
+<body>
+
+  <%- include('partials/nav') %>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Browse Help Requests</h1>
+      <p>Find opportunities to help people in your community</p>
+    </div>
+
+    <div class="section" style="padding-top:32px;">
+
+      <form class="filters-bar" method="GET" action="/requests" id="filter-form">
+        <div class="search-wrap">
+          <span class="search-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" name="search" id="search-input" class="search-input"
+            placeholder="Search requests..." value="<%= filters.search %>"/>
+        </div>
+
+        <select name="category" id="category-filter" class="filter-select" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          <% ['Home Tasks','IT Repair','Gardening','Tutoring','Pet Care','Transportation'].forEach(cat => { %>
+            <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
+          <% }) %>
+        </select>
+
+        <select name="status" id="status-filter" class="filter-select" onchange="this.form.submit()">
+          <option value="">All Statuses</option>
+          <option value="Open"        <%= filters.status === 'Open'        ? 'selected' : '' %>>Open</option>
+          <option value="In Progress" <%= filters.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+        </select>
+      </form>
+
+      <p style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">
+        Showing <%= requests.length %> request<%= requests.length !== 1 ? 's' : '' %>
+      </p>
+
+      <div class="requests-grid" id="requests-grid">
+
+        <% if (requests.length === 0) { %>
+          <p style="color:var(--text-gray); padding:24px 0;">No requests found. Try adjusting your filters.</p>
+        <% } %>
+
+        <% requests.forEach(req => { %>
+          <div class="req-card" data-id="<%= req._id %>">
+            <div class="req-card-top">
+              <span class="badge <%= req.status === 'Open' ? 'badge-open' : 'badge-progress' %>"><%= req.status %></span>
+              <span class="req-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
+            </div>
+            <h3><%= req.title %></h3>
+            <p class="req-category"><%= req.category %></p>
+            <p class="req-desc"><%= req.description.substring(0, 100) %>...</p>
+            <div class="req-meta">
+              <span class="meta-info">📍 <%= req.location %></span>
+              <% if (req.desiredDate) { %>
+                <span class="meta-info">🕐 <%= new Date(req.desiredDate).toDateString() %></span>
+              <% } else { %>
+                <span class="meta-info">🕐 Flexible</span>
+              <% } %>
+            </div>
+            <% if (user) { %>
+              <button class="btn-offer" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Unknown' %>')">
+                Offer Help
+              </button>
+            <% } else { %>
+              <a href="/login" class="btn-offer" style="text-align:center;">Login to Offer Help</a>
+            <% } %>
+          </div>
+        <% }) %>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="offer-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h2 id="modal-title"></h2>
+      <p id="modal-category" class="modal-cat"></p>
+      <div class="modal-grid">
+        <div class="modal-item">
+          <label>Location</label>
+          <p id="modal-location"></p>
+        </div>
+      </div>
+      <div class="modal-section">
+        <label>Requested by</label>
+        <div class="user-info"><span id="modal-user"></span></div>
+      </div>
+      <div class="modal-section time-picker-box">
+        <label>Set your convenient time</label>
+        <input type="datetime-local" id="suggested-time" class="form-control">
+      </div>
+      <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeOfferModal()">Cancel</button>
+        <button class="btn-primary" id="confirm-help-btn" onclick="confirmHelp()">Contact to Help</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    let currentRequestId = null;
+
+    function openOfferModal(id, title, category, location, user) {
+      currentRequestId = id;
+      document.getElementById('modal-title').textContent    = title;
+      document.getElementById('modal-category').textContent = category;
+      document.getElementById('modal-location').textContent = location;
+      document.getElementById('modal-user').textContent     = user;
+      document.getElementById('offer-msg').style.display    = 'none';
+      document.getElementById('offer-modal').style.display  = 'flex';
+    }
+
+    function closeOfferModal() {
+      document.getElementById('offer-modal').style.display = 'none';
+    }
+
+    async function confirmHelp() {
+      const suggestedTime = document.getElementById('suggested-time').value;
+      const btn = document.getElementById('confirm-help-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      try {
+        const res  = await fetch(`/requests/${currentRequestId}/offer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ suggestedTime }),
+        });
+        const data = await res.json();
+        const msgEl = document.getElementById('offer-msg');
+        msgEl.style.display = 'block';
+        msgEl.style.color   = data.success ? 'green' : 'red';
+        msgEl.textContent   = data.message;
+        if (data.success) {
+          btn.textContent = '✓ Sent!';
+          setTimeout(closeOfferModal, 1500);
+        } else {
+          btn.disabled    = false;
+          btn.textContent = 'Contact to Help';
+        }
+      } catch (err) {
+        btn.disabled    = false;
+        btn.textContent = 'Contact to Help';
+      }
+    }
+
+    document.getElementById('search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('filter-form').submit();
+    });
+  </script>
+</body>
+</html>

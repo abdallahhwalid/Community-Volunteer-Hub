@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Requests – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/requests.css"/>
+</head>
+<body>
+
+  <%- include('partials/nav') %>
+
+  <main class="main-content">
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <h1>My Requests</h1>
+        <p>Manage your help requests and volunteering activities</p>
+      </div>
+      <a href="/requests/new" class="btn-primary">+ Post New Request</a>
+    </div>
+
+    <div class="section" style="padding-top:32px;">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-posted"  onclick="switchTab('posted')">Requests I Posted (<%= postedRequests.length %>)</button>
+        <button class="tab-btn"        id="tab-helping" onclick="switchTab('helping')">Requests I'm Helping With (<%= helpingRequests.length %>)</button>
+      </div>
+
+      <div id="panel-posted">
+        <% if (postedRequests.length === 0) { %>
+          <p style="color:var(--text-gray); padding:24px 0;">No requests yet. <a href="/requests/new">Post one!</a></p>
+        <% } %>
+        <% postedRequests.forEach(req => { %>
+          <div class="my-req-item">
+            <div class="my-req-header">
+              <div class="my-req-header-top">
+                <span class="badge <%= req.status === 'Open' ? 'badge-open' : req.status === 'In Progress' ? 'badge-progress' : 'badge-completed' %>"><%= req.status %></span>
+                <span style="font-size:13px;color:#6b7280;"><%= req.category %></span>
+              </div>
+              <h3 class="req-title"><%= req.title %></h3>
+            </div>
+            <div class="my-req-meta">
+              <span class="meta-info">📍 <%= req.location %></span>
+              <% if (req.desiredDate) { %>
+                <span class="meta-info">🕐 <%= new Date(req.desiredDate).toDateString() %></span>
+              <% } %>
+            </div>
+
+            <% if (req.pendingOffers && req.pendingOffers.length > 0) { %>
+              <div style="margin-top:12px;">
+                <h4 style="font-size:14px; margin-bottom:8px;">Pending Offers (<%= req.pendingOffers.length %>)</h4>
+                <% req.pendingOffers.forEach(offer => { %>
+                  <div class="helper-box" style="margin-bottom:8px;">
+                    <div class="helper-info">
+                      <span class="helper-name"><%= offer.volunteer.name %></span>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                      <button class="btn-blue" onclick="respondOffer('<%= offer._id %>','accept')">Accept</button>
+                      <button class="btn-danger" onclick="respondOffer('<%= offer._id %>','reject')">Reject</button>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+
+            <div class="my-req-actions">
+              <% if (req.status === 'Open') { %>
+                <button class="btn-danger" onclick="cancelRequest('<%= req._id %>')">Cancel Request</button>
+              <% } %>
+              <% if (req.status === 'In Progress') { %>
+                <button class="btn-blue" onclick="markCompleted('<%= req._id %>')">Mark as Completed</button>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div id="panel-helping" style="display:none;">
+        <% if (helpingRequests.length === 0) { %>
+          <p style="color:var(--text-gray); padding:24px 0;">Not helping with anything yet. <a href="/requests">Browse requests!</a></p>
+        <% } %>
+        <% helpingRequests.forEach(offer => { %>
+          <% const req = offer.request; %>
+          <div class="my-req-item">
+            <div class="my-req-header">
+              <div class="my-req-header-top">
+                <span class="badge badge-open">Offer: <%= offer.status %></span>
+                <span style="font-size:13px;color:#6b7280;"><%= req.category %></span>
+              </div>
+              <h3 class="req-title"><%= req.title %></h3>
+            </div>
+            <div class="my-req-meta">
+              <span class="meta-info">📍 <%= req.location %></span>
+            </div>
+            <div class="helper-box">
+              <div class="helper-info">
+                <span class="helper-label">Requested by:</span>
+                <span class="helper-name"><%= req.postedBy ? req.postedBy.name : 'Unknown' %></span>
+              </div>
+              <a href="/messages" class="btn-ghost">Message</a>
+            </div>
+            <% if (offer.status === 'Pending') { %>
+              <div class="my-req-actions">
+                <button class="btn-ghost" onclick="withdrawOffer('<%= offer._id %>')">Withdraw Offer</button>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    function switchTab(tab) {
+      document.getElementById('panel-posted').style.display  = tab === 'posted'  ? 'block' : 'none';
+      document.getElementById('panel-helping').style.display = tab === 'helping' ? 'block' : 'none';
+      document.getElementById('tab-posted').classList.toggle('active',  tab === 'posted');
+      document.getElementById('tab-helping').classList.toggle('active', tab === 'helping');
+    }
+    async function cancelRequest(id) {
+      if (!confirm('Cancel this request?')) return;
+      const data = await fetch(`/requests/${id}`, { method: 'DELETE' }).then(r => r.json());
+      if (data.success) location.reload(); else alert(data.message);
+    }
+    async function markCompleted(id) {
+      const data = await fetch(`/requests/${id}/complete`, { method: 'PUT' }).then(r => r.json());
+      if (data.success) location.reload(); else alert(data.message);
+    }
+    async function respondOffer(offerId, action) {
+      const data = await fetch(`/requests/offers/${offerId}/${action}`, { method: 'PUT' }).then(r => r.json());
+      if (data.success) location.reload(); else alert(data.message);
+    }
+    async function withdrawOffer(offerId) {
+      if (!confirm('Withdraw your offer?')) return;
+      const data = await fetch(`/requests/offers/${offerId}/withdraw`, { method: 'PUT' }).then(r => r.json());
+      if (data.success) location.reload(); else alert(data.message);
+    }
+  </script>
+</body>
+</html>
