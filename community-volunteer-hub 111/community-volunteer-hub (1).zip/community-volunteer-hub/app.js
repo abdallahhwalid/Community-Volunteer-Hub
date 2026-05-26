@@ -21,6 +21,13 @@ app.get('/', (req, res) => {
   res.send('Server is running!');
 });
 
+// Person 4 routes
+const messageRoutes = require('./routes/messageRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
+app.use('/messages', messageRoutes);
+app.use('/admin', adminRoutes);
+
 // Connect to MongoDB FIRST, then start server
 mongoose.connect(process.env.MONGO_URI, {
   serverSelectionTimeoutMS: 5000,
@@ -35,10 +42,3 @@ mongoose.connect(process.env.MONGO_URI, {
   .catch((err) => {
     console.log('MongoDB connection error:', err);
   });
-
-  // Person 4 routes
-const messageRoutes = require('./routes/messageRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-
-app.use('/messages', messageRoutes);
-app.use('/admin', adminRoutes);
