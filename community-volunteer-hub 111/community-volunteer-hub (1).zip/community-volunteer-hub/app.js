@@ -34,8 +34,8 @@ app.get('/', (req, res) => {
 // app.use('/admin', adminRoutes);
 
 // Person 3 routes — commented out until they finish
-// const authRoutes = require('./routes/authRoutes');
-// app.use('/', authRoutes);
+ const authRoutes = require('./routes/authRoutes');
+ app.use('/', authRoutes);
 
 // Person 2 routes
 const requestRoutes = require('./routes/requestRoutes');
