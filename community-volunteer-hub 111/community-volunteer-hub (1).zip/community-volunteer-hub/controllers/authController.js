@@ -18,6 +18,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     req.session.userId = user._id;
+    req.session.role = user.role;
     res.redirect('/');
 
   } catch (err) {
@@ -40,6 +41,7 @@ exports.login = async (req, res) => {
     }
 
     req.session.userId = user._id;
+    req.session.role = user.role;
     res.redirect('/');
 
   } catch (err) {
@@ -66,17 +68,23 @@ exports.showProfile = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const { name, location, bio, skills } = req.body;
-    const skillsArray = skills ? skills.split(',').map(s => s.trim()) : [];
+    const skillsArray = skills ? skills.split(',').map(s => s.trim()).filter(s => s) : [];
 
-    await User.findByIdAndUpdate(req.session.userId, {
-      name,
-      location,
-      bio,
-      skills: skillsArray
-    });
+    const updateData = { name, location, bio, skills: skillsArray };
 
+    if (req.files && req.files.photo) {
+      const photo = req.files.photo;
+      const fileName = req.session.userId + '_' + photo.name;
+      const uploadPath = __dirname + '/../public/images/' + fileName;
+      await photo.mv(uploadPath);
+      updateData.photo = '/images/' + fileName;
+    }
+
+    await User.findByIdAndUpdate(req.session.userId, updateData);
     res.redirect('/profile');
+
   } catch (err) {
+    console.log(err);
     res.redirect('/profile');
   }
 };

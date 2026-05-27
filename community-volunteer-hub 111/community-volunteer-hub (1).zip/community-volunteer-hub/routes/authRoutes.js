@@ -19,3 +19,8 @@ router.get('/profile', protect, authController.showProfile);
 router.post('/profile', protect, authController.updateProfile);
 
 module.exports = router;
+// Static pages
+router.get('/terms', (req, res) => res.render('terms'));
+router.get('/privacy', (req, res) => res.render('privacy'));
+router.get('/safety', (req, res) => res.render('safety'));
+router.get('/about', (req, res) => res.render('about'));

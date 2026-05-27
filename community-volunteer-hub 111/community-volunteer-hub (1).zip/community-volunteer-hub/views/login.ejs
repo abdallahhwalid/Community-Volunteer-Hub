@@ -1,16 +1,94 @@
 <!DOCTYPE html>
-<html>
-<head><title>Login</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/forms.css"/>
+</head>
 <body>
-  <h1>Login</h1>
-  <% if (error) { %>
-    <p style="color:red;"><%= error %></p>
-  <% } %>
-  <form method="POST" action="/login">
-    <input type="email" name="email" placeholder="Email" required/>
-    <input type="password" name="password" placeholder="Password" required/>
-    <button type="submit">Login</button>
-  </form>
-  <a href="/register">Don't have an account? Register</a>
+  <nav class="navbar">
+    <a href="/" class="nav-logo">
+      <div class="nav-logo-icon"><img src="/images/logo.png" alt="Community Help Hub logo"></div>
+      <span class="nav-logo-text">Community Help Hub</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/requests">Browse</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="/images/logo.png" alt="Community Help Hub logo" class="auth-logo">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your account</p>
+      </div>
+
+      <% if (error) { %>
+        <div style="color:red; text-align:center; margin-bottom:15px; font-weight:bold;">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form id="login-form" action="/login" method="POST" novalidate>
+        <div class="form-group">
+          <label for="email">Email Address <span class="required-star">*</span></label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="e.g., john@example.com"/>
+          <span class="error-msg form-error-text" id="email-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="password">Password <span class="required-star">*</span></label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password"/>
+          <span class="error-msg form-error-text" id="password-error"></span>
+        </div>
+        <div class="login-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="remember"/> Remember me
+          </label>
+          <a href="#" id="forgot-password-link" class="forgot-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-primary btn-full">Sign In</button>
+        <div class="alert-success" id="success-msg">✅ Login successful! Redirecting...</div>
+      </form>
+    </div>
+
+    <div id="recovery-modal" class="modal-overlay hidden">
+      <div class="auth-card modal-card">
+        <button id="close-modal" class="modal-close">&times;</button>
+        <h2>Reset Password</h2>
+        <p id="recovery-desc" class="modal-desc">Enter your email for a verification code.</p>
+        <div id="step-1-email">
+          <div class="form-group">
+            <input type="email" id="recovery-email" class="form-control" placeholder="enter your email"/>
+            <span class="error-msg form-error-text text-red" id="recovery-email-error"></span>
+          </div>
+          <button id="send-recovery-btn" class="btn-primary btn-full">Send Code</button>
+        </div>
+        <div id="step-2-reset" class="hidden">
+          <div class="form-group">
+            <label class="form-label-sm">Verification Code</label>
+            <input type="text" id="recovery-code" class="form-control" placeholder="Enter code"/>
+            <span class="error-msg form-error-text text-red" id="recovery-code-error"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label-sm">New Password</label>
+            <input type="password" id="new-password" class="form-control" placeholder="Min 6 characters"/>
+            <span class="error-msg form-error-text text-red" id="new-password-error"></span>
+          </div>
+          <button id="confirm-reset-btn" class="btn-primary btn-full">Reset Password</button>
+        </div>
+        <div id="recovery-success-msg" class="modal-success-text hidden">✅ Password reset successfully! You can now log in.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="simple-footer">
+    <p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p>
+  </footer>
+
+  <script src="/js/login.js"></script>
 </body>
 </html>
