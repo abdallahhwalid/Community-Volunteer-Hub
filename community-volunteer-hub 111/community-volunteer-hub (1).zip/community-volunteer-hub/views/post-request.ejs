@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <%- include('partials/nav') %>
+  <%- include('partials/navbar') %>
 
   <main class="main-content">
     <div class="form-page">
@@ -30,12 +30,14 @@
           </div>
         <% } %>
 
-        <form method="POST" action="/requests" novalidate>
+        <form id="post-request-form" method="POST" action="/requests" enctype="multipart/form-data" novalidate>
 
           <div class="form-group">
             <label for="title">Request Title *</label>
             <input type="text" id="title" name="title" class="form-control"
-              placeholder="e.g., Need help moving furniture" value="<%= old.title || '' %>"/>
+              placeholder="e.g., Need help moving furniture"
+              value="<%= old.title || '' %>"/>
+            <span class="error-msg" id="title-error"></span>
           </div>
 
           <div class="form-group">
@@ -43,38 +45,67 @@
             <select id="category" name="category" class="form-control">
               <option value="">Select a category</option>
               <% ['Home Tasks','IT Repair','Gardening','Tutoring','Pet Care','Transportation','Other'].forEach(cat => { %>
-                <option value="<%= cat %>" <%= old.category === cat ? 'selected' : '' %>><%= cat %></option>
+                <option value="<%= cat %>" <%= (old.category === cat) ? 'selected' : '' %>><%= cat %></option>
               <% }) %>
             </select>
+            <span class="error-msg" id="category-error"></span>
           </div>
 
           <div class="form-group">
             <label for="description">Description *</label>
             <textarea id="description" name="description" class="form-control"
-              placeholder="Provide detailed information..."><%= old.description || '' %></textarea>
+              placeholder="Provide detailed information about what you need help with..."><%= old.description || '' %></textarea>
+            <p style="font-size:12px; color:var(--text-gray); margin-top:6px;">
+              Include important details like the scope of work, time estimate, and any tools needed
+            </p>
+            <span class="error-msg" id="description-error"></span>
           </div>
 
           <div class="form-group">
             <label for="location">📍 Location *</label>
             <input type="text" id="location" name="location" class="form-control"
-              placeholder="e.g., Downtown, 123 Main St" value="<%= old.location || '' %>"/>
+              placeholder="e.g., Downtown, 123 Main St"
+              value="<%= old.location || '' %>"/>
+            <span class="error-msg" id="location-error"></span>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label for="desired-date">📅 Desired Date</label>
-              <input type="date" id="desired-date" name="desiredDate" class="form-control" value="<%= old.desiredDate || '' %>"/>
+              <input type="date" id="desired-date" name="desiredDate" class="form-control"
+                value="<%= old.desiredDate || '' %>"/>
             </div>
             <div class="form-group">
               <label for="desired-time">Desired Time</label>
-              <input type="time" id="desired-time" name="desiredTime" class="form-control" value="<%= old.desiredTime || '' %>"/>
+              <input type="time" id="desired-time" name="desiredTime" class="form-control"
+                value="<%= old.desiredTime || '' %>"/>
             </div>
           </div>
 
           <label class="flexible-check">
-            <input type="checkbox" name="flexible" style="width:16px;height:16px;" <%= old.flexible === 'on' ? 'checked' : '' %>/>
-            I'm flexible with timing
+            <input type="checkbox" id="flexible" name="flexible" style="width:16px;height:16px;"
+              <%= old.flexible === 'on' ? 'checked' : '' %>/>
+            I'm flexible with timing and can coordinate with the volunteer
           </label>
+
+          <div class="form-group" style="margin-top:20px;">
+            <label for="image">📷 Add a Photo <span style="color:var(--text-gray); font-weight:400;">(optional)</span></label>
+            <input type="file" id="image" name="image" class="form-control"
+              accept="image/jpeg, image/png, image/gif, image/webp"
+              onchange="previewImage(event)"
+              style="padding:8px;"/>
+            <p style="font-size:12px; color:var(--text-gray); margin-top:6px;">
+              Upload a photo of what you need help with. Max 5MB. JPG, PNG, GIF, or WEBP.
+            </p>
+            <div id="image-preview-wrap" style="display:none; margin-top:12px;">
+              <img id="image-preview" src="" alt="Preview"
+                style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid #e5e7eb;"/>
+              <button type="button" onclick="clearImage()"
+                style="display:block; margin-top:6px; font-size:13px; color:#dc2626; background:none; border:none; cursor:pointer;">
+                ✕ Remove photo
+              </button>
+            </div>
+          </div>
 
           <div class="safety-box">
             <h4>⚠ Safety Reminders</h4>
@@ -97,5 +128,30 @@
 
   <%- include('partials/footer') %>
 
+  <script>
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image must be smaller than 5MB');
+        event.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('image-preview').src = e.target.result;
+        document.getElementById('image-preview-wrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearImage() {
+      document.getElementById('image').value = '';
+      document.getElementById('image-preview').src = '';
+      document.getElementById('image-preview-wrap').style.display = 'none';
+    }
+  </script>
+
+  <script src="/js/validation.js"></script>
 </body>
 </html>
