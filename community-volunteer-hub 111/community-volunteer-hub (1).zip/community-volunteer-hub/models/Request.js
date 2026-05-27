@@ -37,6 +37,10 @@ const requestSchema = new mongoose.Schema(
       enum: ['Open', 'In Progress', 'Completed', 'Cancelled'],
       default: 'Open',
     },
+    image: {
+      type: String,
+      default: null,
+    },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -52,4 +56,3 @@ const requestSchema = new mongoose.Schema(
 );
  
 module.exports = mongoose.model('Request', requestSchema);
- 

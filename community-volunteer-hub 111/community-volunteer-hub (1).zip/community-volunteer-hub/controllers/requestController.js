@@ -1,5 +1,7 @@
 const Request = require('../models/Request');
 const Offer   = require('../models/Offer');
+const path    = require('path');
+const fs      = require('fs');
  
 // ─────────────────────────────────────────────
 // GET /requests
@@ -32,18 +34,16 @@ exports.getAllRequests = async (req, res) => {
  
 // ─────────────────────────────────────────────
 // GET /requests/my
-// Logged-in user's posted requests + offers they made
+// Logged-in user's posted requests + offers
 // ─────────────────────────────────────────────
 exports.getMyRequests = async (req, res) => {
   try {
     const userId = req.user._id;
  
-    // Requests this user posted, with pending offers populated
     const postedRequests = await Request.find({ postedBy: userId })
       .populate('acceptedVolunteer', 'name')
       .sort({ createdAt: -1 });
  
-    // Attach pending offers to each posted request
     const requestsWithOffers = await Promise.all(
       postedRequests.map(async (r) => {
         const offers = await Offer.find({ request: r._id, status: 'Pending' })
@@ -52,7 +52,6 @@ exports.getMyRequests = async (req, res) => {
       })
     );
  
-    // Requests this user offered to help with
     const myOffers = await Offer.find({ volunteer: userId })
       .populate({
         path: 'request',
@@ -81,13 +80,13 @@ exports.getPostRequestForm = (req, res) => {
  
 // ─────────────────────────────────────────────
 // POST /requests
-// Create a new request
+// Create a new request (with optional image upload)
 // ─────────────────────────────────────────────
 exports.createRequest = async (req, res) => {
   try {
     const { title, category, description, location, desiredDate, desiredTime, flexible } = req.body;
  
-    // Basic server-side validation
+    // Server-side validation
     const errors = [];
     if (!title)       errors.push('Title is required');
     if (!category)    errors.push('Category is required');
@@ -98,6 +97,42 @@ exports.createRequest = async (req, res) => {
       return res.render('post-request', { user: req.user, errors, old: req.body });
     }
  
+    // Handle file upload
+    let imagePath = null;
+    if (req.files && req.files.image) {
+      const file = req.files.image;
+ 
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.mimetype)) {
+        return res.render('post-request', {
+          user: req.user,
+          errors: ['Only image files are allowed (JPG, PNG, GIF, WEBP)'],
+          old: req.body,
+        });
+      }
+ 
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        return res.render('post-request', {
+          user: req.user,
+          errors: ['Image must be smaller than 5MB'],
+          old: req.body,
+        });
+      }
+ 
+      // Save file to public/uploads/
+      const uploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+ 
+      const fileName = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
+      const uploadPath = path.join(uploadsDir, fileName);
+      await file.mv(uploadPath);
+      imagePath = `/uploads/${fileName}`;
+    }
+ 
     await Request.create({
       title,
       category,
@@ -106,6 +141,7 @@ exports.createRequest = async (req, res) => {
       desiredDate:  desiredDate  || null,
       desiredTime:  desiredTime  || null,
       flexible:     flexible === 'on',
+      image:        imagePath,
       postedBy:     req.user._id,
     });
  
@@ -123,7 +159,7 @@ exports.createRequest = async (req, res) => {
 exports.submitOffer = async (req, res) => {
   try {
     const { suggestedTime } = req.body;
-    const requestId = req.params.id;
+    const requestId   = req.params.id;
     const volunteerId = req.user._id;
  
     const request = await Request.findById(requestId);
@@ -131,12 +167,10 @@ exports.submitOffer = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Request is not available' });
     }
  
-    // Prevent the poster from offering on their own request
     if (request.postedBy.toString() === volunteerId.toString()) {
       return res.status(400).json({ success: false, message: 'You cannot offer help on your own request' });
     }
  
-    // Upsert: update if already offered, create if not
     await Offer.findOneAndUpdate(
       { request: requestId, volunteer: volunteerId },
       { suggestedTime: suggestedTime || null, status: 'Pending' },
@@ -243,17 +277,14 @@ exports.acceptOffer = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
  
-    // Accept this offer
     offer.status = 'Accepted';
     await offer.save();
  
-    // Reject all other pending offers for the same request
     await Offer.updateMany(
       { request: offer.request._id, _id: { $ne: offer._id }, status: 'Pending' },
       { status: 'Rejected' }
     );
  
-    // Update request status and record the accepted volunteer
     await Request.findByIdAndUpdate(offer.request._id, {
       status: 'In Progress',
       acceptedVolunteer: offer.volunteer,
@@ -309,3 +340,4 @@ exports.withdrawOffer = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+ 
