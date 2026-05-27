@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
+const session = require('express-session');
 require('dotenv').config();
 
 const app = express();
@@ -12,14 +13,29 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
-
-// Serve static files from public/
 app.use(express.static('public'));
+
+// Session
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
 
 // Temporary test route
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });
+
+// Person 4 routes
+const messageRoutes = require('./routes/messageRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/messages', messageRoutes);
+app.use('/admin', adminRoutes);
+
+// Person 3 routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/', authRoutes);
 
 // Connect to MongoDB FIRST, then start server
 mongoose.connect(process.env.MONGO_URI, {
