@@ -1,7 +1,7 @@
 const form = document.getElementById('register-form');
 
 form.addEventListener('submit', function (e) {
-  e.preventDefault();
+  e.preventDefault(); // Stop form to run frontend checks first
 
   let valid = validateRegisterForm();
   const termsChecked = document.getElementById('terms').checked;
@@ -14,16 +14,9 @@ form.addEventListener('submit', function (e) {
     clearError(termsError);
   }
 
+  // FIXED FOR BACKEND: If all checks pass, naturally submit to Express!
   if (valid) {
-    // SAVE DATA TO LOCALSTORAGE
-    const name = document.getElementById('name').value.trim();
-    localStorage.setItem('userName', name);
-    localStorage.setItem('userRole', 'Member');
-
-    document.getElementById('success-msg').classList.add('show');
-    setTimeout(function () {
-      window.location.href = 'login.html';
-    }, 2000);
+    form.submit(); 
   }
 });
 
@@ -72,7 +65,11 @@ function setError(element, message) {
   element.classList.add('show');
 }
 
-function clearError(element) {
+function removeError(element) { // Changed name slightly to avoid bugs
   element.textContent = '';
-  element.classList.remove('show');
+  if(element.classList.contains('show')) {
+    element.classList.remove('show');
+  }
 }
+// Mapping alias to protect any inner calls from validation.js
+function clearError(element) { removeError(element); }
