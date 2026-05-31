@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <%- include('partials/nav') %>
+
+  <div class="admin-container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="stat-card">
+        <h3>Total Users</h3>
+        <p><%= userCount %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Requests</h3>
+        <p><%= requestCount %></p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Messages</h3>
+        <p><%= messageCount %></p>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="admin-section">
+      <h2>Recent Users</h2>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentUsers.forEach(user => { %>
+            <tr>
+              <td><%= user.name %></td>
+              <td><%= user.email %></td>
+              <td><%= user.createdAt.toLocaleDateString() %></td>
+              <td>
+                <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST">
+                  <button type="submit" class="btn-delete">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Requests -->
+    <div class="admin-section">
+      <h2>Recent Requests</h2>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Posted By</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentRequests.forEach(request => { %>
+            <tr>
+              <td><%= request.title %></td>
+              <td><%= request.user ? request.user.name : 'Unknown' %></td>
+              <td><%= request.createdAt.toLocaleDateString()
