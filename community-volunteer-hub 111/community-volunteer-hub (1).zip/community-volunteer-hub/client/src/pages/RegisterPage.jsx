@@ -1,11 +1,11 @@
 import AuthForm from "../components/AuthForm";
 
-function LoginPage() {
+function RegisterPage() {
   return (
     <main className="main-content auth-page">
-      <AuthForm mode="login" />
+      <AuthForm mode="register" />
     </main>
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
