@@ -9,7 +9,6 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Backend validation
     if (!name || name.trim() === '') {
       return res.render('register', { error: 'Name is required' });
     }
@@ -46,7 +45,6 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Backend validation
     if (!email || !email.includes('@')) {
       return res.render('login', { error: 'Valid email is required' });
     }
@@ -91,14 +89,12 @@ exports.updateProfile = async (req, res) => {
   try {
     const { name, location, bio, skills } = req.body;
 
-    // Backend validation
     if (!name || name.trim() === '') {
       const user = await User.findById(req.session.userId);
       return res.render('profile', { user, error: 'Name is required' });
     }
 
     const skillsArray = skills ? skills.split(',').map(s => s.trim()).filter(s => s) : [];
-
     const updateData = { name, location, bio, skills: skillsArray };
 
     if (req.files && req.files.photo) {
@@ -124,5 +120,98 @@ exports.updateProfile = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.redirect('/profile');
+  }
+};
+
+// ─── API FUNCTIONS FOR REACT ───────────────────────────────────────────────
+
+// API Register
+exports.apiRegister = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ success: false, error: 'Name is required' });
+    }
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Valid email is required' });
+    }
+    if (!password || password.length < 6) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, error: 'Email already exists' });
+    }
+
+    const user = new User({ name, email, password });
+    await user.save();
+
+    req.session.userId = user._id;
+    req.session.role = user.role;
+
+    res.status(201).json({
+      success: true,
+      message: 'Account created successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+};
+
+// API Login
+exports.apiLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: 'Valid email is required' });
+    }
+    if (!password || password.length < 6) {
+      return res.status(400).json({ success: false, error: 'Password must be at least 6 characters' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    req.session.userId = user._id;
+    req.session.role = user.role;
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+};
+
+// API Get Profile
+exports.apiGetProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Something went wrong' });
   }
 };
