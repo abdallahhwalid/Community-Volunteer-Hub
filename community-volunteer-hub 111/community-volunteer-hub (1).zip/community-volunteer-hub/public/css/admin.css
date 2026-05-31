@@ -390,3 +390,17 @@ tr:hover td { background: var(--bg); }
   .stat-number { font-size: 22px; }
   .admin-section { padding: 16px; }
 }
+
+.btn-delete {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.btn-delete:hover { background: #DC2626; }

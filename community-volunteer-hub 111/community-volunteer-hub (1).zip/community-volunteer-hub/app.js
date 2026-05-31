@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 const session = require('express-session');
+const methodOverride = require('method-override');
 require('dotenv').config();
 
 const app = express();
@@ -26,16 +27,17 @@ app.use(session({
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });
+app.use(methodOverride('_method'));
 
-// Person 4 routes — commented out until they finish
-// const messageRoutes = require('./routes/messageRoutes');
-// const adminRoutes = require('./routes/adminRoutes');
-// app.use('/messages', messageRoutes);
-// app.use('/admin', adminRoutes);
+// Person 4 routes
+const messageRoutes = require('./routes/messageRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/messages', messageRoutes);
+app.use('/admin', adminRoutes);
 
-// Person 3 routes — commented out until they finish
- const authRoutes = require('./routes/authRoutes');
- app.use('/', authRoutes);
+// Person 3 routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/', authRoutes);
 
 // Person 2 routes
 const requestRoutes = require('./routes/requestRoutes');

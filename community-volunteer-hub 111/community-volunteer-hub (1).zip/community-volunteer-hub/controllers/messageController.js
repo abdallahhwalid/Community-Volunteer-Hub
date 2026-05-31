@@ -1,9 +1,12 @@
 const Message = require('../models/Message');
+const User = require('../models/User');
 
 // GET /messages — show all conversations for the logged-in user
 exports.getInbox = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.session.userId;
+
+    const user = await User.findById(userId);
 
     const messages = await Message.find({
       $or: [{ sender: userId }, { receiver: userId }]
@@ -12,7 +15,11 @@ exports.getInbox = async (req, res) => {
       .populate('receiver', 'name')
       .sort({ createdAt: -1 });
 
-    res.render('messages', { messages, currentUser: req.user });
+    res.render('messages', { 
+      messages, 
+      currentUser: req.session,
+      user: user
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -25,7 +32,7 @@ exports.sendMessage = async (req, res) => {
     const { receiverId, content, requestId } = req.body;
 
     const message = new Message({
-      sender: req.user._id,
+      sender: req.session.userId,
       receiver: receiverId,
       content,
       request: requestId || null
