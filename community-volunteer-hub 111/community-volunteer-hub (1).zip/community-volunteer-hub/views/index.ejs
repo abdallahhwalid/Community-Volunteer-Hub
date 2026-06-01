@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Community Help Hub – Home</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/home.css"/>
+  <link rel="stylesheet" href="/css/requests.css"/>
+</head>
+<body>
+
+  <%- include('partials/nav') %>
+
+  <main class="main-content">
+
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Help Your Neighbors –<br>Get Help When You Need</h1>
+        <p>Building stronger communities by connecting people who need help with volunteers ready to lend a hand.</p>
+        <div class="hero-buttons">
+          <a href="/requests/new" class="btn-primary">I Need Help</a>
+          <a href="/requests" class="btn-hero-outline">I Want to Volunteer</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container container-center">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Getting help or helping others is simple</p>
+        <div class="grid-3">
+          <div class="how-card">
+            <div class="how-icon">
+              <img src="/images/sign up.PNG" alt="Sign Up">
+            </div>
+            <h3>1. Sign Up</h3>
+            <p>Create your free account and add your skills if you want to volunteer.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">
+              <img src="/images/post and browse.PNG" alt="Post and Browse">
+            </div>
+            <h3>2. Post or Browse</h3>
+            <p>Post a help request or browse existing requests to find someone to help.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-icon">
+              <img src="/images/connect and help.PNG" alt="Connect and Help">
+            </div>
+            <h3>3. Connect & Help</h3>
+            <p>Message each other to coordinate, complete the task, and rate your experience.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-bg">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title section-title-sm">Recent Help Requests</h2>
+            <p class="section-desc">People in your community need your help</p>
+          </div>
+          <a href="/requests" class="btn-ghost">View All</a>
+        </div>
+        <div class="grid-4 grid-stretch">
+          <% if (recentRequests && recentRequests.length > 0) { %>
+            <% recentRequests.forEach(function(req) { %>
+              <div class="card card-full">
+                <div class="card-top-row">
+                  <span class="badge badge-open"><%= req.status %></span>
+                  <span class="card-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
+                </div>
+                <h4 class="card-title"><%= req.title %></h4>
+                <p class="card-category"><%= req.category %></p>
+                <div class="meta-info">📍 <%= req.location %></div>
+                <% if (user) { %>
+                  <button class="btn-offer btn-offer-full" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Someone' %>')">Offer Help</button>
+                <% } else { %>
+                  <a href="/login" class="btn-offer btn-offer-full" style="text-align:center;">Login to Offer Help</a>
+                <% } %>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p style="color:var(--text-gray);">No open requests yet. Be the first to post one!</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container container-center">
+        <h2 class="section-title">Top Volunteers</h2>
+        <p class="section-sub">Meet our most helpful community members</p>
+        <div class="grid-4">
+          <% if (topVolunteers && topVolunteers.length > 0) { %>
+            <% topVolunteers.forEach(function(volunteer) { %>
+              <div class="card volunteer-card">
+                <div class="avatar avatar-lg volunteer-avatar">
+                  <%= volunteer.name.charAt(0).toUpperCase() %>
+                </div>
+                <h4 class="volunteer-name"><%= volunteer.name %></h4>
+                <p class="volunteer-skill"><%= volunteer.skills && volunteer.skills[0] ? volunteer.skills[0] : 'Volunteer' %></p>
+                <div class="stars">★★★★☆ <span class="volunteer-rating"><%= volunteer.rating || '4.8' %></span></div>
+                <a href="/profile" class="btn-primary btn-profile">View Profile</a>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p style="color:var(--text-gray);">No volunteers yet. Sign up and add your skills!</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-banner">
+      <h2>Ready to Make a Difference?</h2>
+      <p>Join thousands of community members helping each other every day.</p>
+      <a href="/register" class="btn-primary btn-cta">Get Started Today</a>
+    </section>
+
+  </main>
+
+  <!-- Offer Modal -->
+  <div id="offer-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h2 id="modal-title"></h2>
+      <p id="modal-category" class="modal-cat"></p>
+      <div class="modal-grid">
+        <div class="modal-item">
+          <label>Location</label>
+          <p id="modal-location"></p>
+        </div>
+      </div>
+      <div class="modal-section">
+        <label>Requested by</label>
+        <div class="user-info"><span id="modal-user"></span></div>
+      </div>
+      <div class="modal-section time-picker-box">
+        <label>Set your convenient time</label>
+        <input type="datetime-local" id="suggested-time" class="form-control">
+      </div>
+      <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeOfferModal()">Cancel</button>
+        <button class="btn-primary" id="confirm-help-btn" onclick="confirmHelp()">Contact to Help</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    let currentRequestId = null;
+
+    function openOfferModal(id, title, category, location, user) {
+      currentRequestId = id;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-category').textContent = category;
+      document.getElementById('modal-location').textContent = location;
+      document.getElementById('modal-user').textContent = user;
+      document.getElementById('offer-msg').style.display = 'none';
+      document.getElementById('offer-modal').style.display = 'flex';
+    }
+
+    function closeOfferModal() {
+      document.getElementById('offer-modal').style.display = 'none';
+    }
+
+    async function confirmHelp() {
+      const suggestedTime = document.getElementById('suggested-time').value;
+      const btn = document.getElementById('confirm-help-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      try {
+        const res = await fetch(`/requests/${currentRequestId}/offer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ suggestedTime })
+        });
+        const data = await res.json();
+        const msgEl = document.getElementById('offer-msg');
+        msgEl.style.display = 'block';
+        msgEl.style.color = data.success ? 'green' : 'red';
+        msgEl.textContent = data.message;
+        if (data.success) {
+          btn.textContent = '✓ Sent!';
+          setTimeout(closeOfferModal, 1500);
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Contact to Help';
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Contact to Help';
+      }
+    }
+  </script>
+
+</body>
+</html>

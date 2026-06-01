@@ -27,9 +27,10 @@ exports.register = async (req, res) => {
     const user = new User({ name, email, password });
     await user.save();
 
-    req.session.userId = user._id;
-    req.session.role = user.role;
-    res.redirect('/');
+   req.session.userId = user._id;
+req.session.role = user.role;
+req.session.name = user.name;
+res.redirect('/');
 
   } catch (err) {
     res.render('register', { error: 'Something went wrong' });
@@ -57,9 +58,10 @@ exports.login = async (req, res) => {
       return res.render('login', { error: 'Invalid email or password' });
     }
 
-    req.session.userId = user._id;
-    req.session.role = user.role;
-    res.redirect('/');
+      req.session.userId = user._id;
+      req.session.role = user.role;
+      req.session.name = user.name;
+      res.redirect('/');
 
   } catch (err) {
     res.render('login', { error: 'Something went wrong' });

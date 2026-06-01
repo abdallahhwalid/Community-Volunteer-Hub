@@ -24,10 +24,9 @@ app.use(session({
 }));
 
 // Temporary test route
-app.get('/', (req, res) => {
+/*app.get('/', (req, res) => {
   res.send('Server is running!');
-});
-app.use(methodOverride('_method'));
+});*/
 
 // Person 4 routes
 const messageRoutes = require('./routes/messageRoutes');
