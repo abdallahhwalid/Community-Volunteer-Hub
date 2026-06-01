@@ -32,7 +32,7 @@
         <div class="grid-3">
           <div class="how-card">
             <div class="how-icon">
-              <img src="/images/sign up.PNG" alt="Sign Up">
+              <img src="/images/sign up.PNG" alt="Sign Up">                                                                      
             </div>
             <h3>1. Sign Up</h3>
             <p>Create your free account and add your skills if you want to volunteer.</p>
@@ -55,7 +55,7 @@
       </div>
     </section>
 
-    <section class="section section-bg">
+   <section class="section section-bg">
       <div class="container">
         <div class="section-header">
           <div>
@@ -72,11 +72,20 @@
                   <span class="badge badge-open"><%= req.status %></span>
                   <span class="card-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
                 </div>
+    
                 <h4 class="card-title"><%= req.title %></h4>
                 <p class="card-category"><%= req.category %></p>
                 <div class="meta-info">📍 <%= req.location %></div>
+                
                 <% if (user) { %>
-                  <button class="btn-offer btn-offer-full" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Someone' %>')">Offer Help</button>
+                  <% // 1. Create a safe, clean variable on the server side first %>
+                  <% var posterName = req.postedBy ? req.postedBy.name : "Someone"; %>
+                  
+                  <% // 2. Pass that variable cleanly into the onclick function without character escaping bugs %>
+                  <button class="btn-offer btn-offer-full" 
+                          onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= posterName %>')">
+                    Offer Help
+                  </button>
                 <% } else { %>
                   <a href="/login" class="btn-offer btn-offer-full" style="text-align:center;">Login to Offer Help</a>
                 <% } %>

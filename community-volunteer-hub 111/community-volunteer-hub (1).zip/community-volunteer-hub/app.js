@@ -9,6 +9,7 @@ const app = express();
 
 // Set EJS as view engine
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));

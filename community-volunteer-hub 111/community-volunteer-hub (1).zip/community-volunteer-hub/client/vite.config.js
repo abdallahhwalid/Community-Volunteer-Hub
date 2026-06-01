@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+/*import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -16,6 +16,22 @@ export default defineConfig({
       '/css': {
         target: 'http://localhost:3000',
         changeOrigin: true
+      }
+    }
+  }
+})*/
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '^/(?!@vite|src|node_modules).*': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
       }
     }
   }
