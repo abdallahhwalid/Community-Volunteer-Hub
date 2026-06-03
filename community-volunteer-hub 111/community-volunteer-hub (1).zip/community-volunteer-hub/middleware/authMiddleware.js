@@ -2,6 +2,7 @@ const protect = (req, res, next) => {
   if (!req.session.userId) {
     return res.redirect('/login');
   }
+  req.user = { _id: req.session.userId, name: req.session.userName };
   next();
 };
 
