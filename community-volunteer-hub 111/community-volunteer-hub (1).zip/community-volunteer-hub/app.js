@@ -9,12 +9,18 @@ const app = express();
 
 // Set EJS as view engine
 app.set('view engine', 'ejs');
+
 app.use(express.static('public'));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// IMPORTANT: enables DELETE and PUT from forms
+app.use(methodOverride('_method'));
+
 app.use(fileUpload());
+
 app.use(express.static('public'));
 
 // Session
@@ -24,23 +30,21 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// Temporary test route
-/*app.get('/', (req, res) => {
-  res.send('Server is running!');
-});*/
-
 // Person 4 routes
 const messageRoutes = require('./routes/messageRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+
 app.use('/messages', messageRoutes);
 app.use('/admin', adminRoutes);
 
 // Person 3 routes
 const authRoutes = require('./routes/authRoutes');
+
 app.use('/', authRoutes);
 
 // Person 2 routes
 const requestRoutes = require('./routes/requestRoutes');
+
 app.use('/requests', requestRoutes);
 
 // Connect to MongoDB FIRST, then start server
@@ -48,12 +52,15 @@ mongoose.connect(process.env.MONGO_URI, {
   serverSelectionTimeoutMS: 5000,
   family: 4
 })
-  .then(() => {
-    console.log('MongoDB connected!');
-    app.listen(process.env.PORT, () => {
-      console.log(`Server running on http://localhost:${process.env.PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log('MongoDB connection error:', err);
+.then(() => {
+  console.log('MongoDB connected!');
+
+  app.listen(process.env.PORT, () => {
+    console.log(
+      `Server running on http://localhost:${process.env.PORT}`
+    );
   });
+})
+.catch((err) => {
+  console.log('MongoDB connection error:', err);
+});

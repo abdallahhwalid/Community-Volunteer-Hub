@@ -80,3 +80,14 @@ exports.getMessages = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+// DELETE /admin/messages/:id
+exports.deleteMessage = async (req, res) => {
+  try {
+    await Message.findByIdAndDelete(req.params.id);
+    res.redirect('/admin');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+};

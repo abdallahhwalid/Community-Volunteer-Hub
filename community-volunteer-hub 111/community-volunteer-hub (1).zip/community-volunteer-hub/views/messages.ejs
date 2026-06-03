@@ -3,49 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <title>Messages</title>
+
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/messages.css">
 </head>
 <body>
+
   <%- include('partials/header') %>
   <%- include('partials/nav') %>
 
   <div class="messages-container">
+
     <h1>My Messages</h1>
 
-    <% if (messages.length === 0) { %>
-      <p>No messages yet.</p>
+    <% if (!messages || messages.length === 0) { %>
+
+      <p class="empty-message">
+        No messages yet.
+      </p>
+
     <% } else { %>
+
       <div class="messages-list">
+
         <% messages.forEach(msg => { %>
+
           <div class="message-card <%= msg.isRead ? '' : 'unread' %>">
+
             <div class="message-info">
+
               <span class="message-from">
-                <% if (msg.sender._id.toString() === currentUser._id.toString()) { %>
-                  To: <strong><%= msg.receiver.name %></strong>
+
+                <% if (msg.sender && msg.sender._id.toString() === currentUser.userId.toString()) { %>
+
+                  To:
+                  <strong>
+                    <%= msg.receiver ? msg.receiver.name : 'Unknown User' %>
+                  </strong>
+
                 <% } else { %>
-                  From: <strong><%= msg.sender.name %></strong>
+
+                  From:
+                  <strong>
+                    <%= msg.sender ? msg.sender.name : 'Unknown User' %>
+                  </strong>
+
                 <% } %>
+
               </span>
-              <span class="message-time"><%= msg.createdAt.toLocaleDateString() %></span>
+
+              <span class="message-time">
+
+                <%= msg.createdAt
+                  ? msg.createdAt.toLocaleDateString()
+                  : 'Unknown Date' %>
+
+              </span>
+
             </div>
-            <p class="message-content"><%= msg.content %></p>
+
+            <p class="message-content">
+              <%= msg.content %>
+            </p>
+
           </div>
+
         <% }) %>
+
       </div>
+
     <% } %>
 
-    <!-- Send Message Form -->
     <div class="send-message">
+
       <h2>Send a Message</h2>
+
       <form action="/messages/send" method="POST">
-        <input type="text" name="receiverId" placeholder="Receiver ID" required />
-        <textarea name="content" placeholder="Write your message..." required></textarea>
-        <button type="submit">Send</button>
+
+        <input
+          type="text"
+          name="receiverId"
+          placeholder="Receiver ID"
+          required
+        >
+
+        <textarea
+          name="content"
+          placeholder="Write your message..."
+          required
+        ></textarea>
+
+        <button type="submit">
+          Send Message
+        </button>
+
       </form>
+
     </div>
+
   </div>
 
   <%- include('partials/footer') %>
+
 </body>
 </html>
