@@ -12,9 +12,12 @@
   <%- include('partials/nav') %>
 
   <main class="main-content">
-    <div class="page-header">
-      <h1>Browse Help Requests</h1>
-      <p>Find opportunities to help people in your community</p>
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1>Browse Help Requests</h1>
+        <p>Find opportunities to help people in your community</p>
+      </div>
+      <a href="/requests/new" class="btn-primary">+ Post a Request</a>
     </div>
 
     <div class="section" style="padding-top:32px;">
@@ -62,6 +65,10 @@
               <span class="badge <%= req.status === 'Open' ? 'badge-open' : 'badge-progress' %>"><%= req.status %></span>
               <span class="req-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
             </div>
+            <% if (req.image) { %>
+              <img src="<%= req.image %>" alt="Request image"
+                style="width:100%; height:140px; object-fit:cover; border-radius:8px; margin-bottom:10px;"/>
+            <% } %>
             <h3><%= req.title %></h3>
             <p class="req-category"><%= req.category %></p>
             <p class="req-desc"><%= req.description.substring(0, 100) %>...</p>
