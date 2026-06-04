@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -17,6 +15,12 @@
       }
     })();
   </script>
+  <style>
+    @keyframes popIn {
+      from { transform: scale(0.88) translateY(12px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
@@ -35,7 +39,7 @@
 
       <form class="filters-bar" method="GET" action="/requests" id="filter-form">
         <div class="search-wrap">
-          <span class="search-icon">
+          <span class="search-icon" id="search-btn" style="cursor:pointer;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
@@ -60,7 +64,7 @@
         </select>
       </form>
 
-      <p style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">
+      <p id="results-count" style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">
         Showing <%= requests.length %> request<%= requests.length !== 1 ? 's' : '' %>
       </p>
 
@@ -71,7 +75,7 @@
         <% } %>
 
         <% requests.forEach(req => { %>
-          <div class="req-card" data-id="<%= req._id %>">
+          <div class="req-card" data-id="<%= req._id %>" data-category="<%= req.category %>" data-status="<%= req.status %>">
             <div class="req-card-top">
               <span class="badge <%= req.status === 'Open' ? 'badge-open' : 'badge-progress' %>"><%= req.status %></span>
               <span class="req-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
@@ -91,12 +95,12 @@
                 <span class="meta-info">🕐 Flexible</span>
               <% } %>
             </div>
-            <% if (user) { %>
-              <button class="btn-offer" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Unknown' %>')">
-                Offer Help
-              </button>
+            <% if (req.status === 'In Progress') { %>
+              <button class="btn-offer" disabled style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">In Progress</button>
+            <% } else if (user) { %>
+              <button class="btn-offer" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Unknown' %>')">Offer Help</button>
             <% } else { %>
-              <a href="/login" class="btn-offer" style="text-align:center;">Login to Offer Help</a>
+              <button class="btn-offer" onclick="showLoginPrompt()">Offer Help</button>
             <% } %>
           </div>
         <% }) %>
@@ -105,6 +109,7 @@
     </div>
   </main>
 
+  <!-- Offer Modal -->
   <div id="offer-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h2 id="modal-title"></h2>
@@ -131,18 +136,49 @@
     </div>
   </div>
 
+  <!-- Login Prompt Modal -->
+  <div id="login-prompt-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(15,23,42,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; border-radius:16px; padding:32px 28px; max-width:360px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.18); animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
+      <div style="width:56px; height:56px; border-radius:50%; background:#EEF2FF; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:24px;">🔒</div>
+      <h3 style="font-size:18px; font-weight:700; color:#111827; margin:0 0 8px;">Login Required</h3>
+      <p style="font-size:14px; color:#6b7280; line-height:1.6; margin:0 0 24px;">You need to be logged in to offer help to someone in the community.</p>
+      <div style="display:flex; gap:10px;">
+        <button onclick="hideLoginPrompt()" style="flex:1; padding:11px 0; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#f3f4f6; color:#374151; border:1.5px solid #e5e7eb;">Cancel</button>
+        <button onclick="window.location.href='/login'" style="flex:1; padding:11px 0; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#1E3A8A; color:#fff; border:none;">Go to Login</button>
+      </div>
+    </div>
+  </div>
+
   <%- include('partials/footer') %>
 
   <script>
-    let currentRequestId = null;
+    let currentRequestId    = null;
+    let currentRequestTitle = null;
+    let currentRequestUser  = null;
+
+    function showLoginPrompt() {
+      const modal = document.getElementById('login-prompt-modal');
+      modal.style.display = 'flex';
+      modal.onclick = e => { if (e.target === modal) hideLoginPrompt(); };
+    }
+
+    function hideLoginPrompt() {
+      document.getElementById('login-prompt-modal').style.display = 'none';
+    }
 
     function openOfferModal(id, title, category, location, user) {
-      currentRequestId = id;
+      currentRequestId    = id;
+      currentRequestTitle = title;
+      currentRequestUser  = user;
       document.getElementById('modal-title').textContent    = title;
       document.getElementById('modal-category').textContent = category;
       document.getElementById('modal-location').textContent = location;
       document.getElementById('modal-user').textContent     = user;
       document.getElementById('offer-msg').style.display    = 'none';
+      document.getElementById('suggested-time').value       = '';
+      document.getElementById('suggested-time').style.borderColor = '';
+      document.getElementById('confirm-help-btn').disabled    = false;
+      document.getElementById('confirm-help-btn').textContent = 'Contact to Help';
       document.getElementById('offer-modal').style.display  = 'flex';
     }
 
@@ -152,6 +188,12 @@
 
     async function confirmHelp() {
       const suggestedTime = document.getElementById('suggested-time').value;
+      if (!suggestedTime) {
+        document.getElementById('suggested-time').style.borderColor = '#dc2626';
+        document.getElementById('suggested-time').focus();
+        return;
+      }
+      document.getElementById('suggested-time').style.borderColor = '';
       const btn = document.getElementById('confirm-help-btn');
       btn.disabled = true;
       btn.textContent = 'Sending...';
@@ -168,7 +210,10 @@
         msgEl.textContent   = data.message;
         if (data.success) {
           btn.textContent = '✓ Sent!';
-          setTimeout(closeOfferModal, 1500);
+          setTimeout(() => {
+            closeOfferModal();
+            window.location.href = `/messages?autoMsg=true&datetime=${encodeURIComponent(suggestedTime)}&user=${encodeURIComponent(currentRequestUser)}&requestTitle=${encodeURIComponent(currentRequestTitle)}`;
+          }, 1200);
         } else {
           btn.disabled    = false;
           btn.textContent = 'Contact to Help';
@@ -179,9 +224,28 @@
       }
     }
 
-    document.getElementById('search-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('filter-form').submit();
-    });
+    function filterRequests() {
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+      const catVal    = document.getElementById('category-filter').value;
+      const statusVal = document.getElementById('status-filter').value;
+      let count = 0;
+      document.querySelectorAll('.req-card').forEach(card => {
+        const title       = card.querySelector('h3').textContent.toLowerCase();
+        const matchSearch = !searchVal || title.includes(searchVal);
+        const matchCat    = !catVal    || card.dataset.category === catVal;
+        const matchStatus = !statusVal || card.dataset.status   === statusVal;
+        const show = matchSearch && matchCat && matchStatus;
+        card.style.display = show ? '' : 'none';
+        if (show) count++;
+      });
+      document.getElementById('results-count').textContent = `Showing ${count} request${count !== 1 ? 's' : ''}`;
+    }
+
+    document.getElementById('search-input').addEventListener('input',   filterRequests);
+    document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); filterRequests(); }});
+    document.getElementById('search-btn').addEventListener('click',     filterRequests);
+    document.getElementById('category-filter').addEventListener('change', filterRequests);
+    document.getElementById('status-filter').addEventListener('change',   filterRequests);
   </script>
 </body>
 </html>
