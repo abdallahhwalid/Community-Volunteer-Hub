@@ -1,3 +1,4 @@
+<%# Dark mode is initialized in header.ejs before paint — no flash %>
 <nav class="navbar">
   <a href="/" class="nav-logo">
     <div class="nav-logo-icon"><img src="/images/logo.png" alt="Community Help Hub logo"></div>
@@ -35,6 +36,7 @@
     var btn  = document.getElementById('darkToggle');
     var icon = document.getElementById('darkIcon');
     var html = document.documentElement;
+    // Sync icon with current state (set by header.ejs before paint)
     icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
     btn.addEventListener('click', function () {
       var isDark = html.classList.toggle('dark');

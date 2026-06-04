@@ -18,8 +18,17 @@ const messageSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    default: ''
+  },
+  // File attachments
+  fileUrl:  { type: String, default: null },
+  fileType: { type: String, enum: ['image', 'doc', 'video', null], default: null },
+  // Location sharing
+  location: {
+    lat:   { type: Number },
+    lng:   { type: Number },
+    label: { type: String }
   },
   isRead: {
     type: Boolean,

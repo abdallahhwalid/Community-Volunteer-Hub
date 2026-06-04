@@ -828,7 +828,38 @@ footer {
 :root.dark .conv-time,
 :root.dark .conv-preview       { color: #64748B; }
 :root.dark .bubble-received    { background: #263040; color: #F1F5F9; border-color: #374151; }
-
+/* ── ATTACH BAR dark mode fix ── */
+:root.dark .attach-bar {
+  background: #1F2937;
+  border-color: #374151;
+}
+:root.dark .attach-btn {
+  color: #94A3B8;
+}
+:root.dark .attach-btn:hover {
+  background: #374151;
+  color: #F1F5F9;
+}
+:root.dark .attach-preview {
+  background: #1E3A5F;
+  border-color: #2d4d7a;
+  color: #93C5FD;
+}
+:root.dark .new-chat-box {
+  background: #1F2937;
+  color: #F1F5F9;
+}
+:root.dark .new-chat-box input {
+  background: #111827;
+  color: #F1F5F9;
+  border-color: #374151;
+}
+:root.dark .new-chat-result-item:hover {
+  background: #263040;
+}
+:root.dark .new-chat-result-name {
+  color: #F1F5F9;
+}
 /* ── REQUESTS PAGE ── */
 :root.dark .req-card           { background: #1F2937; border-color: #374151; }
 :root.dark .my-req-item        { background: #1F2937; border-color: #374151; }

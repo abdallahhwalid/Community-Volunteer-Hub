@@ -1,327 +1,357 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
-
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/admin.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/admin.css"/>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
 <body>
 
-<%- include('partials/header') %>
-<%- include('partials/nav') %>
+  <%- include('partials/nav') %>
 
-  <div class="admin-page">
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Admin Dashboard</h1>
+      <p>Manage users, requests, and platform activity</p>
+    </div>
 
-```
-<h1>Admin Dashboard</h1>
+    <div class="admin-page">
 
-<!-- Statistics -->
-<div class="stats-grid">
+      <!-- ── STATS CARDS ── -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#EEF2FF;">
+            <img src="/images/Total users.png" alt="Total Users" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div>
+            <p class="stat-number"><%= userCount %></p>
+            <p class="stat-label">Total Users</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--green-light);">
+            <img src="/images/Active tasks.png" alt="Active Requests" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div>
+            <p class="stat-number"><%= requestCount %></p>
+            <p class="stat-label">Total Requests</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FFFBEB;">
+            <img src="/images/Completed tasks.png" alt="Messages" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div>
+            <p class="stat-number"><%= messageCount %></p>
+            <p class="stat-label">Total Messages</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#FEE2E2;">
+            <img src="/images/Pending reports.png" alt="Pending Reports" style="width:40px;height:40px;object-fit:contain;">
+          </div>
+          <div>
+            <p class="stat-number"><%- recentUsers.filter(u => u.role === 'admin').length %></p>
+            <p class="stat-label">Admins</p>
+          </div>
+        </div>
+      </div>
 
-  <div class="stat-card">
-    <div class="stat-icon">👥</div>
-    <div>
-      <div class="stat-number"><%= userCount %></div>
-      <div class="stat-label">Total Users</div>
+      <!-- ── USERS TABLE ── -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Manage Users</h2>
+          <div class="filter-bar">
+            <input type="text" class="search-input" placeholder="Search users..." id="user-search" oninput="filterUsers()"/>
+            <select class="filter-select" id="user-role-filter" onchange="filterUsers()">
+              <option value="">All Roles</option>
+              <option value="volunteer">Volunteer</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentUsers.length === 0) { %>
+                <tr><td colspan="5" style="text-align:center;">No users found</td></tr>
+              <% } else { %>
+                <% recentUsers.forEach(u => { %>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="avatar" style="width:32px;height:32px;font-size:12px;">
+                          <%= u.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() %>
+                        </div>
+                        <%= u.name %>
+                      </div>
+                    </td>
+                    <td><%= u.email %></td>
+                    <td><span class="role-badge role-<%= u.role %>"><%= u.role %></span></td>
+                    <td><%= u.joinedAt ? u.joinedAt.toLocaleDateString() : 'N/A' %></td>
+                    <td class="actions-cell">
+                      <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                      <form action="/admin/users/<%= u._id %>?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this user?')">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── REQUESTS TABLE ── -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Manage Requests</h2>
+          <div class="filter-bar">
+            <input type="text" class="search-input" placeholder="Search requests..." id="req-search" oninput="filterRequests()"/>
+            <select class="filter-select" id="req-status-filter" onchange="filterRequests()">
+              <option value="">All Statuses</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="requests-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Posted By</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentRequests.length === 0) { %>
+                <tr><td colspan="5" style="text-align:center;">No requests found</td></tr>
+              <% } else { %>
+                <% recentRequests.forEach(req => { %>
+                  <tr>
+                    <td><%= req.title %></td>
+                    <td><%= req.postedBy ? req.postedBy.name : 'Unknown' %></td>
+                    <td><span class="badge badge-<%= req.status === 'open' ? 'open' : req.status === 'completed' ? 'completed' : 'progress' %>"><%= req.status %></span></td>
+                    <td><%= req.createdAt ? req.createdAt.toLocaleDateString() : 'N/A' %></td>
+                    <td class="actions-cell">
+                      <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
+                      <form action="/admin/requests/<%= req._id %>?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this request?')">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── MESSAGES TABLE ── -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Recent Messages</h2>
+          <div class="filter-bar">
+            <select class="filter-select" id="msg-status-filter" onchange="filterMessages()">
+              <option value="">All Messages</option>
+              <option value="unread">Unread</option>
+              <option value="read">Read</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="messages-table">
+            <thead>
+              <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Message</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentMessages.length === 0) { %>
+                <tr><td colspan="6" style="text-align:center;">No messages yet</td></tr>
+              <% } else { %>
+                <% recentMessages.forEach(msg => { %>
+                  <tr data-status="<%= msg.isRead ? 'read' : 'unread' %>">
+                    <td><%= msg.sender   ? msg.sender.name   : 'Unknown' %></td>
+                    <td><%= msg.receiver ? msg.receiver.name : 'Unknown' %></td>
+                    <td><%= msg.content && msg.content.length > 50 ? msg.content.substring(0,50) + '...' : (msg.content || '📎 Attachment') %></td>
+                    <td><%= msg.createdAt ? msg.createdAt.toLocaleDateString() : 'N/A' %></td>
+                    <td><span class="role-badge <%= msg.isRead ? 'role-user' : 'role-admin' %>"><%= msg.isRead ? 'Read' : 'Unread' %></span></td>
+                    <td class="actions-cell">
+                      <form action="/admin/messages/<%= msg._id %>?_method=DELETE" method="POST" style="display:inline">
+                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this message?')">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── CONTACT INBOX ── -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <h2>Contact Messages</h2>
+          <div class="filter-bar">
+            <select class="filter-select" id="inbox-status-filter" onchange="filterInbox()">
+              <option value="">All Messages</option>
+              <option value="unread">Unread</option>
+              <option value="read">Read</option>
+            </select>
+          </div>
+        </div>
+        <div id="inbox-list">
+          <% if (typeof contactMessages !== 'undefined' && contactMessages.length > 0) { %>
+            <% contactMessages.forEach(cm => { %>
+              <div class="inbox-card <%= cm.isRead ? '' : 'unread' %>" data-status="<%= cm.isRead ? 'read' : 'unread' %>">
+                <div class="inbox-card-header">
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <div class="avatar" style="width:40px;height:40px;font-size:14px;flex-shrink:0;">
+                      <%= cm.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() %>
+                    </div>
+                    <div>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span class="inbox-name"><%= cm.name %></span>
+                        <span class="badge <%= cm.isRead ? 'badge-completed' : 'badge-progress' %>" style="font-size:11px;"><%= cm.isRead ? 'Read' : 'Unread' %></span>
+                      </div>
+                      <span class="inbox-meta"><%= cm.email %> &nbsp;·&nbsp; <%= cm.createdAt ? cm.createdAt.toLocaleDateString() : '' %></span>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <% if (!cm.isRead) { %>
+                      <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="markRead(this)">Mark Read</button>
+                    <% } %>
+                    <button class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="deleteMessage(this)">Delete</button>
+                  </div>
+                </div>
+                <div class="inbox-subject">Subject: <%= cm.subject %></div>
+                <div class="inbox-body"><%= cm.message %></div>
+                <div class="inbox-reply-area" style="display:none;">
+                  <textarea class="inbox-reply-input" placeholder="Reply as Community Help Hub Support Team..."></textarea>
+                  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+                    <button class="btn-ghost" style="padding:6px 14px;font-size:13px;" onclick="cancelReply(this)">Cancel</button>
+                    <button class="btn-blue" style="padding:6px 14px;font-size:13px;" onclick="sendReply(this)">Send Reply</button>
+                  </div>
+                </div>
+                <div class="inbox-reply-sent" style="display:none;"></div>
+                <button class="inbox-reply-btn" onclick="toggleReply(this)">↩ Reply</button>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p style="padding:20px;color:var(--text-gray);font-size:14px;">No contact messages yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── Confirm Modal ── -->
+  <div id="confirm-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon" id="modal-icon">⚠️</div>
+      <h3 class="modal-title" id="modal-title">Are you sure?</h3>
+      <p class="modal-message" id="modal-message">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost modal-btn" id="modal-cancel">Cancel</button>
+        <button class="btn-danger modal-btn" id="modal-continue">Continue</button>
+      </div>
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-icon">📋</div>
-    <div>
-      <div class="stat-number"><%= requestCount %></div>
-      <div class="stat-label">Total Requests</div>
+  <!-- ── View Details Modal ── -->
+  <div id="view-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box modal-box-view">
+      <div class="modal-view-header">
+        <h3 class="modal-title">Details</h3>
+        <button id="view-modal-close" class="modal-close-btn">✕</button>
+      </div>
+      <div id="view-modal-body"></div>
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-icon">💬</div>
-    <div>
-      <div class="stat-number"><%= messageCount %></div>
-      <div class="stat-label">Total Messages</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Recent Users -->
-<div class="admin-section">
-
-  <div class="admin-section-header">
-    <h2>Recent Users</h2>
-  </div>
-
-  <div class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Joined</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <% if (recentUsers.length === 0) { %>
-
-          <tr>
-            <td colspan="5" style="text-align:center;">
-              No users found
-            </td>
-          </tr>
-
-        <% } else { %>
-
-          <% recentUsers.forEach(user => { %>
-
-            <tr>
-
-              <td><%= user.name %></td>
-
-              <td><%= user.email %></td>
-
-              <td>
-                <span class="role-badge role-<%= user.role %>">
-                  <%= user.role %>
-                </span>
-              </td>
-
-              <td>
-                <%= user.joinedAt
-                  ? user.joinedAt.toLocaleDateString()
-                  : 'N/A' %>
-              </td>
-
-              <td class="actions-cell">
-
-                <form
-                  action="/admin/users/<%= user._id %>?_method=DELETE"
-                  method="POST"
-                  style="display:inline"
-                >
-                  <button
-                    type="submit"
-                    class="btn-delete"
-                    onclick="return confirm('Delete this user?')"
-                  >
-                    Delete
-                  </button>
-                </form>
-
-              </td>
-
-            </tr>
-
-          <% }) %>
-
-        <% } %>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-<!-- Recent Requests -->
-<div class="admin-section">
-
-  <div class="admin-section-header">
-    <h2>Recent Requests</h2>
-  </div>
-
-  <div class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Posted By</th>
-          <th>Date</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <% if (recentRequests.length === 0) { %>
-
-          <tr>
-            <td colspan="4" style="text-align:center;">
-              No requests found
-            </td>
-          </tr>
-
-        <% } else { %>
-
-          <% recentRequests.forEach(request => { %>
-
-            <tr>
-
-              <td><%= request.title %></td>
-
-              <td>
-                <%= request.postedBy
-                  ? request.postedBy.name
-                  : 'Unknown' %>
-              </td>
-
-              <td>
-                <%= request.createdAt
-                  ? request.createdAt.toLocaleDateString()
-                  : 'N/A' %>
-              </td>
-
-              <td class="actions-cell">
-
-                <form
-                  action="/admin/requests/<%= request._id %>?_method=DELETE"
-                  method="POST"
-                  style="display:inline"
-                >
-                  <button
-                    type="submit"
-                    class="btn-delete"
-                    onclick="return confirm('Delete this request?')"
-                  >
-                    Delete
-                  </button>
-                </form>
-
-              </td>
-
-            </tr>
-
-          <% }) %>
-
-        <% } %>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
-
-<!-- Recent Messages -->
-<div class="admin-section">
-
-  <div class="admin-section-header">
-    <h2>Recent Messages</h2>
-  </div>
-
-  <div class="table-wrap">
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>From</th>
-          <th>To</th>
-          <th>Message</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        <% if (recentMessages.length === 0) { %>
-
-          <tr>
-            <td colspan="6" style="text-align:center;">
-              No messages yet
-            </td>
-          </tr>
-
-        <% } else { %>
-
-          <% recentMessages.forEach(msg => { %>
-
-            <tr>
-
-              <td>
-                <%= msg.sender
-                  ? msg.sender.name
-                  : 'Unknown' %>
-              </td>
-
-              <td>
-                <%= msg.receiver
-                  ? msg.receiver.name
-                  : 'Unknown' %>
-              </td>
-
-              <td>
-                <%= msg.content.length > 50
-                  ? msg.content.substring(0, 50) + '...'
-                  : msg.content %>
-              </td>
-
-              <td>
-                <%= msg.createdAt
-                  ? msg.createdAt.toLocaleDateString()
-                  : 'N/A' %>
-              </td>
-
-              <td>
-
-                <span class="role-badge <%= msg.isRead ? 'role-user' : 'role-admin' %>">
-
-                  <%= msg.isRead ? 'Read' : 'Unread' %>
-
-                </span>
-
-              </td>
-
-              <td>
-
-                <form
-                  action="/admin/messages/<%= msg._id %>?_method=DELETE"
-                  method="POST"
-                  style="display:inline"
-                >
-                  <button
-                    type="submit"
-                    class="btn-delete"
-                    onclick="return confirm('Delete this message?')"
-                  >
-                    Delete
-                  </button>
-                </form>
-
-              </td>
-
-            </tr>
-
-          <% }) %>
-
-        <% } %>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-</div>
-```
-
-  </div>
-
-<%- include('partials/footer') %>
+  <%- include('partials/footer') %>
+
+  <script src="/js/admin.js"></script>
+
+  <script>
+    // ── Filter users table ──
+    function filterUsers() {
+      const search = document.getElementById('user-search').value.toLowerCase();
+      const role   = document.getElementById('user-role-filter').value.toLowerCase();
+      document.querySelectorAll('#users-table tbody tr').forEach(function (row) {
+        const text     = row.textContent.toLowerCase();
+        const roleCell = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
+        const matchSearch = text.includes(search);
+        const matchRole   = role === '' || roleCell === role;
+        row.style.display = (matchSearch && matchRole) ? '' : 'none';
+      });
+    }
+
+    // ── Filter requests table ──
+    function filterRequests() {
+      const search = document.getElementById('req-search').value.toLowerCase();
+      const status = document.getElementById('req-status-filter').value.toLowerCase();
+      document.querySelectorAll('#requests-table tbody tr').forEach(function (row) {
+        const text       = row.textContent.toLowerCase();
+        const statusCell = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
+        const matchSearch = text.includes(search);
+        const matchStatus = status === '' || statusCell.includes(status);
+        row.style.display = (matchSearch && matchStatus) ? '' : 'none';
+      });
+    }
+
+    // ── Filter messages table ──
+    function filterMessages() {
+      const status = document.getElementById('msg-status-filter').value.toLowerCase();
+      document.querySelectorAll('#messages-table tbody tr').forEach(function (row) {
+        const rowStatus = row.getAttribute('data-status');
+        row.style.display = (status === '' || rowStatus === status) ? '' : 'none';
+      });
+    }
+
+    // ── Filter inbox ──
+    function filterInbox() {
+      const status = document.getElementById('inbox-status-filter').value.toLowerCase();
+      document.querySelectorAll('#inbox-list .inbox-card').forEach(function (card) {
+        const cardStatus = card.getAttribute('data-status');
+        card.style.display = (status === '' || cardStatus === status) ? '' : 'none';
+      });
+    }
+  </script>
 
 </body>
 </html>

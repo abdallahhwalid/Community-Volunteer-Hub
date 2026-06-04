@@ -1,28 +1,75 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ChatWindow from '../components/ChatWindow';
 
-const mockConversations = [
-  { id: 1, name: 'Ahmed', lastMessage: 'Can you help with the event?', time: '10:30 AM', unread: 2 },
-  { id: 2, name: 'Sara', lastMessage: 'Thank you so much!', time: 'Yesterday', unread: 0 },
-  { id: 3, name: 'Omar', lastMessage: 'When are you available?', time: 'Monday', unread: 1 },
-];
-
 export default function MessagesPage() {
+  const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('/messages/api');
+      const data = await response.json();
+
+      if (data.success) {
+        const grouped = groupConversations(data.messages);
+        setConversations(grouped);
+        if (data.messages.length > 0) {
+          const userId = data.messages[0].receiver?._id;
+          setCurrentUserId(userId);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const groupConversations = (messages) => {
+    const map = {};
+    messages.forEach(msg => {
+      const other = msg.sender?._id === currentUserId ? msg.receiver : msg.sender;
+      if (!other) return;
+      if (!map[other._id]) {
+        map[other._id] = {
+          id: other._id,
+          userId: other._id,
+          name: other.name,
+          messages: [],
+          lastMessage: '',
+          time: '',
+          unread: 0
+        };
+      }
+      map[other._id].messages.push(msg);
+      map[other._id].lastMessage = msg.content;
+      map[other._id].time = new Date(msg.createdAt).toLocaleDateString();
+      if (!msg.isRead && msg.receiver?._id === currentUserId) {
+        map[other._id].unread++;
+      }
+    });
+    return Object.values(map);
+  };
 
   return (
     <div style={styles.container}>
-      {/* Sidebar */}
       <div style={styles.sidebar}>
         <h2 style={styles.sidebarTitle}>Messages</h2>
-        {mockConversations.map((convo) => (
+        {loading && <p style={{ padding: '15px', color: '#999' }}>Loading...</p>}
+        {!loading && conversations.length === 0 && (
+          <p style={{ padding: '15px', color: '#999' }}>No conversations yet.</p>
+        )}
+        {conversations.map((convo) => (
           <div
             key={convo.id}
-            style={{
-              ...styles.convoItem,
-              backgroundColor: selectedConvo?.id === convo.id ? '#e8f4e8' : 'white',
-            }}
-            onClick={() => setSelectedConvo(convo)}
+            style={{ ...styles.convoItem, backgroundColor: selectedConvo?.id === convo.id ? '#e8f4e8' : 'white' }}
+            onClick={() => setSelectedConvo({ ...convo, currentUserId })}
           >
             <div style={styles.avatar}>{convo.name[0]}</div>
             <div style={styles.convoInfo}>
@@ -32,16 +79,13 @@ export default function MessagesPage() {
               </div>
               <div style={styles.convoFooter}>
                 <span style={styles.lastMessage}>{convo.lastMessage}</span>
-                {convo.unread > 0 && (
-                  <span style={styles.badge}>{convo.unread}</span>
-                )}
+                {convo.unread > 0 && <span style={styles.badge}>{convo.unread}</span>}
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Chat Window */}
       <div style={styles.chatArea}>
         {selectedConvo ? (
           <ChatWindow conversation={selectedConvo} />
