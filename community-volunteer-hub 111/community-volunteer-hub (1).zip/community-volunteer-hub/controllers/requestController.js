@@ -21,10 +21,15 @@ exports.getAllRequests = async (req, res) => {
       .populate('postedBy', 'name')
       .sort({ createdAt: -1 });
 
+    // Read user from session (same way Person 3 does it)
+    const user = req.session && req.session.userId
+      ? { _id: req.session.userId, name: req.session.name }
+      : null;
+
     res.render('requests', {
       requests,
       filters: { category: category || '', status: status || '', search: search || '' },
-      user: req.user || null,
+      user,
     });
   } catch (err) {
     console.error('getAllRequests error:', err);
