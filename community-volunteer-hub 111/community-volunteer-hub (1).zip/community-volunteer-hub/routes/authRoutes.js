@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     res.render('index', {
       recentRequests,
       topVolunteers,
-      user: req.session.userId ? { name: req.session.name } : null
+      user: req.session.userId ? { name: req.session.name, role: req.session.role } : null
     });
   } catch (err) {
     console.error(err);
@@ -45,12 +45,11 @@ router.get('/profile', protect, authController.showProfile);
 router.post('/profile', protect, authController.updateProfile);
 
 // Static pages
-router.get('/terms', (req, res) => res.render('terms'));
-router.get('/privacy', (req, res) => res.render('privacy'));
-router.get('/safety', (req, res) => res.render('safety'));
-router.get('/about', (req, res) => res.render('about'));
+router.get('/terms', (req, res) => res.render('terms', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
+router.get('/privacy', (req, res) => res.render('privacy', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
+router.get('/safety', (req, res) => res.render('safety', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
+router.get('/about', (req, res) => res.render('about', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
 
-// API routes for React
 // API routes for React
 router.post('/api/register', authController.apiRegister);
 router.post('/api/login', authController.apiLogin);
@@ -59,7 +58,7 @@ router.get('/api/profile', protect, authController.apiGetProfile);
 // Contact GET
 router.get('/contact', (req, res) => {
   res.render('contact', {
-    user: req.session.userId ? { name: req.session.name } : null,
+    user: req.session.userId ? { name: req.session.name, role: req.session.role } : null,
     success: null,
     error: null
   });
@@ -72,7 +71,7 @@ router.post('/contact', async (req, res) => {
 
     if (!name || !email || !subject || !message) {
       return res.render('contact', {
-        user: req.session.userId ? { name: req.session.name } : null,
+        user: req.session.userId ? { name: req.session.name, role: req.session.role } : null,
         error: 'All fields are required',
         success: null
       });
@@ -81,7 +80,7 @@ router.post('/contact', async (req, res) => {
     await ContactMessage.create({ name, email, subject, message });
 
     res.render('contact', {
-      user: req.session.userId ? { name: req.session.name } : null,
+      user: req.session.userId ? { name: req.session.name, role: req.session.role } : null,
       success: 'Message sent successfully!',
       error: null
     });
@@ -89,7 +88,7 @@ router.post('/contact', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.render('contact', {
-      user: req.session.userId ? { name: req.session.name } : null,
+      user: req.session.userId ? { name: req.session.name, role: req.session.role } : null,
       error: 'Something went wrong',
       success: null
     });

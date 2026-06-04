@@ -14,27 +14,24 @@ exports.getDashboard = async (req, res) => {
     ]);
 
     const recentUsers = await User.find()
-      .sort({ joinedAt: -1 })
-      .limit(5);
+      .sort({ joinedAt: -1 }) ;
 
     const recentRequests = await Request.find()
       .populate('postedBy', 'name')
-      .sort({ createdAt: -1 })
-      .limit(5);
+      .sort({ createdAt: -1 }); 
 
     const recentMessages = await Message.find()
       .populate('sender',   'name email')
       .populate('receiver', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(10);
+      .sort({ createdAt: -1 }) ;
 
     // Contact messages — optional, only if model exists
     let contactMessages = [];
     try {
       const ContactMessage = require('../models/ContactMessage');
       contactMessages = await ContactMessage.find()
-        .sort({ createdAt: -1 })
-        .limit(10);
+        .sort({ createdAt: -1 }) ;
+        
     } catch (e) { /* model not available */ }
 
     res.render('admin', {

@@ -23,6 +23,9 @@
     </a>
     <% if (user) { %>
       <span style="font-size:14px; font-weight:600;">Hi, <%= user.name.split(' ')[0] %></span>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin" class="btn-nav-signup">Admin</a>
+      <% } %>
       <a href="/logout" class="btn-nav-login">Logout</a>
     <% } else { %>
       <a href="/login" class="btn-nav-login">Login</a>
@@ -36,7 +39,6 @@
     var btn  = document.getElementById('darkToggle');
     var icon = document.getElementById('darkIcon');
     var html = document.documentElement;
-    // Sync icon with current state (set by header.ejs before paint)
     icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
     btn.addEventListener('click', function () {
       var isDark = html.classList.toggle('dark');

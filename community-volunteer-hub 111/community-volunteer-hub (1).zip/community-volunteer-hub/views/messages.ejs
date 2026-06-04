@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="/css/style.css"/>
   <link rel="stylesheet" href="/css/messages.css"/>
   <style>
+    /* ── Layout fix — send button always visible ── */
+    .main-content { padding-bottom: 0 !important; }
+    .chat-layout  { height: calc(100vh - 200px); min-height: 500px; }
+
     /* ── New Chat Modal ── */
     .new-chat-modal {
       position: fixed; inset: 0; z-index: 9999;
@@ -16,7 +20,7 @@
     }
     .new-chat-modal.open { display: flex; }
     .new-chat-box {
-      background: white; border-radius: 16px;
+      background: var(--white); border-radius: 16px;
       padding: 28px; width: 100%; max-width: 400px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.2);
       animation: slideUp 0.2s ease;
@@ -25,13 +29,14 @@
       from { transform: translateY(16px); opacity: 0; }
       to   { transform: translateY(0);    opacity: 1; }
     }
-    .new-chat-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+    .new-chat-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--text-dark); }
     .new-chat-box input {
       width: 100%; padding: 10px 14px;
       border: 1.5px solid var(--border);
       border-radius: 8px; font-size: 14px;
       font-family: inherit; outline: none;
       box-sizing: border-box;
+      background: var(--bg); color: var(--text-dark);
       transition: border-color 0.2s;
     }
     .new-chat-box input:focus { border-color: var(--blue); }
@@ -42,35 +47,44 @@
       cursor: pointer; transition: background 0.15s;
     }
     .new-chat-result-item:hover { background: var(--bg); }
-    .new-chat-result-item .avatar {
-      width: 36px; height: 36px; font-size: 13px; flex-shrink: 0;
-    }
-    .new-chat-result-name  { font-size: 14px; font-weight: 600; }
+    .new-chat-result-name  { font-size: 14px; font-weight: 600; color: var(--text-dark); }
     .new-chat-result-email { font-size: 12px; color: var(--text-gray); }
     .new-chat-modal-footer {
       display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
     }
+    .search-spinner { text-align: center; padding: 12px; color: var(--text-gray); font-size: 13px; }
+
+    /* ── New chat button ── */
+    .new-chat-btn {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin: 12px 14px;
+      padding: 9px 0;
+      background: var(--navy); color: white;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.2s;
+    }
+    .new-chat-btn:hover { background: var(--blue); }
 
     /* ── Attachment bar ── */
     .attach-bar {
       display: flex; align-items: center; gap: 6px;
-      padding: 6px 14px 6px;
+      padding: 6px 14px;
       border-top: 1px solid var(--border);
-      background: white;
+      background: var(--white);
     }
     .attach-btn {
       background: none; border: none; cursor: pointer;
       font-size: 18px; padding: 4px 6px; border-radius: 6px;
       transition: background 0.15s; line-height: 1;
-      color: var(--text-gray);
-      position: relative;
+      color: var(--text-gray); position: relative;
     }
     .attach-btn:hover { background: var(--bg); color: var(--navy); }
     .attach-btn input[type="file"] {
       position: absolute; inset: 0; opacity: 0;
       cursor: pointer; width: 100%; height: 100%;
     }
-    .attach-btn title { display: none; }
 
     /* ── Attachment preview ── */
     .attach-preview {
@@ -88,17 +102,11 @@
     }
 
     /* ── Message attachments ── */
-    .msg-attachment {
-      margin-top: 6px; border-radius: 8px; overflow: hidden;
-      max-width: 220px;
-    }
-    .msg-attachment img {
-      width: 100%; display: block; border-radius: 8px;
-    }
+    .msg-attachment { margin-top: 6px; border-radius: 8px; overflow: hidden; max-width: 220px; }
+    .msg-attachment img { width: 100%; display: block; border-radius: 8px; cursor: pointer; }
     .msg-attachment-file {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.15);
+      padding: 8px 12px; background: rgba(255,255,255,0.15);
       border-radius: 8px; font-size: 13px;
       text-decoration: none; color: inherit;
     }
@@ -106,39 +114,19 @@
     .msg-location-link {
       display: flex; align-items: center; gap: 6px;
       font-size: 13px; color: #3B82F6;
-      text-decoration: underline; cursor: pointer;
-      margin-top: 4px;
-    }
-
-    /* ── New chat button in sidebar ── */
-    .new-chat-btn {
-      display: flex; align-items: center; justify-content: center;
-      gap: 6px; margin: 12px 14px;
-      padding: 9px 0;
-      background: var(--navy); color: white;
-      border: none; border-radius: 8px;
-      font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: inherit;
-      transition: background 0.2s;
-    }
-    .new-chat-btn:hover { background: var(--blue); }
-
-    /* ── Loading spinner ── */
-    .search-spinner {
-      text-align: center; padding: 12px;
-      color: var(--text-gray); font-size: 13px;
+      text-decoration: underline; cursor: pointer; margin-top: 4px;
     }
   </style>
 
   <script>
-  (function () {
-    var saved = localStorage.getItem('theme');
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (saved === 'dark' || (!saved && prefersDark)) {
-      document.documentElement.classList.add('dark');
-    }
-  })();
-</script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -249,22 +237,18 @@
 
         <!-- Attachment buttons -->
         <div class="attach-bar">
-          <!-- Image -->
           <button class="attach-btn" title="Send image">
             🖼️
             <input type="file" id="file-image" accept="image/*" onchange="previewAttachment(this,'image')">
           </button>
-          <!-- Document -->
           <button class="attach-btn" title="Send document">
             📄
             <input type="file" id="file-doc" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" onchange="previewAttachment(this,'doc')">
           </button>
-          <!-- Video -->
           <button class="attach-btn" title="Send video">
             🎥
             <input type="file" id="file-video" accept="video/*" onchange="previewAttachment(this,'video')">
           </button>
-          <!-- Location -->
           <button class="attach-btn" title="Share location" onclick="shareLocation()">📍</button>
         </div>
 
@@ -305,49 +289,45 @@
         <button class="btn-secondary" onclick="closeNewChatModal()">Cancel</button>
       </div>
     </div>
-  
   </div>
 
   <%- include('partials/footer') %>
 
-  <!-- ✅ Safe JSON data tag — prevents </script> injection breaking the page -->
   <script id="messages-data" type="application/json">
     <%- JSON.stringify(messages || []) %>
   </script>
 
   <script>
-    // ── State ──────────────────────────────────────────────
     let activeReceiverId = null;
-    let pendingFile      = null;   // { file, type }
-    let pendingLocation  = null;   // { lat, lng, label }
+    let pendingFile      = null;
+    let pendingLocation  = null;
     let searchTimeout    = null;
 
-    // ✅ Safe parse — no more injection risk
     const allMessages   = JSON.parse(document.getElementById('messages-data').textContent);
     const currentUserId = '<%= currentUser.userId %>';
 
-    // ── Helpers ────────────────────────────────────────────
     function getMessagesForUser(userId) {
-      return allMessages.filter(msg => {
-        const sid = msg.sender?._id  || msg.sender;
-        const rid = msg.receiver?._id || msg.receiver;
-        return (sid === userId && rid === currentUserId) ||
-               (rid === userId && sid === currentUserId);
-      });
+      return allMessages
+        .filter(msg => {
+          const sid = msg.sender?._id  || msg.sender;
+          const rid = msg.receiver?._id || msg.receiver;
+          return (sid === userId && rid === currentUserId) ||
+                 (rid === userId && sid === currentUserId);
+        })
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // oldest first in chat
     }
 
     function fileIcon(name) {
       if (!name) return '📎';
       const ext = name.split('.').pop().toLowerCase();
-      if (['pdf'].includes(ext))                   return '📕';
-      if (['doc','docx'].includes(ext))            return '📘';
-      if (['xls','xlsx'].includes(ext))            return '📗';
-      if (['ppt','pptx'].includes(ext))            return '📙';
-      if (['mp4','mov','avi','webm'].includes(ext)) return '🎥';
+      if (['pdf'].includes(ext))                    return '📕';
+      if (['doc','docx'].includes(ext))             return '📘';
+      if (['xls','xlsx'].includes(ext))             return '📗';
+      if (['ppt','pptx'].includes(ext))             return '📙';
+      if (['mp4','mov','avi','webm'].includes(ext))  return '🎥';
       return '📎';
     }
 
-    // ── Open conversation ──────────────────────────────────
     function openConv(el) {
       document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
       el.classList.add('active');
@@ -365,7 +345,6 @@
       renderMessages(activeReceiverId);
     }
 
-    // ── Render messages ────────────────────────────────────
     function renderMessages(userId) {
       const container = document.getElementById('chat-messages');
       const msgs      = getMessagesForUser(userId);
@@ -386,10 +365,8 @@
 
         let attachHtml = '';
         if (msg.fileUrl) {
-          const isImage = msg.fileType === 'image' ||
-            /\.(jpg|jpeg|png|gif|webp)$/i.test(msg.fileUrl);
-          const isVideo = msg.fileType === 'video' ||
-            /\.(mp4|mov|avi|webm)$/i.test(msg.fileUrl);
+          const isImage = msg.fileType === 'image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(msg.fileUrl);
+          const isVideo = msg.fileType === 'video' || /\.(mp4|mov|avi|webm)$/i.test(msg.fileUrl);
 
           if (isImage) {
             attachHtml = `<div class="msg-attachment">
@@ -430,20 +407,15 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    // ── Attachment preview ─────────────────────────────────
     function previewAttachment(input, type) {
       if (!input.files || !input.files[0]) return;
       const file = input.files[0];
-
-      // 50MB limit
       if (file.size > 50 * 1024 * 1024) {
         alert('File too large. Maximum size is 50MB.');
         input.value = '';
         return;
       }
-
       pendingFile = { file, type };
-
       const icons = { image: '🖼️', doc: '📄', video: '🎥' };
       document.getElementById('attach-preview-icon').textContent = icons[type] || '📎';
       document.getElementById('attach-preview-name').textContent = file.name;
@@ -458,16 +430,9 @@
       document.getElementById('file-video').value = '';
     }
 
-    // ── Location sharing ───────────────────────────────────
     function shareLocation() {
-      if (!activeReceiverId) {
-        alert('Please select a conversation first.');
-        return;
-      }
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser.');
-        return;
-      }
+      if (!activeReceiverId) { alert('Please select a conversation first.'); return; }
+      if (!navigator.geolocation) { alert('Geolocation is not supported by your browser.'); return; }
       navigator.geolocation.getCurrentPosition(
         pos => {
           const { latitude: lat, longitude: lng } = pos.coords;
@@ -478,7 +443,6 @@
       );
     }
 
-    // ── Send message ───────────────────────────────────────
     async function sendMessage() {
       const input = document.getElementById('msg-input');
       const text  = input.value.trim();
@@ -487,9 +451,7 @@
       if (!activeReceiverId) return;
       if (!text && !pendingFile && !pendingLocation) return;
 
-      // ✅ Save preview text BEFORE clearing pendingFile/pendingLocation
       const previewText = text || (pendingFile ? '📎 Attachment' : '📍 Location');
-
       btn.disabled   = true;
       input.disabled = true;
 
@@ -497,32 +459,23 @@
         let newMsg;
 
         if (pendingFile) {
-          // ── File upload via FormData ──
           const formData = new FormData();
           formData.append('file', pendingFile.file);
           formData.append('fileType', pendingFile.type);
           formData.append('receiverId', activeReceiverId);
           if (text) formData.append('content', text);
 
-          const res  = await fetch('/messages/api/send-file', {
-            method: 'POST',
-            body: formData
-          });
+          const res  = await fetch('/messages/api/send-file', { method: 'POST', body: formData });
           const data = await res.json();
           if (!data.success) { alert(data.error || 'Upload failed'); return; }
           newMsg = data.message;
           clearAttachment();
 
         } else if (pendingLocation) {
-          // ── Location message ──
           const res  = await fetch('/messages/api/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              receiverId: activeReceiverId,
-              content: '',
-              location: pendingLocation
-            })
+            body: JSON.stringify({ receiverId: activeReceiverId, content: '', location: pendingLocation })
           });
           const data = await res.json();
           if (!data.success) { alert(data.error || 'Failed to send location'); return; }
@@ -530,7 +483,6 @@
           pendingLocation = null;
 
         } else {
-          // ── Text message ──
           const res  = await fetch('/messages/api/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -541,24 +493,16 @@
           newMsg = data.message;
         }
 
-        // Append and re-render
         allMessages.push(newMsg);
         renderMessages(activeReceiverId);
         input.value = '';
 
-        // ✅ Update sidebar preview using previewText saved before clearing
         const activeItem = document.querySelector('.conv-item.active');
         if (activeItem) {
           const preview = activeItem.querySelector('.conv-preview');
-          if (preview) {
-            preview.textContent = previewText.length > 35
-              ? previewText.substring(0, 35) + '...'
-              : previewText;
-          }
+          if (preview) preview.textContent = previewText.length > 35 ? previewText.substring(0, 35) + '...' : previewText;
           const timeEl = activeItem.querySelector('.conv-time');
-          if (timeEl && newMsg.createdAt) {
-            timeEl.textContent = new Date(newMsg.createdAt).toLocaleDateString();
-          }
+          if (timeEl && newMsg.createdAt) timeEl.textContent = new Date(newMsg.createdAt).toLocaleDateString();
         }
 
       } catch (err) {
@@ -574,7 +518,6 @@
       if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
     });
 
-    // ── Conversation filter ────────────────────────────────
     function filterConversations() {
       const val = document.getElementById('conv-search').value.toLowerCase();
       document.querySelectorAll('.conv-item').forEach(item => {
@@ -583,7 +526,6 @@
       });
     }
 
-    // ── New Chat Modal ─────────────────────────────────────
     function openNewChatModal() {
       document.getElementById('new-chat-modal').classList.add('open');
       setTimeout(() => document.getElementById('user-search-input').focus(), 100);
@@ -606,28 +548,21 @@
         results.innerHTML = '<p style="font-size:13px;color:var(--text-gray);margin-top:10px;">Start typing to find a user</p>';
         return;
       }
-
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(async () => {
         results.innerHTML = '<div class="search-spinner">Searching...</div>';
         try {
           const res  = await fetch(`/users/search?q=${encodeURIComponent(query.trim())}`);
           const data = await res.json();
-
           if (!data.success || data.users.length === 0) {
             results.innerHTML = '<p style="font-size:13px;color:var(--text-gray);margin-top:10px;">No users found.</p>';
             return;
           }
-
           results.innerHTML = data.users.map(u => {
             const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             return `
               <div class="new-chat-result-item" onclick="startChatWith('${u._id}', '${u.name}', '${initials}')">
-                <div class="avatar"
-                  style="width:36px;height:36px;font-size:13px;flex-shrink:0;
-                         background:var(--navy);border-radius:50%;
-                         display:flex;align-items:center;justify-content:center;
-                         color:white;font-weight:700;">
+                <div class="avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
                   ${initials}
                 </div>
                 <div>
@@ -644,9 +579,7 @@
 
     function startChatWith(userId, name, initials) {
       closeNewChatModal();
-
       let existing = document.querySelector(`.conv-item[data-userid="${userId}"]`);
-
       if (!existing) {
         const convList = document.getElementById('conv-list');
         const div = document.createElement('div');
@@ -667,7 +600,7 @@
         convList.prepend(div);
         existing = div;
       }
-
+      
       openConv(existing);
     }
   </script>

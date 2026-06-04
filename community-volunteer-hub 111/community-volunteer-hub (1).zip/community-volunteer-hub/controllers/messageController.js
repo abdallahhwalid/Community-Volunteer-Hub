@@ -15,7 +15,7 @@ exports.getInbox = async (req, res) => {
     })
       .populate('sender',   'name')
       .populate('receiver', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // newest first → most recent convo at top of sidebar
 
     res.render('messages', {
       messages,
