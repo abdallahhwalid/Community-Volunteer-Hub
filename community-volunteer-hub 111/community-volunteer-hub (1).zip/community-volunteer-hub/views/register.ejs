@@ -6,18 +6,32 @@
   <title>Sign Up – Community Help Hub</title>
   <link rel="stylesheet" href="/css/style.css"/>
   <link rel="stylesheet" href="/css/forms.css"/>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
 <body>
 
   <nav class="navbar">
     <a href="/" class="nav-logo">
-      <div class="nav-logo-icon"><img src="/images/logo.png" alt="Community Help Hub logo" ></div>
+      <div class="nav-logo-icon"><img src="/images/logo.png" alt="Community Help Hub logo"></div>
       <span class="nav-logo-text">Community Help Hub</span>
     </a>
     <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/requests">Browse</a></li>
     </ul>
+    <div class="nav-icons">
+      <button class="nav-icon-btn dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <span id="darkIcon">🌙</span>
+      </button>
+    </div>
   </nav>
 
   <main class="main-content auth-page">
@@ -35,31 +49,31 @@
       <% } %>
 
       <form id="register-form" action="/register" method="POST">
-        
+
         <div class="form-group">
           <label for="name">Full Name <span class="required-star">*</span></label>
           <input type="text" id="name" name="name" class="form-control" placeholder="e.g., John Doe" required/>
           <span class="error-msg" id="name-error"></span>
         </div>
-        
+
         <div class="form-group">
-          <label for="email">Email Address <span class="required-star">*</span> </label>
+          <label for="email">Email Address <span class="required-star">*</span></label>
           <input type="email" id="email" name="email" class="form-control" placeholder="e.g., john@example.com" required/>
           <span class="error-msg" id="email-error"></span>
         </div>
-        
+
         <div class="form-group">
-          <label for="password">Password <span class="required-star">*</span> </label>
+          <label for="password">Password <span class="required-star">*</span></label>
           <input type="password" id="password" name="password" class="form-control" placeholder="At least 6 characters" required/>
           <span class="error-msg" id="password-error"></span>
         </div>
-        
+
         <div class="form-group">
-          <label for="confirm-password">Confirm Password <span class="required-star">*</span> </label>
+          <label for="confirm-password">Confirm Password <span class="required-star">*</span></label>
           <input type="password" id="confirm-password" class="form-control" placeholder="Repeat your password" required/>
           <span class="error-msg" id="confirm-password-error"></span>
         </div>
-        
+
         <div class="form-group">
           <label class="terms-label">
             <input type="checkbox" id="terms" class="terms-checkbox" required/>
@@ -67,7 +81,7 @@
           </label>
           <span class="error-msg" id="terms-error"></span>
         </div>
-        
+
         <button type="submit" class="btn-primary btn-large">Create Account</button>
       </form>
 
@@ -79,6 +93,19 @@
     <p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p>
   </footer>
 
+  <script>
+    (function () {
+      var btn  = document.getElementById('darkToggle');
+      var icon = document.getElementById('darkIcon');
+      var html = document.documentElement;
+      icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+      btn.addEventListener('click', function () {
+        var isDark = html.classList.toggle('dark');
+        icon.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    })();
+  </script>
   <script src="/js/validation.js"></script>
   <script src="/js/register.js"></script>
 </body>

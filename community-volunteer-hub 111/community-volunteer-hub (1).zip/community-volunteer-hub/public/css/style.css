@@ -633,16 +633,7 @@ footer {
   }
 }
 
-/*
-  ================================================================
-  DARK MODE — replaces all existing body.dark rules in style.css
-  ================================================================
-  HOW IT WORKS:
-    - The script in header.ejs adds class="dark" to <html>
-    - We target :root.dark (or html.dark) instead of body.dark
-      so styles apply before the body even renders → no flicker
-  ================================================================
-*/
+/* ── DARK MODE ── */
 
 /* ── CORE TOKENS ── */
 :root.dark {

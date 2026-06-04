@@ -33,19 +33,5 @@
     <p class="footer-copy">© 2026 Community Help Hub. All rights reserved.</p>
   </div>
 
-  <script>
-  function toggleDark() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    localStorage.setItem('darkMode', isDark);
-    document.querySelector('.dark-toggle').textContent = isDark ? '☀️' : '🌙';
-  }
-
-  // Remember preference on page load
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark');
-    document.querySelector('.dark-toggle').textContent = '☀️';
-  }
-</script> 
 
 </footer>

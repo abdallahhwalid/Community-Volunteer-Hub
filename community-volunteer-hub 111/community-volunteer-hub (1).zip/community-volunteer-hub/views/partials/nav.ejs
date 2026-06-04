@@ -11,23 +11,9 @@
     <% } %>
   </ul>
   <div class="nav-icons">
-   <button class="nav-icon-btn dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
-  <span id="darkIcon">🌙</span>
-</button>
-
-<script>
-  (function () {
-    var btn  = document.getElementById('darkToggle');
-    var icon = document.getElementById('darkIcon');
-    var html = document.documentElement;
-    icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
-    btn.addEventListener('click', function () {
-      var isDark = html.classList.toggle('dark');
-      icon.textContent = isDark ? '☀️' : '🌙';
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    });
-  })();
-</script>
+    <button class="nav-icon-btn dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <span id="darkIcon">🌙</span>
+    </button>
     <a href="/messages" class="nav-icon-btn">
       <img src="/images/messages1.png" alt="Messages" class="nav-icon-img-sm">
     </a>
@@ -43,3 +29,17 @@
     <% } %>
   </div>
 </nav>
+
+<script>
+  (function () {
+    var btn  = document.getElementById('darkToggle');
+    var icon = document.getElementById('darkIcon');
+    var html = document.documentElement;
+    icon.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+    btn.addEventListener('click', function () {
+      var isDark = html.classList.toggle('dark');
+      icon.textContent = isDark ? '☀️' : '🌙';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  })();
+</script>
