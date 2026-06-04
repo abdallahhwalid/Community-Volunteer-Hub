@@ -634,123 +634,297 @@ footer {
 }
 
 /* ── DARK MODE ── */
-body.dark {
-  --bg: #0F172A;
-  --white: #1E293B;
-  --text-dark: #F1F5F9;
-  --text-mid: #CBD5E1;
-  --text-gray: #94A3B8;
-  --text-light: #64748B;
-  --border: #334155;
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --card-shadow-hover: 0 8px 25px rgba(0,0,0,0.4);
-  background: var(--bg);
-  color: var(--text-dark);
+
+/* ── CORE TOKENS ── */
+:root.dark {
+  --bg:               #111827;
+  --white:            #1F2937;
+  --text-dark:        #F1F5F9;
+  --text-mid:         #CBD5E1;
+  --text-gray:        #94A3B8;
+  --text-light:       #64748B;
+  --border:           #374151;
+  --navy:             #93C5FD;
+  --blue-light:       #1E3A5F;
+  --card-shadow:      0 1px 3px rgba(0,0,0,0.4);
+  --card-shadow-hover:0 8px 25px rgba(0,0,0,0.5);
+  --badge-progress:       #1E3A8A;
+  --badge-progress-text:  #BFDBFE;
+  --badge-completed:      #374151;
+  --badge-completed-text: #CBD5E1;
 }
 
-body.dark .navbar,
-body.dark .admin-section,
-body.dark .stat-card,
-body.dark .card,
-body.dark footer {
-  background: #1E293B;
-  border-color: #334155;
-}
-
-body.dark table thead tr { background: #0F172A; }
-body.dark td { color: #F1F5F9; }
-body.dark th { color: #94A3B8; }
-body.dark tr:hover td { background: #263548; }
-
-body.dark .role-badge.role-user { background: #334155; color: #CBD5E1; }
-body.dark .role-badge.role-admin { background: #78350F; color: #FDE68A; }
-
-body.dark .nav-logo-text { color: #F1F5F9; }
-body.dark .nav-links a { color: #CBD5E1; }
-body.dark .nav-links a:hover { background: #334155; color: white; }
-body.dark .btn-nav-login { border-color: #475569; color: #CBD5E1; }
-body.dark .btn-nav-login:hover { border-color: #F1F5F9; color: #F1F5F9; }
-
-body.dark .stat-number { color: #F1F5F9; }
-body.dark .stat-label { color: #94A3B8; }
-body.dark h1, body.dark h2 { color: #F1F5F9; }
-
-body.dark footer { background: #1E293B; border-color: #334155; }
-body.dark .footer-col ul li a { color: #94A3B8; }
-body.dark .footer-col ul li a:hover { color: #F1F5F9; }
-body.dark .footer-copy { color: #64748B; }
-body.dark .footer-col h4 { color: #CBD5E1; }
-body.dark .footer-brand p { color: #94A3B8; }
-body.dark .footer-contact span { color: #94A3B8; }
-body.dark .footer-bottom { border-color: #334155; }
-
-/* ── DARK MODE ── */
-body.dark {
-  --navy: #F1F5F9;
-  --bg: #111827;
-  --white: #1E293B;
-  --text-dark: #F1F5F9;
-  --text-mid: #CBD5E1;
-  --text-gray: #94A3B8;
-  --text-light: #64748B;
-  --border: #374151;
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --card-shadow-hover: 0 8px 25px rgba(0,0,0,0.4);
+/* ── BASE ── */
+:root.dark body {
   background: #111827;
   color: #F1F5F9;
 }
 
-body.dark .nav-logo-icon img { filter: brightness(0.8) invert(0.1); }
-body.dark .nav-logo-text { color: #E2E8F0; font-weight: 500; }
-body.dark .nav-logo-text { color: #93C5FD; }
-.dark-toggle { border: none; outline: none; box-shadow: none; }
-body.dark .btn-nav-signup { background: #3B5BDB; color: #F1F5F9; }
-body.dark .btn-nav-signup:hover { background: #2F4AC0; }
-body.dark .navbar { background: #1F2937; border-color: #374151; }
-body.dark .admin-section,
-body.dark .stat-card,
-body.dark .card { background: #1F2937; border-color: #374151; }
-body.dark footer { background: #1F2937; border-color: #374151; }
-
-body.dark table thead tr { background: #111827; }
-body.dark td { color: #F1F5F9; }
-body.dark th { color: #94A3B8; }
-body.dark tr:hover td { background: #263548; }
-
-body.dark .role-badge.role-user { background: #374151; color: #CBD5E1; }
-body.dark .role-badge.role-admin { background: #78350F; color: #FDE68A; }
-
-body.dark .nav-logo-text { color: #F1F5F9; }
-body.dark .nav-links a { color: #CBD5E1; }
-body.dark .nav-links a:hover { background: #374151; color: white; }
-body.dark .btn-nav-login { border-color: #4B5563; color: #CBD5E1; }
-body.dark .btn-nav-login:hover { border-color: #F1F5F9; color: #F1F5F9; }
-
-body.dark .stat-number { color: #F1F5F9; }
-body.dark .stat-label { color: #94A3B8; }
-body.dark h1, body.dark h2 { color: #F1F5F9; }
-
-body.dark .footer-col ul li a { color: #94A3B8; }
-body.dark .footer-col ul li a:hover { color: #F1F5F9; }
-body.dark .footer-copy { color: #64748B; }
-body.dark .footer-col h4 { color: #CBD5E1; }
-body.dark .footer-brand p { color: #94A3B8; }
-body.dark .footer-contact span { color: #94A3B8; }
-body.dark .footer-bottom { border-color: #374151; }
-
-/* ── DARK MODE TOGGLE BUTTON ── */
-.dark-toggle {
-  width: 38px;
-  height: 38px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: all 0.2s;
-  color: var(--text-gray);
+/* ── NAVBAR ── */
+:root.dark .navbar {
+  background: #1F2937;
+  border-color: #374151;
 }
-.dark-toggle:hover { background: #374151; color: #F1F5F9; }
+:root.dark .nav-logo-text        { color: #93C5FD; }
+:root.dark .nav-links a          { color: #CBD5E1; }
+:root.dark .nav-links a:hover,
+:root.dark .nav-links a.active   { background: #374151; color: #F1F5F9; }
+:root.dark .nav-icon-btn         { color: #94A3B8; }
+:root.dark .nav-icon-btn:hover   { background: #374151; color: #F1F5F9; }
+:root.dark .btn-nav-login        { border-color: #4B5563; color: #CBD5E1; }
+:root.dark .btn-nav-login:hover  { border-color: #F1F5F9; color: #F1F5F9; }
+:root.dark .btn-nav-signup       { background: #3B5BDB; }
+:root.dark .btn-nav-signup:hover { background: #2F4AC0; }
+:root.dark .dark-toggle:hover    { background: #374151; color: #F1F5F9; }
+
+/* ── CARDS ── */
+:root.dark .card,
+:root.dark .how-card,
+:root.dark .profile-card,
+:root.dark .my-req-item,
+:root.dark .pending-offer-card,
+:root.dark .inbox-card,
+:root.dark .req-card {
+  background: #1F2937;
+  border-color: #374151;
+}
+:root.dark .card:hover    { box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+:root.dark .inbox-card.unread { background: #1a2d46; border-left-color: #3B5BDB; }
+
+/* ── PAGE HEADER ── */
+:root.dark .page-header           { background: #1F2937; border-color: #374151; }
+:root.dark .page-header h1        { color: #F1F5F9; }
+:root.dark .page-header p         { color: #94A3B8; }
+
+/* ── HEADINGS ── */
+:root.dark h1, :root.dark h2, :root.dark h3 { color: #F1F5F9; }
+
+/* ── BUTTONS ── */
+:root.dark .btn-secondary {
+  background: #1F2937;
+  border-color: #374151;
+  color: #F1F5F9;
+}
+:root.dark .btn-secondary:hover { border-color: #93C5FD; color: #93C5FD; }
+
+:root.dark .btn-ghost {
+  background: none;
+  border-color: #374151;
+  color: #CBD5E1;
+}
+:root.dark .btn-ghost:hover { border-color: #93C5FD; color: #93C5FD; }
+
+:root.dark .modal-btn-keep { background: #374151; color: #CBD5E1; border-color: #4B5563; }
+:root.dark .modal-btn-keep:hover { background: #4B5563; }
+
+/* ── FORMS ── */
+:root.dark .form-control,
+:root.dark .chat-input,
+:root.dark .search-input,
+:root.dark .inbox-reply-input,
+:root.dark .edit-input,
+:root.dark input,
+:root.dark textarea,
+:root.dark select {
+  background: #1F2937;
+  border-color: #374151;
+  color: #F1F5F9;
+}
+:root.dark .form-control::placeholder,
+:root.dark .chat-input::placeholder,
+:root.dark input::placeholder,
+:root.dark textarea::placeholder { color: #6B7280; }
+:root.dark .form-control:focus,
+:root.dark .chat-input:focus,
+:root.dark input:focus,
+:root.dark textarea:focus { border-color: #3B5BDB; }
+:root.dark select.form-control { background: #1F2937; color: #F1F5F9; }
+:root.dark .filter-select {
+  background: #1F2937 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border-color: #374151;
+  color: #F1F5F9;
+}
+:root.dark .form-group label { color: #CBD5E1; }
+
+/* ── AUTH CARD (login/register) ── */
+:root.dark .auth-card {
+  background: #1F2937;
+  border-color: #374151;
+}
+:root.dark .auth-header h1 { color: #F1F5F9; }
+:root.dark .auth-header p  { color: #94A3B8; }
+:root.dark .auth-switch     { color: #94A3B8; }
+:root.dark .auth-switch a   { color: #93C5FD; }
+
+/* ── FORM BOX (post-request, contact) ── */
+:root.dark .form-box {
+  background: #1F2937;
+  border-color: #374151;
+}
+:root.dark .form-box-title  { color: #F1F5F9; }
+:root.dark .form-box-sub    { color: #94A3B8; }
+:root.dark .form-page       { background: #111827; }
+:root.dark .form-page-header h1 { color: #F1F5F9; }
+:root.dark .flexible-check  { background: #1E3A5F; border-color: #2d4d7a; color: #93C5FD; }
+:root.dark .safety-box      { background: #2d2310; border-color: #78450F; }
+:root.dark .safety-box h4,
+:root.dark .safety-box ul li { color: #FDE68A; }
+
+/* ── TABS ── */
+:root.dark .tabs       { background: #111827; border-color: #374151; }
+:root.dark .tab-btn    { color: #94A3B8; }
+:root.dark .tab-btn.active { background: #1F2937; color: #F1F5F9; box-shadow: none; }
+
+/* ── BADGES ── */
+:root.dark .badge-open      { background: #064E3B; color: #6EE7B7; }
+:root.dark .badge-progress  { background: #1E3A8A; color: #BFDBFE; }
+:root.dark .badge-completed { background: #374151; color: #CBD5E1; }
+
+/* ── ADMIN TABLE ── */
+:root.dark .admin-page         { background: transparent; }
+:root.dark .admin-section,
+:root.dark .stat-card          { background: #1F2937; border-color: #374151; }
+:root.dark .admin-section-header h2 { color: #F1F5F9; }
+:root.dark .stat-number        { color: #F1F5F9; }
+:root.dark .stat-label         { color: #94A3B8; }
+
+:root.dark table thead tr      { background: #111827; }
+:root.dark th                  { color: #94A3B8; }
+:root.dark td                  { color: #F1F5F9; border-color: #374151; }
+:root.dark tr:hover td         { background: #263548; }
+:root.dark tr:last-child td    { border-color: transparent; }
+
+:root.dark .role-badge.role-user     { background: #374151; color: #CBD5E1; }
+:root.dark .role-badge.role-admin    { background: #78350F; color: #FDE68A; }
+:root.dark .role-badge.role-volunteer{ background: #1E3A5F; color: #93C5FD; }
+
+/* ── MESSAGES (EJS view) ── */
+:root.dark .messages-container { background: transparent; }
+:root.dark .message-card       { background: #1F2937; border-color: #374151; }
+:root.dark .message-card.unread{ background: #1a2d46; border-left-color: #3B5BDB; }
+:root.dark .message-from,
+:root.dark .message-content    { color: #CBD5E1; }
+:root.dark .message-time       { color: #64748B; }
+:root.dark .send-message h2    { color: #F1F5F9; }
+
+/* ── CHAT LAYOUT (messages.css classes) ── */
+:root.dark .chat-layout        { background: #1F2937; border-color: #374151; }
+:root.dark .chat-sidebar       { background: #1F2937; border-color: #374151; }
+:root.dark .chat-panel         { background: #1F2937; }
+:root.dark .chat-panel-header  { background: #1F2937; border-color: #374151; }
+:root.dark .chat-contact-name  { color: #F1F5F9; }
+:root.dark .chat-messages      { background: #111827; }
+:root.dark .chat-input-bar     { background: #1F2937; border-color: #374151; }
+:root.dark .chat-search-wrap   { border-color: #374151; }
+:root.dark .chat-search {
+  background: #111827;
+  border-color: #374151;
+  color: #F1F5F9;
+}
+:root.dark .conv-item          { border-color: #374151; }
+:root.dark .conv-item:hover    { background: #263040; }
+:root.dark .conv-item.active   { background: #1E3A5F; }
+:root.dark .conv-name          { color: #F1F5F9; }
+:root.dark .conv-time,
+:root.dark .conv-preview       { color: #64748B; }
+:root.dark .bubble-received    { background: #263040; color: #F1F5F9; border-color: #374151; }
+/* ── ATTACH BAR dark mode fix ── */
+:root.dark .attach-bar {
+  background: #1F2937;
+  border-color: #374151;
+}
+:root.dark .attach-btn {
+  color: #94A3B8;
+}
+:root.dark .attach-btn:hover {
+  background: #374151;
+  color: #F1F5F9;
+}
+:root.dark .attach-preview {
+  background: #1E3A5F;
+  border-color: #2d4d7a;
+  color: #93C5FD;
+}
+:root.dark .new-chat-box {
+  background: #1F2937;
+  color: #F1F5F9;
+}
+:root.dark .new-chat-box input {
+  background: #111827;
+  color: #F1F5F9;
+  border-color: #374151;
+}
+:root.dark .new-chat-result-item:hover {
+  background: #263040;
+}
+:root.dark .new-chat-result-name {
+  color: #F1F5F9;
+}
+/* ── REQUESTS PAGE ── */
+:root.dark .req-card           { background: #1F2937; border-color: #374151; }
+:root.dark .my-req-item        { background: #1F2937; border-color: #374151; }
+:root.dark .helper-box         { background: #263040; }
+:root.dark .helper-label       { color: #94A3B8; }
+:root.dark .helper-name        { color: #F1F5F9; }
+:root.dark .pending-offer-card { background: #1F2937; border-color: #374151; }
+:root.dark .pending-offer-avatar { background: #1E3A5F; color: #93C5FD; }
+:root.dark .pending-offer-name { color: #F1F5F9; }
+:root.dark .pending-offer-sub  { color: #94A3B8; }
+:root.dark .edit-input         { background: #111827; border-color: #374151; color: #F1F5F9; }
+:root.dark .edit-label         { color: #CBD5E1; }
+:root.dark .modal-box          { background: #1F2937; }
+:root.dark .modal-title        { color: #F1F5F9; }
+:root.dark .modal-message      { color: #94A3B8; }
+:root.dark .modal-content      { background: #1F2937; color: #F1F5F9; }
+
+/* ── PROFILE PAGE ── */
+:root.dark .profile-card       { background: #1F2937; border-color: #374151; }
+:root.dark .profile-card-title { color: #F1F5F9; }
+:root.dark .profile-card-sub   { color: #94A3B8; }
+:root.dark .profile-info h3    { color: #F1F5F9; }
+:root.dark .skill-tag          { background: #1E3A5F; color: #93C5FD; border-color: #2d4d7a; }
+:root.dark .skill-suggestion   { background: #263040; border-color: #374151; color: #CBD5E1; }
+:root.dark .skill-suggestion:hover:not(:disabled) { background: #1E3A5F; border-color: #93C5FD; color: #93C5FD; }
+:root.dark .tip-box            { background: #2d2310; border-color: #78450F; color: #FDE68A; }
+:root.dark .photo-hint         { background: #263040; border-color: #374151; color: #94A3B8; }
+:root.dark .avatar-wrap img    { border-color: #374151; }
+
+/* ── STATIC PAGES (about, terms, privacy, safety) ── */
+:root.dark .static-page-card  { background: #1F2937; border-color: #374151; color: #CBD5E1; }
+:root.dark .static-page-card h3 { color: #93C5FD; }
+:root.dark .static-page-card p  { color: #CBD5E1; }
+:root.dark .cta-box { background: #263040; border-color: #374151; }
+:root.dark .cta-box h4 { color: #93C5FD; }
+
+/* ── HOME PAGE ── */
+:root.dark .section-white      { background: #1F2937; }
+:root.dark .section-bg         { background: #111827; }
+:root.dark .how-card           { background: #1F2937; border-color: #374151; }
+:root.dark .how-icon           { background: #1E3A5F; }
+:root.dark .how-card h3        { color: #F1F5F9; }
+:root.dark .how-card p         { color: #94A3B8; }
+:root.dark .volunteer-card     { background: #1F2937; border-color: #374151; }
+:root.dark .volunteer-name     { color: #F1F5F9; }
+:root.dark .volunteer-skill    { color: #94A3B8; }
+
+/* ── FOOTER ── */
+:root.dark footer              { background: #1F2937; border-color: #374151; }
+:root.dark .footer-col h4      { color: #CBD5E1; }
+:root.dark .footer-col ul li a { color: #94A3B8; }
+:root.dark .footer-col ul li a:hover { color: #F1F5F9; }
+:root.dark .footer-brand p     { color: #94A3B8; }
+:root.dark .footer-contact span{ color: #94A3B8; }
+:root.dark .footer-bottom      { border-color: #374151; }
+:root.dark .footer-copy        { color: #64748B; }
+:root.dark .footer-badge       { color: #94A3B8; }
+
+/* ── ALERTS / TOASTS ── */
+:root.dark .alert-success      { background: #064E3B; border-color: #065F46; color: #6EE7B7; }
+:root.dark .toast-notification { background: #1F2937; border: 1px solid #374151; }
+
+/* ── INBOX REPLY ── */
+:root.dark .inbox-reply-input  { background: #111827; border-color: #374151; color: #F1F5F9; }
+:root.dark .inbox-reply-btn    { border-color: #374151; color: #CBD5E1; }
+:root.dark .inbox-reply-btn:hover { border-color: #93C5FD; color: #93C5FD; }
+:root.dark .inbox-name         { color: #F1F5F9; }
+:root.dark .inbox-body         { color: #CBD5E1; }

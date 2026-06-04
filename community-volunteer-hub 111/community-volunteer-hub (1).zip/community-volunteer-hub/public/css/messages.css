@@ -172,3 +172,36 @@
   .bubble { font-size: 13px; padding: 9px 13px; }
   .chat-panel-header { padding: 12px 14px; }
 }
+
+/* ── Dark mode fixes for messages page ── */
+.dark .attach-bar {
+  background: var(--card) !important;
+  border-top-color: var(--border);
+}
+
+.dark .chat-input-bar {
+  background: var(--card) !important;
+}
+
+.dark .chat-input {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.dark .new-chat-box {
+  background: var(--card);
+  color: var(--text);
+}
+
+.dark .new-chat-box input {
+  background: var(--bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.dark .attach-preview {
+  background: rgba(99, 102, 241, 0.15);
+  border-top-color: rgba(99, 102, 241, 0.3);
+  color: var(--text);
+}

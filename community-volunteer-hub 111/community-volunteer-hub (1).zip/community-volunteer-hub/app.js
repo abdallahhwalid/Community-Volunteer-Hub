@@ -21,8 +21,6 @@ app.use(methodOverride('_method'));
 
 app.use(fileUpload());
 
-app.use(express.static('public'));
-
 // Session
 app.use(session({
   secret: process.env.JWT_SECRET,
@@ -37,6 +35,9 @@ const adminRoutes = require('./routes/adminRoutes');
 app.use('/messages', messageRoutes);
 app.use('/admin', adminRoutes);
 
+const userRoutes = require('./routes/userRoutes');
+app.use('/users', userRoutes);
+
 // Person 3 routes
 const authRoutes = require('./routes/authRoutes');
 
@@ -46,6 +47,18 @@ app.use('/', authRoutes);
 const requestRoutes = require('./routes/requestRoutes');
 
 app.use('/requests', requestRoutes);
+
+
+// ── 404 handler ──
+app.use((req, res) => {
+  res.status(404).render('404', { user: req.session.name || null });
+});
+
+// ── 500 handler ──
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('500', { user: req.session.name || null });
+});
 
 // Connect to MongoDB FIRST, then start server
 mongoose.connect(process.env.MONGO_URI, {

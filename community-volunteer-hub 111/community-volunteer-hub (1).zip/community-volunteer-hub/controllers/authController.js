@@ -1,4 +1,5 @@
-const User = require('../models/User');
+const User   = require('../models/User');
+const bcrypt = require('bcrypt');
 
 // REGISTER
 exports.showRegister = (req, res) => {
@@ -24,13 +25,14 @@ exports.register = async (req, res) => {
       return res.render('register', { error: 'Email already exists' });
     }
 
-    const user = new User({ name, email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ name, email, password: hashedPassword });
     await user.save();
 
-   req.session.userId = user._id;
-req.session.role = user.role;
-req.session.name = user.name;
-res.redirect('/');
+    req.session.userId = user._id;
+    req.session.role   = user.role;
+    req.session.name   = user.name;
+    res.redirect('/');
 
   } catch (err) {
     res.render('register', { error: 'Something went wrong' });
@@ -54,14 +56,19 @@ exports.login = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user || user.password !== password) {
+    if (!user) {
       return res.render('login', { error: 'Invalid email or password' });
     }
 
-      req.session.userId = user._id;
-      req.session.role = user.role;
-      req.session.name = user.name;
-      res.redirect('/');
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.render('login', { error: 'Invalid email or password' });
+    }
+
+    req.session.userId = user._id;
+    req.session.role   = user.role;
+    req.session.name   = user.name;
+    res.redirect('/');
 
   } catch (err) {
     res.render('login', { error: 'Something went wrong' });
@@ -78,9 +85,7 @@ exports.logout = (req, res) => {
 exports.showProfile = async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.redirect('/login');
-    }
+    if (!user) return res.redirect('/login');
     res.render('profile', { user });
   } catch (err) {
     res.redirect('/login');
@@ -96,7 +101,9 @@ exports.updateProfile = async (req, res) => {
       return res.render('profile', { user, error: 'Name is required' });
     }
 
-    const skillsArray = skills ? skills.split(',').map(s => s.trim()).filter(s => s) : [];
+    const skillsArray = skills
+      ? skills.split(',').map(s => s.trim()).filter(s => s)
+      : [];
     const updateData = { name, location, bio, skills: skillsArray };
 
     if (req.files && req.files.photo) {
@@ -110,7 +117,7 @@ exports.updateProfile = async (req, res) => {
         const user = await User.findById(req.session.userId);
         return res.render('profile', { user, error: 'Image must be under 5MB' });
       }
-      const fileName = req.session.userId + '_' + photo.name;
+      const fileName   = req.session.userId + '_' + photo.name;
       const uploadPath = __dirname + '/../public/images/' + fileName;
       await photo.mv(uploadPath);
       updateData.photo = '/images/' + fileName;
@@ -147,21 +154,17 @@ exports.apiRegister = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Email already exists' });
     }
 
-    const user = new User({ name, email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ name, email, password: hashedPassword });
     await user.save();
 
     req.session.userId = user._id;
-    req.session.role = user.role;
+    req.session.role   = user.role;
 
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
 
   } catch (err) {
@@ -182,22 +185,22 @@ exports.apiLogin = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'Invalid email or password' });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(401).json({ success: false, error: 'Invalid email or password' });
     }
 
     req.session.userId = user._id;
-    req.session.role = user.role;
+    req.session.role   = user.role;
 
     res.status(200).json({
       success: true,
       message: 'Login successful',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
 
   } catch (err) {
