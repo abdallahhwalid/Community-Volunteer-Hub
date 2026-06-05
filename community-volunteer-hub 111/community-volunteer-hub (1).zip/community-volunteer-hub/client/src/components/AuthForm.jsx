@@ -163,7 +163,7 @@ function AuthForm({ mode }) {
               placeholder="Repeat your password"
               value={formData.confirmPassword}
               onChange={handleChange}
-            />
+            /> 
           </div>
         )}
 
