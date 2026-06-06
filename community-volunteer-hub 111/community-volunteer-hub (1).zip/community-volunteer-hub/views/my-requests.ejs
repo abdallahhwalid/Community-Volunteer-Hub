@@ -22,6 +22,10 @@
     .edit-input { padding:10px 12px; border:1.5px solid #e5e7eb; border-radius:8px; font-size:14px; outline:none; }
     .edit-input:focus { border-color:#1E3A8A; }
     .edit-form-actions { display:flex; gap:10px; margin-top:4px; }
+    .online-badge {
+      display:inline-block; font-size:11px; font-weight:700; background:#EEF2FF;
+      color:#4338CA; border-radius:6px; padding:2px 8px; margin-left:6px;
+    }
   </style>
 </head>
 <body>
@@ -56,7 +60,7 @@
         <button class="tab-btn"        id="tab-helping" onclick="switchTab('helping')">Requests I'm Helping With (<%= helpingRequests.length %>)</button>
       </div>
 
-      <!-- TAB: POSTED -->
+      <!-- TAB: POSTED — Server already filtered out Cancelled -->
       <div id="panel-posted" style="display:flex; flex-direction:column; gap:16px;">
 
         <% if (postedRequests.length === 0) { %>
@@ -64,19 +68,27 @@
         <% } %>
 
         <% postedRequests.forEach(req => { %>
+          <%
+            const isOnline = ['IT Repair', 'Tutoring'].includes(req.category);
+          %>
           <div class="my-req-item" id="req-<%= req._id %>">
             <div class="my-req-header">
               <div class="my-req-header-top">
-                <span class="badge <%= req.status === 'Open' ? 'badge-open' : req.status === 'In Progress' ? 'badge-progress' : req.status === 'Completed' ? 'badge-completed' : 'badge-cancelled' %>">
+                <span class="badge <%= req.status === 'Open' ? 'badge-open' : req.status === 'In Progress' ? 'badge-progress' : 'badge-completed' %>">
                   <%= req.status %>
                 </span>
                 <span style="font-size:13px; color:#6b7280;"><%= req.category %></span>
+                <% if (isOnline) { %><span class="online-badge">🌐 Online</span><% } %>
               </div>
               <h3 class="req-title"><%= req.title %></h3>
             </div>
 
             <div class="my-req-meta">
-              <span class="meta-info">📍 <span class="req-location"><%= req.location %></span></span>
+              <% if (isOnline) { %>
+                <span class="meta-info">🌐 Online Meeting</span>
+              <% } else { %>
+                <span class="meta-info">📍 <span class="req-location"><%= req.location %></span></span>
+              <% } %>
               <% if (req.desiredDate) { %>
                 <span class="meta-info">🕐 <span class="req-date"><%= new Date(req.desiredDate).toDateString() %></span></span>
               <% } %>
@@ -104,7 +116,10 @@
                     <div class="helper-info">
                       <span class="helper-name"><%= offer.volunteer.name %></span>
                       <% if (offer.suggestedTime) { %>
-                        <span style="font-size:12px; color:#6b7280;">Available: <%= new Date(offer.suggestedTime).toLocaleString() %></span>
+                        <span style="font-size:12px; color:#6b7280;">
+                          <%= isOnline ? '📅 Meeting:' : '⏰ Available:' %>
+                          <%= new Date(offer.suggestedTime).toLocaleString() %>
+                        </span>
                       <% } %>
                     </div>
                     <div style="display:flex; gap:8px;">
@@ -119,6 +134,7 @@
             <div class="my-req-actions">
               <% if (req.status === 'Open') { %>
                 <button class="btn-ghost" onclick="editRequest(this)">Edit</button>
+                <!-- Cancel: removes from DOM permanently, server stores as Cancelled (never shown again) -->
                 <button class="btn-danger" onclick="cancelRequest(this, '<%= req._id %>')">Cancel Request</button>
               <% } %>
               <% if (req.status === 'In Progress') { %>
@@ -138,6 +154,9 @@
 
         <% helpingRequests.forEach(offer => { %>
           <% const req = offer.request; %>
+          <%
+            const isOnlineHelp = req && ['IT Repair', 'Tutoring'].includes(req.category);
+          %>
           <div class="my-req-item" id="helping-<%= offer._id %>">
             <div class="my-req-header">
               <div class="my-req-header-top">
@@ -145,14 +164,22 @@
                   Offer: <%= offer.status %>
                 </span>
                 <span style="font-size:13px; color:#6b7280;"><%= req.category %></span>
+                <% if (isOnlineHelp) { %><span class="online-badge">🌐 Online</span><% } %>
               </div>
               <h3 class="req-title"><%= req.title %></h3>
             </div>
 
             <div class="my-req-meta">
-              <span class="meta-info">📍 <%= req.location %></span>
+              <% if (isOnlineHelp) { %>
+                <span class="meta-info">🌐 Online Meeting</span>
+              <% } else { %>
+                <span class="meta-info">📍 <%= req.location %></span>
+              <% } %>
               <% if (offer.suggestedTime) { %>
-                <span class="meta-info">🕐 Your time: <%= new Date(offer.suggestedTime).toLocaleString() %></span>
+                <span class="meta-info">
+                  <%= isOnlineHelp ? '📅 Meeting time:' : '🕐 Your time:' %>
+                  <%= new Date(offer.suggestedTime).toLocaleString() %>
+                </span>
               <% } %>
             </div>
 
@@ -215,27 +242,37 @@
       showConfirmModal(
         '🚫', '#fef2f2',
         'Cancel Request?',
-        'This will permanently cancel your request. Volunteers who offered to help will be notified.',
+        'This will permanently cancel your request. It will no longer appear in your list.',
         'Keep Request', 'Cancel Request',
         '#dc2626', '#b91c1c',
         async () => {
-          const data = await fetch(`/requests/${id}`, { method: 'DELETE' }).then(r => r.json());
-          if (data.success) {
-            Object.assign(item.style, { transition:'all .4s ease', opacity:'0', transform:'scale(0.95)' });
-            setTimeout(() => item.remove(), 400);
-          } else alert(data.message);
+          try {
+            const data = await fetch(`/requests/${id}`, { method: 'DELETE' }).then(r => r.json());
+            if (data.success) {
+              // Permanently remove from DOM — matches server-side filter (status !== Cancelled)
+              Object.assign(item.style, { transition:'all .4s ease', opacity:'0', transform:'scale(0.95)' });
+              setTimeout(() => {
+                item.remove();
+                showToast('Request cancelled and removed.');
+              }, 400);
+            } else {
+              showToast('Error: ' + data.message);
+            }
+          } catch {
+            showToast('Network error. Please try again.');
+          }
         }
       );
     }
 
     async function markCompleted(id) {
       const data = await fetch(`/requests/${id}/complete`, { method: 'PUT' }).then(r => r.json());
-      if (data.success) location.reload(); else alert(data.message);
+      if (data.success) location.reload(); else showToast('Error: ' + data.message);
     }
 
     async function respondOffer(offerId, action) {
       const data = await fetch(`/requests/offers/${offerId}/${action}`, { method: 'PUT' }).then(r => r.json());
-      if (data.success) location.reload(); else alert(data.message);
+      if (data.success) location.reload(); else showToast('Error: ' + data.message);
     }
 
     function withdrawOffer(btn, offerId) {
@@ -251,7 +288,7 @@
           if (data.success) {
             Object.assign(item.style, { transition:'all .4s ease', opacity:'0', transform:'scale(0.95)' });
             setTimeout(() => item.remove(), 400);
-          } else alert(data.message);
+          } else showToast('Error: ' + data.message);
         }
       );
     }
@@ -269,11 +306,9 @@
       form.innerHTML = `
         <div class="edit-form-inner">
           <label class="edit-label">Title</label>
-          <input class="edit-input" id="edit-title"    type="text" value="${titleEl ? titleEl.textContent.trim() : ''}"/>
-          <label class="edit-label">Location</label>
-          <input class="edit-input" id="edit-location" type="text" value="${locationEl ? locationEl.textContent.trim() : ''}"/>
-          <label class="edit-label">Date</label>
-          <input class="edit-input" id="edit-date"     type="text" value="${dateEl ? dateEl.textContent.trim() : ''}"/>
+          <input class="edit-input" id="edit-title" type="text" value="${titleEl ? titleEl.textContent.trim() : ''}"/>
+          ${locationEl ? `<label class="edit-label">Location</label>
+          <input class="edit-input" id="edit-location" type="text" value="${locationEl.textContent.trim()}"/>` : ''}
           <div class="edit-form-actions">
             <button class="btn-ghost" onclick="cancelEdit(this)">Cancel</button>
             <button class="btn-blue"  onclick="saveEdit(this)">Save Changes</button>
@@ -293,13 +328,12 @@
     }
 
     function saveEdit(btn) {
-      const form     = btn.closest('.edit-form');
-      const val      = id => form.querySelector(id).value.trim();
+      const form = btn.closest('.edit-form');
+      const val  = id => { const el = form.querySelector(id); return el ? el.value.trim() : ''; };
       if (form._titleEl    && val('#edit-title'))    form._titleEl.textContent    = val('#edit-title');
       if (form._locationEl && val('#edit-location')) form._locationEl.textContent = val('#edit-location');
-      if (form._dateEl     && val('#edit-date'))     form._dateEl.textContent     = val('#edit-date');
       form._originalActions.style.display = '';
-      showToast('Request updated successfully!');
+      showToast('Request updated!');
       form.remove();
     }
 
