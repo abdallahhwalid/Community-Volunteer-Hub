@@ -51,13 +51,19 @@ app.use('/requests', requestRoutes);
 
 // ── 404 handler ──
 app.use((req, res) => {
-  res.status(404).render('404', { user: req.session.name || null });
+  const user = req.session.userId
+    ? { name: req.session.name, role: req.session.role }
+    : null;
+  res.status(404).render('404', { user });
 });
 
 // ── 500 handler ──
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).render('500', { user: req.session.name || null });
+  const user = req.session.userId
+    ? { name: req.session.name, role: req.session.role }
+    : null;
+  res.status(500).render('500', { user });
 });
 
 // Connect to MongoDB FIRST, then start server

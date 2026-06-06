@@ -54,6 +54,7 @@ router.get('/about', (req, res) => res.render('about', { user: req.session.userI
 router.post('/api/register', authController.apiRegister);
 router.post('/api/login', authController.apiLogin);
 router.get('/api/profile', protect, authController.apiGetProfile);
+router.put('/api/profile', protect, authController.apiUpdateProfile);
 
 // Contact GET
 router.get('/contact', (req, res) => {

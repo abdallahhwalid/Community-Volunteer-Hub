@@ -1,0 +1,34 @@
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
+function SafetyPage() {
+  return (
+    <>
+      <Navbar />
+      <main className="main-content">
+        <div className="page-header">
+          <h1>Safety Guidelines</h1>
+          <p>Best practices for a secure community experience</p>
+        </div>
+        <div className="static-page-card">
+          <p>Keeping our platform safe is a team effort. Because Community Help Hub connects people for in-person tasks, it is vital that you prioritize your physical and digital security.</p>
+          <h3>1. Meet in Public First</h3>
+          <p>For tasks that do not specifically require home access, always arrange to meet in a well-lit, busy public space. Coffee shops, libraries, and community centers are excellent choices.</p>
+          <h3>2. Keep Communication on the Platform</h3>
+          <p>Avoid sharing your personal phone number or email address right away. Use our built-in messaging system to discuss the details of the request.</p>
+          <h3>3. Protect Your Private Information</h3>
+          <p>Never share sensitive personal details such as your Social Security Number, bank account information, passwords, or exact home address unless absolutely necessary.</p>
+          <h3>4. Tell a Friend or Family Member</h3>
+          <p>Before you meet someone from the platform, tell a trusted friend or family member exactly where you are going, who you are meeting, and what time you expect to be finished.</p>
+          <h3>5. Trust Your Instincts</h3>
+          <p>You are never obligated to complete a task or meet with someone if you feel uncomfortable. Your safety always comes first.</p>
+          <h3>6. Reporting Suspicious Behavior</h3>
+          <p>If you encounter a user who makes you feel unsafe, please report them immediately at <strong>support@communityhelpub.org</strong>. In the event of an immediate emergency, contact your local emergency services first.</p>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+export default SafetyPage;

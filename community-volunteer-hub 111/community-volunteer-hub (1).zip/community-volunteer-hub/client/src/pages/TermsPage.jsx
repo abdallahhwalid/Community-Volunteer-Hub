@@ -1,0 +1,35 @@
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+
+function TermsPage() {
+  return (
+    <>
+      <Navbar />
+      <main className="main-content">
+        <div className="page-header">
+          <h1>Terms of Service</h1>
+          <p>Rules and guidelines for using our platform</p>
+        </div>
+        <div className="static-page-card">
+          <p><strong>Last Updated: April 2026</strong></p>
+          <p>Welcome to Community Help Hub. By creating an account or using our platform to request or offer help, you agree to comply with and be bound by the following Terms of Service.</p>
+          <h3>1. Eligibility &amp; Account Security</h3>
+          <p>You must be at least 18 years old to create an account on Community Help Hub. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate. You are entirely responsible for maintaining the confidentiality of your password and account.</p>
+          <h3>2. User Conduct</h3>
+          <p>Our community is built on trust and respect. You agree not to use the platform to: post fraudulent, misleading, or illegal requests; harass, threaten, or discriminate against other users; or collect user data for commercial spam or marketing purposes. Violating these rules will result in immediate account termination.</p>
+          <h3>3. Role of Community Help Hub</h3>
+          <p>Community Help Hub is strictly a communication platform designed to connect local volunteers with people who need help. We do not employ the volunteers, nor do we guarantee the quality, safety, or legality of the tasks being performed. We are not a party to any agreement made directly between users.</p>
+          <h3>4. Disclaimer of Liability</h3>
+          <p>You agree that any interaction with other users is entirely at your own risk. Community Help Hub, its creators, and affiliates shall not be held liable for any damages, losses, or injuries that arise from your use of the platform or any in-person meetups arranged through it.</p>
+          <h3>5. Account Termination</h3>
+          <p>We reserve the right to suspend or permanently delete your account, without prior notice, if we determine that you have violated these Terms of Service or if your behavior poses a risk to the safety of the community.</p>
+          <h3>6. Modifications to Terms</h3>
+          <p>We may update these terms from time to time. If we make significant changes, we will notify users via email or a prominent notice on the website. Continued use of the platform after changes implies your acceptance of the new terms.</p>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+export default TermsPage;

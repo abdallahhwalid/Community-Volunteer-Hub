@@ -220,3 +220,43 @@ exports.apiGetProfile = async (req, res) => {
     res.status(500).json({ success: false, error: 'Something went wrong' });
   }
 };
+
+// API Update Profile
+exports.apiUpdateProfile = async (req, res) => {
+  try {
+    const { name, location, bio, skills } = req.body;
+
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ success: false, error: 'Name is required' });
+    }
+
+    const skillsArray = skills
+      ? skills.split(',').map(s => s.trim()).filter(s => s)
+      : [];
+
+    const updateData = { name, location, bio, skills: skillsArray };
+
+    if (req.files && req.files.photo) {
+      const photo = req.files.photo;
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(photo.mimetype)) {
+        return res.status(400).json({ success: false, error: 'Only JPG and PNG images are allowed' });
+      }
+      if (photo.size > 5 * 1024 * 1024) {
+        return res.status(400).json({ success: false, error: 'Image must be under 5MB' });
+      }
+      const fileName   = req.session.userId + '_' + photo.name;
+      const uploadPath = __dirname + '/../public/images/' + fileName;
+      await photo.mv(uploadPath);
+      updateData.photo = '/images/' + fileName;
+    }
+
+    const updated = await User.findByIdAndUpdate(req.session.userId, updateData, { new: true }).select('-password');
+    req.session.name = updated.name;
+    res.status(200).json({ success: true, user: updated });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+};
