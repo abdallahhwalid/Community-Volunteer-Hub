@@ -1,109 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Messages</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messages – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/messages.css"/>
+  <style>
+    /* ── Layout fix — send button always visible ── */
+    .main-content { padding-bottom: 0 !important; }
+    .chat-layout  { height: calc(100vh - 200px); min-height: 500px; }
 
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/messages.css">
+    /* ── New Chat Modal ── */
+    .new-chat-modal {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+    }
+    .new-chat-modal.open { display: flex; }
+    .new-chat-box {
+      background: var(--white); border-radius: 16px;
+      padding: 28px; width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .new-chat-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--text-dark); }
+    .new-chat-box input {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 14px;
+      font-family: inherit; outline: none;
+      box-sizing: border-box;
+      background: var(--bg); color: var(--text-dark);
+      transition: border-color 0.2s;
+    }
+    .new-chat-box input:focus { border-color: var(--blue); }
+    .new-chat-results { margin-top: 12px; max-height: 200px; overflow-y: auto; }
+    .new-chat-result-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .new-chat-result-item:hover { background: var(--bg); }
+    .new-chat-result-name  { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .new-chat-result-email { font-size: 12px; color: var(--text-gray); }
+    .new-chat-modal-footer {
+      display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+    }
+    .search-spinner { text-align: center; padding: 12px; color: var(--text-gray); font-size: 13px; }
+
+    /* ── New chat button ── */
+    .new-chat-btn {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin: 12px 14px;
+      padding: 9px 0;
+      background: var(--navy); color: white;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.2s;
+    }
+    .new-chat-btn:hover { background: var(--blue); }
+
+    /* ── Attachment bar ── */
+    .attach-bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--white);
+    }
+    .attach-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; padding: 4px 6px; border-radius: 6px;
+      transition: background 0.15s; line-height: 1;
+      color: var(--text-gray); position: relative;
+    }
+    .attach-btn:hover { background: var(--bg); color: var(--navy); }
+    .attach-btn input[type="file"] {
+      position: absolute; inset: 0; opacity: 0;
+      cursor: pointer; width: 100%; height: 100%;
+    }
+
+    /* ── Attachment preview ── */
+    .attach-preview {
+      display: none; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: var(--blue-light);
+      border-top: 1px solid #C7D2FE;
+      font-size: 13px; color: var(--navy);
+    }
+    .attach-preview.show { display: flex; }
+    .attach-preview-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .attach-preview-remove {
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; color: var(--navy); padding: 0; line-height: 1;
+    }
+
+    /* ── Message attachments ── */
+    .msg-attachment { margin-top: 6px; border-radius: 8px; overflow: hidden; max-width: 220px; }
+    .msg-attachment img { width: 100%; display: block; border-radius: 8px; cursor: pointer; }
+    .msg-attachment-file {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: rgba(255,255,255,0.15);
+      border-radius: 8px; font-size: 13px;
+      text-decoration: none; color: inherit;
+    }
+    .msg-attachment-file span { font-size: 20px; }
+    .msg-location-link {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: #3B82F6;
+      text-decoration: underline; cursor: pointer; margin-top: 4px;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
 </head>
 <body>
 
-  <%- include('partials/header') %>
   <%- include('partials/nav') %>
 
-  <div class="messages-container">
-
-    <h1>My Messages</h1>
-
-    <% if (!messages || messages.length === 0) { %>
-
-      <p class="empty-message">
-        No messages yet.
-      </p>
-
-    <% } else { %>
-
-      <div class="messages-list">
-
-        <% messages.forEach(msg => { %>
-
-          <div class="message-card <%= msg.isRead ? '' : 'unread' %>">
-
-            <div class="message-info">
-
-              <span class="message-from">
-
-                <% if (msg.sender && msg.sender._id.toString() === currentUser.userId.toString()) { %>
-
-                  To:
-                  <strong>
-                    <%= msg.receiver ? msg.receiver.name : 'Unknown User' %>
-                  </strong>
-
-                <% } else { %>
-
-                  From:
-                  <strong>
-                    <%= msg.sender ? msg.sender.name : 'Unknown User' %>
-                  </strong>
-
-                <% } %>
-
-              </span>
-
-              <span class="message-time">
-
-                <%= msg.createdAt
-                  ? msg.createdAt.toLocaleDateString()
-                  : 'Unknown Date' %>
-
-              </span>
-
-            </div>
-
-            <p class="message-content">
-              <%= msg.content %>
-            </p>
-
-          </div>
-
-        <% }) %>
-
-      </div>
-
-    <% } %>
-
-    <div class="send-message">
-
-      <h2>Send a Message</h2>
-
-      <form action="/messages/send" method="POST">
-
-        <input
-          type="text"
-          name="receiverId"
-          placeholder="Receiver ID"
-          required
-        >
-
-        <textarea
-          name="content"
-          placeholder="Write your message..."
-          required
-        ></textarea>
-
-        <button type="submit">
-          Send Message
-        </button>
-
-      </form>
-
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Messages</h1>
+      <p>Chat with volunteers and help seekers</p>
     </div>
 
+    <div class="chat-layout">
+
+      <!-- ── SIDEBAR ── -->
+      <div class="chat-sidebar">
+
+        <div class="chat-search-wrap">
+          <input
+            type="text"
+            class="chat-search"
+            placeholder="Search conversations..."
+            id="conv-search"
+            oninput="filterConversations()"
+          />
+        </div>
+
+        <button class="new-chat-btn" onclick="openNewChatModal()">
+          ✏️ New Conversation
+        </button>
+
+        <div class="conv-list" id="conv-list">
+          <% if (!messages || messages.length === 0) { %>
+            <p style="padding:20px; color:var(--text-gray); font-size:14px;">
+              No conversations yet. Start one!
+            </p>
+          <% } %>
+
+          <%
+            const seen = {};
+            const convos = [];
+            if (messages && messages.length > 0) {
+              messages.forEach(msg => {
+                const isSender = msg.sender &&
+                  msg.sender._id.toString() === currentUser.userId.toString();
+                const other = isSender ? msg.receiver : msg.sender;
+                if (!other) return;
+                const otherId = other._id.toString();
+                if (!seen[otherId]) {
+                  seen[otherId] = true;
+                  convos.push({ other, msg });
+                }
+              });
+            }
+          %>
+
+          <% convos.forEach(({ other, msg }) => {
+            const initials = other.name
+              ? other.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+              : '??';
+            const preview = msg.content
+              ? msg.content.substring(0, 35) + (msg.content.length > 35 ? '...' : '')
+              : msg.fileUrl ? '📎 Attachment' : '';
+            const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : '';
+          %>
+            <div
+              class="conv-item"
+              data-userid="<%= other._id %>"
+              data-name="<%= other.name %>"
+              data-initials="<%= initials %>"
+              onclick="openConv(this)"
+            >
+              <div class="avatar"><%= initials %></div>
+              <div class="conv-info">
+                <div class="conv-header">
+                  <span class="conv-name"><%= other.name %></span>
+                  <span class="conv-time"><%= timeStr %></span>
+                </div>
+                <p class="conv-preview"><%= preview %></p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- ── CHAT PANEL ── -->
+      <div class="chat-panel">
+
+        <div class="chat-panel-header">
+          <div class="avatar" id="chat-avatar">--</div>
+          <div>
+            <p class="chat-contact-name" id="chat-contact-name">Select a conversation</p>
+            <p class="chat-contact-status" id="chat-contact-status"></p>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <p style="text-align:center; color:var(--text-gray); font-size:13px; margin:auto;">
+            Select a conversation or start a new one
+          </p>
+        </div>
+
+        <!-- Attachment preview bar -->
+        <div class="attach-preview" id="attach-preview">
+          <span id="attach-preview-icon">📎</span>
+          <span class="attach-preview-name" id="attach-preview-name"></span>
+          <button class="attach-preview-remove" onclick="clearAttachment()">✕</button>
+        </div>
+
+        <!-- Attachment buttons -->
+        <div class="attach-bar">
+          <button class="attach-btn" title="Send image">
+            🖼️
+            <input type="file" id="file-image" accept="image/*" onchange="previewAttachment(this,'image')">
+          </button>
+          <button class="attach-btn" title="Send document">
+            📄
+            <input type="file" id="file-doc" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" onchange="previewAttachment(this,'doc')">
+          </button>
+          <button class="attach-btn" title="Send video">
+            🎥
+            <input type="file" id="file-video" accept="video/*" onchange="previewAttachment(this,'video')">
+          </button>
+          <button class="attach-btn" title="Share location" onclick="shareLocation()">📍</button>
+        </div>
+
+        <!-- Input bar -->
+        <div class="chat-input-bar">
+          <input
+            type="text"
+            id="msg-input"
+            class="chat-input"
+            placeholder="Type your message..."
+            disabled
+          />
+          <button class="chat-send-btn" id="send-btn" onclick="sendMessage()" disabled>
+            <img src="/images/sent message button.png" alt="send" style="width:50px;height:50px;object-fit:contain;">
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── NEW CHAT MODAL ── -->
+  <div class="new-chat-modal" id="new-chat-modal">
+    <div class="new-chat-box">
+      <h3>✏️ New Conversation</h3>
+      <input
+        type="text"
+        id="user-search-input"
+        placeholder="Search by name or email..."
+        oninput="searchUsers(this.value)"
+      />
+      <div class="new-chat-results" id="new-chat-results">
+        <p style="font-size:13px; color:var(--text-gray); margin-top:10px;">
+          Start typing to find a user
+        </p>
+      </div>
+      <div class="new-chat-modal-footer">
+        <button class="btn-secondary" onclick="closeNewChatModal()">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <%- include('partials/footer') %>
+
+  <script id="messages-data" type="application/json">
+    <%- JSON.stringify(messages || []) %>
+  </script>
+
+  <script>
+    let activeReceiverId = null;
+    let pendingFile      = null;
+    let pendingLocation  = null;
+    let searchTimeout    = null;
+
+    const allMessages   = JSON.parse(document.getElementById('messages-data').textContent);
+    const currentUserId = '<%= currentUser.userId %>';
+
+    function getMessagesForUser(userId) {
+      return allMessages
+        .filter(msg => {
+          const sid = msg.sender?._id  || msg.sender;
+          const rid = msg.receiver?._id || msg.receiver;
+          return (sid === userId && rid === currentUserId) ||
+                 (rid === userId && sid === currentUserId);
+        })
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // oldest first in chat
+    }
+
+    function fileIcon(name) {
+      if (!name) return '📎';
+      const ext = name.split('.').pop().toLowerCase();
+      if (['pdf'].includes(ext))                    return '📕';
+      if (['doc','docx'].includes(ext))             return '📘';
+      if (['xls','xlsx'].includes(ext))             return '📗';
+      if (['ppt','pptx'].includes(ext))             return '📙';
+      if (['mp4','mov','avi','webm'].includes(ext))  return '🎥';
+      return '📎';
+    }
+
+    function openConv(el) {
+      document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+
+      activeReceiverId = el.dataset.userid;
+      const name     = el.dataset.name;
+      const initials = el.dataset.initials;
+
+      document.getElementById('chat-avatar').textContent         = initials;
+      document.getElementById('chat-contact-name').textContent   = name;
+      document.getElementById('chat-contact-status').textContent = 'Community Help Hub member';
+      document.getElementById('msg-input').disabled = false;
+      document.getElementById('send-btn').disabled  = false;
+
+      renderMessages(activeReceiverId);
+    }
+
+    function renderMessages(userId) {
+      const container = document.getElementById('chat-messages');
+      const msgs      = getMessagesForUser(userId);
+
+      if (msgs.length === 0) {
+        container.innerHTML = `<p style="text-align:center;color:var(--text-gray);font-size:13px;margin:auto;">
+          No messages yet. Say hello! 👋
+        </p>`;
+        return;
+      }
+
+      container.innerHTML = msgs.map(msg => {
+        const sid    = msg.sender?._id || msg.sender;
+        const isMine = sid === currentUserId;
+        const time   = msg.createdAt
+          ? new Date(msg.createdAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+          : 'Just now';
+
+        let attachHtml = '';
+        if (msg.fileUrl) {
+          const isImage = msg.fileType === 'image' || /\.(jpg|jpeg|png|gif|webp)$/i.test(msg.fileUrl);
+          const isVideo = msg.fileType === 'video' || /\.(mp4|mov|avi|webm)$/i.test(msg.fileUrl);
+
+          if (isImage) {
+            attachHtml = `<div class="msg-attachment">
+              <img src="${msg.fileUrl}" alt="image" onclick="window.open('${msg.fileUrl}','_blank')">
+            </div>`;
+          } else if (isVideo) {
+            attachHtml = `<div class="msg-attachment">
+              <video src="${msg.fileUrl}" controls style="width:100%;border-radius:8px;"></video>
+            </div>`;
+          } else {
+            const fname = msg.fileUrl.split('/').pop();
+            attachHtml = `<div class="msg-attachment">
+              <a href="${msg.fileUrl}" target="_blank" class="msg-attachment-file">
+                <span>${fileIcon(fname)}</span>${fname}
+              </a>
+            </div>`;
+          }
+        }
+
+        if (msg.location) {
+          const { lat, lng, label } = msg.location;
+          attachHtml += `<div class="msg-location-link"
+            onclick="window.open('https://www.google.com/maps?q=${lat},${lng}','_blank')">
+            📍 ${label || 'Shared Location'} — Open in Maps
+          </div>`;
+        }
+
+        return `
+          <div class="msg ${isMine ? 'msg-sent' : 'msg-received'}">
+            <div class="bubble ${isMine ? 'bubble-sent' : 'bubble-received'}">
+              ${msg.content ? `<span>${msg.content}</span>` : ''}
+              ${attachHtml}
+            </div>
+            <span class="msg-time">${time}</span>
+          </div>`;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function previewAttachment(input, type) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      if (file.size > 50 * 1024 * 1024) {
+        alert('File too large. Maximum size is 50MB.');
+        input.value = '';
+        return;
+      }
+      pendingFile = { file, type };
+      const icons = { image: '🖼️', doc: '📄', video: '🎥' };
+      document.getElementById('attach-preview-icon').textContent = icons[type] || '📎';
+      document.getElementById('attach-preview-name').textContent = file.name;
+      document.getElementById('attach-preview').classList.add('show');
+    }
+
+    function clearAttachment() {
+      pendingFile = null;
+      document.getElementById('attach-preview').classList.remove('show');
+      document.getElementById('file-image').value = '';
+      document.getElementById('file-doc').value   = '';
+      document.getElementById('file-video').value = '';
+    }
+
+    function shareLocation() {
+      if (!activeReceiverId) { alert('Please select a conversation first.'); return; }
+      if (!navigator.geolocation) { alert('Geolocation is not supported by your browser.'); return; }
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          pendingLocation = { lat, lng, label: 'My Location' };
+          sendMessage();
+        },
+        () => alert('Could not get your location. Please allow location access.')
+      );
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('msg-input');
+      const text  = input.value.trim();
+      const btn   = document.getElementById('send-btn');
+
+      if (!activeReceiverId) return;
+      if (!text && !pendingFile && !pendingLocation) return;
+
+      const previewText = text || (pendingFile ? '📎 Attachment' : '📍 Location');
+      btn.disabled   = true;
+      input.disabled = true;
+
+      try {
+        let newMsg;
+
+        if (pendingFile) {
+          const formData = new FormData();
+          formData.append('file', pendingFile.file);
+          formData.append('fileType', pendingFile.type);
+          formData.append('receiverId', activeReceiverId);
+          if (text) formData.append('content', text);
+
+          const res  = await fetch('/messages/api/send-file', { method: 'POST', body: formData });
+          const data = await res.json();
+          if (!data.success) { alert(data.error || 'Upload failed'); return; }
+          newMsg = data.message;
+          clearAttachment();
+
+        } else if (pendingLocation) {
+          const res  = await fetch('/messages/api/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ receiverId: activeReceiverId, content: '', location: pendingLocation })
+          });
+          const data = await res.json();
+          if (!data.success) { alert(data.error || 'Failed to send location'); return; }
+          newMsg = data.message;
+          pendingLocation = null;
+
+        } else {
+          const res  = await fetch('/messages/api/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ receiverId: activeReceiverId, content: text })
+          });
+          const data = await res.json();
+          if (!data.success) { alert(data.error || 'Failed to send'); return; }
+          newMsg = data.message;
+        }
+
+        allMessages.push(newMsg);
+        renderMessages(activeReceiverId);
+        input.value = '';
+
+        const activeItem = document.querySelector('.conv-item.active');
+        if (activeItem) {
+          const preview = activeItem.querySelector('.conv-preview');
+          if (preview) preview.textContent = previewText.length > 35 ? previewText.substring(0, 35) + '...' : previewText;
+          const timeEl = activeItem.querySelector('.conv-time');
+          if (timeEl && newMsg.createdAt) timeEl.textContent = new Date(newMsg.createdAt).toLocaleDateString();
+        }
+
+      } catch (err) {
+        alert('Network error. Please try again.');
+      } finally {
+        btn.disabled   = false;
+        input.disabled = false;
+        input.focus();
+      }
+    }
+
+    document.getElementById('msg-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); sendMessage(); }
+    });
+
+    function filterConversations() {
+      const val = document.getElementById('conv-search').value.toLowerCase();
+      document.querySelectorAll('.conv-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        item.style.display = name.includes(val) ? 'flex' : 'none';
+      });
+    }
+
+    function openNewChatModal() {
+      document.getElementById('new-chat-modal').classList.add('open');
+      setTimeout(() => document.getElementById('user-search-input').focus(), 100);
+    }
+
+    function closeNewChatModal() {
+      document.getElementById('new-chat-modal').classList.remove('open');
+      document.getElementById('user-search-input').value = '';
+      document.getElementById('new-chat-results').innerHTML =
+        '<p style="font-size:13px;color:var(--text-gray);margin-top:10px;">Start typing to find a user</p>';
+    }
+
+    document.getElementById('new-chat-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('new-chat-modal')) closeNewChatModal();
+    });
+
+    async function searchUsers(query) {
+      const results = document.getElementById('new-chat-results');
+      if (!query || query.trim().length < 2) {
+        results.innerHTML = '<p style="font-size:13px;color:var(--text-gray);margin-top:10px;">Start typing to find a user</p>';
+        return;
+      }
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        results.innerHTML = '<div class="search-spinner">Searching...</div>';
+        try {
+          const res  = await fetch(`/users/search?q=${encodeURIComponent(query.trim())}`);
+          const data = await res.json();
+          if (!data.success || data.users.length === 0) {
+            results.innerHTML = '<p style="font-size:13px;color:var(--text-gray);margin-top:10px;">No users found.</p>';
+            return;
+          }
+          results.innerHTML = data.users.map(u => {
+            const initials = u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            return `
+              <div class="new-chat-result-item" onclick="startChatWith('${u._id}', '${u.name}', '${initials}')">
+                <div class="avatar" style="width:36px;height:36px;font-size:13px;flex-shrink:0;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
+                  ${initials}
+                </div>
+                <div>
+                  <div class="new-chat-result-name">${u.name}</div>
+                  <div class="new-chat-result-email">${u.email}</div>
+                </div>
+              </div>`;
+          }).join('');
+        } catch (err) {
+          results.innerHTML = '<p style="font-size:13px;color:red;margin-top:10px;">Search failed. Try again.</p>';
+        }
+      }, 400);
+    }
+
+    function startChatWith(userId, name, initials) {
+      closeNewChatModal();
+      let existing = document.querySelector(`.conv-item[data-userid="${userId}"]`);
+      if (!existing) {
+        const convList = document.getElementById('conv-list');
+        const div = document.createElement('div');
+        div.className = 'conv-item';
+        div.dataset.userid   = userId;
+        div.dataset.name     = name;
+        div.dataset.initials = initials;
+        div.setAttribute('onclick', 'openConv(this)');
+        div.innerHTML = `
+          <div class="avatar">${initials}</div>
+          <div class="conv-info">
+            <div class="conv-header">
+              <span class="conv-name">${name}</span>
+              <span class="conv-time">New</span>
+            </div>
+            <p class="conv-preview">Start the conversation...</p>
+          </div>`;
+        convList.prepend(div);
+        existing = div;
+      }
+      
+      openConv(existing);
+    }
+  </script>
 
 </body>
 </html>

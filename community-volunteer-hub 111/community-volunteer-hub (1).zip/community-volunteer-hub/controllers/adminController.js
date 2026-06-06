@@ -1,8 +1,10 @@
-const User = require('../models/User');
+const User    = require('../models/User');
 const Request = require('../models/Request');
 const Message = require('../models/Message');
 
-// GET /admin — dashboard overview
+// ─────────────────────────────────────────────
+// GET /admin  —  dashboard overview
+// ─────────────────────────────────────────────
 exports.getDashboard = async (req, res) => {
   try {
     const [userCount, requestCount, messageCount] = await Promise.all([
@@ -11,17 +13,26 @@ exports.getDashboard = async (req, res) => {
       Message.countDocuments()
     ]);
 
-    const recentUsers = await User.find().sort({ joinedAt: -1 }).limit(5);
+    const recentUsers = await User.find()
+      .sort({ joinedAt: -1 }) ;
+
     const recentRequests = await Request.find()
       .populate('postedBy', 'name')
-      .sort({ createdAt: -1 })
-      .limit(5);
+      .sort({ createdAt: -1 }); 
 
     const recentMessages = await Message.find()
-      .populate('sender', 'name email')
+      .populate('sender',   'name email')
       .populate('receiver', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(10);
+      .sort({ createdAt: -1 }) ;
+
+    // Contact messages — optional, only if model exists
+    let contactMessages = [];
+    try {
+      const ContactMessage = require('../models/ContactMessage');
+      contactMessages = await ContactMessage.find()
+        .sort({ createdAt: -1 }) ;
+        
+    } catch (e) { /* model not available */ }
 
     res.render('admin', {
       userCount,
@@ -30,7 +41,8 @@ exports.getDashboard = async (req, res) => {
       recentUsers,
       recentRequests,
       recentMessages,
-      user: req.user || null
+      contactMessages,
+      user: req.session ? { name: req.session.name } : null
     });
   } catch (err) {
     console.error(err);
@@ -38,7 +50,9 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
-// DELETE /admin/users/:id — remove a user
+// ─────────────────────────────────────────────
+// DELETE /admin/users/:id
+// ─────────────────────────────────────────────
 exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
@@ -48,7 +62,9 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// DELETE /admin/requests/:id — remove a request
+// ─────────────────────────────────────────────
+// DELETE /admin/requests/:id
+// ─────────────────────────────────────────────
 exports.deleteRequest = async (req, res) => {
   try {
     await Request.findByIdAndDelete(req.params.id);
@@ -58,30 +74,16 @@ exports.deleteRequest = async (req, res) => {
   }
 };
 
-// GET /admin/messages — view all messages
+// ─────────────────────────────────────────────
+// GET /admin/messages  —  alias, redirects to dashboard
+// ─────────────────────────────────────────────
 exports.getMessages = async (req, res) => {
-  try {
-    const messages = await Message.find()
-      .populate('sender', 'name email')
-      .populate('receiver', 'name email')
-      .sort({ createdAt: -1 });
-
-    res.render('admin', {
-      userCount: await User.countDocuments(),
-      requestCount: await Request.countDocuments(),
-      messageCount: await Message.countDocuments(),
-      recentUsers: await User.find().sort({ createdAt: -1 }).limit(5),
-      recentRequests: await Request.find().populate('postedBy', 'name').sort({ createdAt: -1 }).limit(5),
-      messages,
-      user: req.user || null
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
+  res.redirect('/admin');
 };
 
+// ─────────────────────────────────────────────
 // DELETE /admin/messages/:id
+// ─────────────────────────────────────────────
 exports.deleteMessage = async (req, res) => {
   try {
     await Message.findByIdAndDelete(req.params.id);

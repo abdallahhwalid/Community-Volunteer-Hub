@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 – Page Not Found</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  <main class="main-content" style="display:flex;align-items:center;justify-content:center;min-height:60vh;text-align:center;">
+    <div>
+      <h1 style="font-size:80px;margin:0;color:var(--navy);">404</h1>
+      <h2 style="margin:10px 0 16px;">Page Not Found</h2>
+      <p style="color:var(--text-gray);margin-bottom:28px;">The page you're looking for doesn't exist or has been moved.</p>
+      <a href="/" class="btn-primary" style="text-decoration:none;padding:12px 28px;border-radius:8px;">Go Home</a>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
