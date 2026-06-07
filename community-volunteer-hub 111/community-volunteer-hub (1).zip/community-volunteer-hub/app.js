@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 const session = require('express-session');
 const methodOverride = require('method-override');
-const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -12,7 +11,6 @@ const app = express();
 app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, 'client/dist')));
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
