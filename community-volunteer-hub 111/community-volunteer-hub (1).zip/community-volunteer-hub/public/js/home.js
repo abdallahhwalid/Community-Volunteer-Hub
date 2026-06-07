@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
       category: 'Home Tasks',
       desc: "I'm moving to a new apartment and need help carrying some heavy furniture down two flights of stairs.",
       location: '📍 Downtown',
+      meetingType: 'In-Person',
       time: '🕐 April 10, 2026 at 2:00 PM',
       user: 'Sarah Miller'
     },
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
       category: 'IT Repair',
       desc: "My laptop suddenly stopped working. It won't turn on at all, even when plugged in. I need someone to take a look.",
       location: '📍 Westside',
+      meetingType: 'Online',
       time: '🕐 April 8, 2026 at Flexible',
       user: 'Ahmed Ali'
     }

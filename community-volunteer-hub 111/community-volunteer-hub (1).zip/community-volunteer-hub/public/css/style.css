@@ -987,3 +987,39 @@ html.dark .nav-logo-text {
 :root.dark .nav-logo-text {
   color: #9ed2eb;
 }
+
+/* ── MODAL DARK MODE ── */
+:root.dark .modal-content {
+  background: #1F2937;
+  color: #F1F5F9;
+}
+:root.dark .modal-content h2 {
+  color: #F1F5F9;
+}
+:root.dark .modal-content label {
+  color: #CBD5E1;
+}
+:root.dark .modal-content p {
+  color: #CBD5E1;
+}
+:root.dark .modal-cat {
+  color: #94A3B8;
+}
+:root.dark .modal-item label {
+  color: #94A3B8;
+}
+:root.dark .time-picker-box {
+  background: #1E3A5F;
+  border-color: #2d4d7a;
+}
+:root.dark .time-picker-box label {
+  color: #93C5FD;
+}
+:root.dark .user-info {
+  background: #263040;
+  border-color: #374151;
+  color: #F1F5F9;
+}
+:root.dark .user-rating {
+  color: #F59E0B;
+}

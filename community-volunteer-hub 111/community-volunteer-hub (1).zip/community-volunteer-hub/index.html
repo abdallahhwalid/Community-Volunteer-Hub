@@ -30,12 +30,17 @@
 
   <div id="offer-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
-      <h2 id="modal-title"></h2>
-      <p id="modal-category" class="modal-cat"></p>
-      <div class="modal-section">
-        <label>Description</label>
-        <p id="modal-desc"></p>
-      </div>
+      <h2 id="modal-title" style="word-break:break-word; overflow-wrap:break-word;"></h2>
+     <p id="modal-category" class="modal-cat"></p>
+<div id="modal-online-badge" style="display:none; margin-bottom:12px;">
+  <span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;border-radius:6px;padding:4px 12px;">🌐 Online Meeting — no location needed</span>
+</div>
+<div class="modal-grid">
+  <div class="modal-item" id="modal-location-wrap">
+    <label>Location</label>
+    <p id="modal-location"></p>
+  </div>
+</div>
       <div class="modal-grid">
         <div class="modal-item">
           <label>Location</label>

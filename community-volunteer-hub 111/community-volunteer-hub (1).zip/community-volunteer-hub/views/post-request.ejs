@@ -126,7 +126,13 @@
                 value="<%= old.desiredTime || '' %>"/>
             </div>
           </div>
-
+              <div class="form-group">
+           <label for="meetingType">📌 Meeting Type *</label>
+            <select id="meetingType" name="meetingType" class="form-control">
+                 <option value="In-Person" <%= (old.meetingType === 'In-Person') ? 'selected' : '' %>>📍 In-Person</option>
+                  <option value="Online" <%= (old.meetingType === 'Online') ? 'selected' : '' %>>🌐 Online</option>
+            </select>
+        </div>
           <label class="flexible-check">
             <input type="checkbox" id="flexible" name="flexible" style="width:16px;height:16px;"
               <%= old.flexible === 'on' ? 'checked' : '' %>/>

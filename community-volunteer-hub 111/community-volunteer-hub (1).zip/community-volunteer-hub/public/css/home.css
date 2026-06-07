@@ -115,7 +115,7 @@
 /* RECENT REQUESTS CARDS */
 .grid-stretch { align-items: stretch; }
 
-.card-full { height: 100%; }
+.card-full { height: 340px; display: flex; flex-direction: column; overflow: hidden; }
 
 .card-top-row {
   display: flex;
@@ -132,6 +132,11 @@
 .card-title {
   font-size: 15px;
   font-weight: 700;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 
 .card-category {

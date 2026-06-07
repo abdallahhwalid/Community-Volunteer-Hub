@@ -352,13 +352,20 @@ export default function HomePage({ user }) {
             ) : (
               recentRequests.map((req) => (
                 <div className="card card-full" key={req._id}>
-                  <div className="card-top-row">
-                    <span className="badge badge-open">{req.status}</span>
-                    <span className="card-time">{formatTimeAgo(req.createdAt)}</span>
-                  </div>
-                  <h4 className="card-title">{req.title}</h4>
-                  <p className="card-category">{req.category}</p>
-                  <div className="meta-info">📍 {req.location}</div>
+  <div className="card-top-row">
+    <span className="badge badge-open">{req.status}</span>
+    <span className="card-time">{formatTimeAgo(req.createdAt)}</span>
+  </div>
+  {["IT Repair", "Tutoring"].includes(req.category) ? (
+    <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, background:"#EEF2FF", color:"#4338CA", borderRadius:"6px", padding:"2px 8px", marginBottom:"6px" }}>🌐 Online Meeting</span>
+  ) : (
+    <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, background:"#D1FAE5", color:"#065F46", borderRadius:"6px", padding:"2px 8px", marginBottom:"6px" }}>📍 In-Person</span>
+  )}
+  <h4 className="card-title">{req.title}</h4>
+  <p className="card-category">{req.category}</p>
+  <div className="meta-info">
+    {["IT Repair", "Tutoring"].includes(req.category) ? "🌐 Online Meeting" : `📍 ${req.location}`}
+  </div>
                   {user ? (
                     <button
                       className="btn-offer btn-offer-full"

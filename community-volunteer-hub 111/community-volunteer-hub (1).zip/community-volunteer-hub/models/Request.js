@@ -38,6 +38,11 @@ const requestSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    meetingType: {
+    type: String,
+    enum: ['Online', 'In-Person'],
+    default: 'In-Person',
+    },
     status: {
       type: String,
       enum: ['Open', 'In Progress', 'Completed', 'Cancelled'],

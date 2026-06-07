@@ -81,23 +81,35 @@
                   <span class="badge badge-open"><%= req.status %></span>
                   <span class="card-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
                 </div>
-    
+
+                <% var isOnline = (req.requestType === 'online' || req.location === 'Online') ? true : false; %>
+                <%if (isOnline) { %>
+                <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;border-radius:6px;padding:2px 8px;margin-bottom:6px;">🌐 Online</span>
+                <% } else { %>
+                <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7;border-radius:6px;padding:2px 8px;margin-bottom:6px;">📍 In-Person</span>
+                  <% } %>
                 <h4 class="card-title"><%= req.title %></h4>
                 <p class="card-category"><%= req.category %></p>
+                <p class="req-desc" style="font-size:13px; color:var(--text-gray); margin:4px 0 6px; line-height:1.5;">
+                   <%= req.description ? req.description.substring(0, 80) + '...' : '' %>
+                </p>
                 <div class="meta-info">📍 <%= req.location %></div>
                 
-                <% if (user) { %>
-                  <% // 1. Create a safe, clean variable on the server side first %>
-                  <% var posterName = req.postedBy ? req.postedBy.name : "Someone"; %>
-                  
-                  <% // 2. Pass that variable cleanly into the onclick function without character escaping bugs %>
-                  <button class="btn-offer btn-offer-full" 
-                          onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= posterName %>')">
-                    Offer Help
-                  </button>
-                <% } else { %>
-                  <a href="/login" class="btn-offer btn-offer-full" style="text-align:center;">Login to Offer Help</a>
-                <% } %>
+           <% if (user) { %>
+          <% var posterName = req.postedBy ? req.postedBy.name : "Someone"; %>
+        <button class="btn-offer btn-offer-full"
+          data-id="<%= req._id %>"
+          data-title="<%= req.title.replace(/'/g, '') %>"
+          data-category="<%= req.category %>"
+          data-location="<%= req.location.replace(/'/g, '') %>"
+          data-user="<%= posterName.replace(/'/g, '') %>"
+          data-type="<%= isOnline ? 'online' : 'inperson' %>"
+         onclick="(function(btn){ openOfferModal(btn.dataset.id, btn.dataset.title, btn.dataset.category, btn.dataset.location, btn.dataset.user, btn.dataset.type); })(this)">
+    Offer Help
+  </button>
+<% } else { %>
+  <a href="/login" class="btn-offer btn-offer-full" style="text-align:center;">Login to Offer Help</a>
+<% } %>
               </div>
             <% }); %>
           <% } else { %>
@@ -140,23 +152,28 @@
   </main>
 
   <!-- Offer Modal -->
-  <div id="offer-modal" class="modal-overlay" style="display:none;">
+<div id="offer-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
-      <h2 id="modal-title"></h2>
+      <h2 id="modal-title" style="word-break:break-word; overflow-wrap:break-word; white-space:normal; max-width:100%; font-size:clamp(14px, 3vw, 24px);"></h2>
       <p id="modal-category" class="modal-cat"></p>
-      <div class="modal-grid">
+      <div id="modal-online-badge" style="display:none; margin-bottom:8px;">
+        <span style="background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;">🌐 Online Meeting</span>
+      </div>
+      <div class="modal-grid" id="modal-location-wrap">
         <div class="modal-item">
           <label>Location</label>
           <p id="modal-location"></p>
         </div>
       </div>
+
       <div class="modal-section">
         <label>Requested by</label>
         <div class="user-info"><span id="modal-user"></span></div>
       </div>
       <div class="modal-section time-picker-box">
         <label>Set your convenient time</label>
-        <input type="datetime-local" id="suggested-time" class="form-control">
+       <input type="datetime-local" id="suggested-time" class="form-control"
+  id="suggested-time">
       </div>
       <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div>
       <div class="modal-footer">
@@ -171,23 +188,58 @@
   <script>
     let currentRequestId = null;
 
-    function openOfferModal(id, title, category, location, user) {
-      currentRequestId = id;
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-category').textContent = category;
-      document.getElementById('modal-location').textContent = location;
-      document.getElementById('modal-user').textContent = user;
-      document.getElementById('offer-msg').style.display = 'none';
-      document.getElementById('offer-modal').style.display = 'flex';
-    }
+    function openOfferModal(id, title, category, location, user, type) {
+  var isOnline = type === 'online';
+  currentRequestId = id;
+  document.getElementById('modal-title').textContent    = title;
+  document.getElementById('modal-category').textContent = category;
+  document.getElementById('modal-user').textContent     = user;
+  document.getElementById('offer-msg').style.display    = 'none';
+
+  const onlineBadge  = document.getElementById('modal-online-badge');
+  const locationWrap = document.getElementById('modal-location-wrap');
+  const confirmBtn   = document.getElementById('confirm-help-btn');
+
+  if (isOnline) {
+    onlineBadge.style.display  = 'block';
+    locationWrap.style.display = 'none';
+    confirmBtn.textContent     = '📅 Schedule Meeting';
+  } else {
+    onlineBadge.style.display  = 'none';
+    locationWrap.style.display = '';
+    document.getElementById('modal-location').textContent = location;
+    confirmBtn.textContent     = 'Contact to Help';
+  }
+
+  const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+document.getElementById('suggested-time').min = now.toISOString().slice(0, 16);
+
+  document.getElementById('offer-modal').style.display = 'flex';
+document.getElementById('offer-modal').style.pointerEvents = 'all';
+}
 
     function closeOfferModal() {
-      document.getElementById('offer-modal').style.display = 'none';
-    }
+  document.getElementById('offer-modal').style.display = 'none';
+  
+}
 
     async function confirmHelp() {
       const suggestedTime = document.getElementById('suggested-time').value;
       const btn = document.getElementById('confirm-help-btn');
+
+      if (!suggestedTime) {
+        const timeInput = document.getElementById('suggested-time');
+        timeInput.style.borderColor = '#dc2626';
+        const msgEl = document.getElementById('offer-msg');
+        msgEl.style.display = 'block';
+        msgEl.style.color = 'red';
+        msgEl.textContent = 'Please select a date and time before continuing.';
+        timeInput.focus();
+        return;
+      }
+
+      document.getElementById('suggested-time').style.borderColor = '';
       btn.disabled = true;
       btn.textContent = 'Sending...';
       try {

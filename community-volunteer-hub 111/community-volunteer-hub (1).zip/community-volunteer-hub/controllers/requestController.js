@@ -157,7 +157,7 @@ exports.createRequest = asyncHandler(async (req, res) => {
 
   const userId = req.user?._id || req.session.userId;
 
-  const { title, category, description, location, desiredDate, desiredTime, flexible } = req.body;
+  const { title, category, description, location, desiredDate, desiredTime, flexible, meetingType } = req.body;
 
   const errors = [];
   if (!title || title.trim().length < 5)       errors.push('Title must be at least 5 characters');
@@ -215,8 +215,9 @@ exports.createRequest = asyncHandler(async (req, res) => {
     requestType: isOnlineRequest ? 'online' : 'in-person',
     desiredDate: desiredDate  || null,
     desiredTime: desiredTime  || null,
-    flexible:    flexible === 'on',
-    image:       imagePath,
+    flexible:     flexible === 'on',
+    meetingType:  meetingType || 'In-Person',
+    image:        imagePath,
     postedBy:    userId,
   });
 
