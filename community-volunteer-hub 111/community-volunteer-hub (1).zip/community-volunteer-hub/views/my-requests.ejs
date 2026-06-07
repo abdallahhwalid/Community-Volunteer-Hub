@@ -41,7 +41,6 @@
 
   <%- include('partials/nav') %>
 
-  <!-- Confirm Modal -->
   <div id="confirm-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.45); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:20px; padding:40px 36px; max-width:420px; width:90%; text-align:center; box-shadow:0 24px 60px rgba(0,0,0,0.18); animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
       <div id="modal-icon" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:30px;"></div>
@@ -69,7 +68,6 @@
         <button class="tab-btn"        id="tab-helping" onclick="switchTab('helping')">Requests I'm Helping With (<%= helpingRequests.length %>)</button>
       </div>
 
-      <!-- TAB: POSTED — Server already filtered out Cancelled -->
       <div id="panel-posted" style="display:flex; flex-direction:column; gap:16px;">
 
         <% if (postedRequests.length === 0) { %>
@@ -113,30 +111,30 @@
               </div>
             <% } %>
 
-          <% if (req.status === 'Completed') { %>
-  <p style="font-size:13px;color:#6b7280;">
-    Completed on <%= new Date(req.updatedAt).toDateString() %>
-  </p>
-  <% if (req.acceptedVolunteer) { %>
-    <div class="rating-box" id="rating-<%= req._id %>"
-      style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
-      <p style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:6px;">
-        ⭐ Rate your volunteer:
-      </p>
-      <div style="display:flex; gap:6px;">
-        <% var volId = req.acceptedVolunteer._id; %>
-        <% var reqId = req._id; %>
-        <% for(var s = 1; s <= 5; s++) { %>
-          <button type="button"
-           onclick="submitRating('<%= reqId %>', '<%= volId %>', '<%= s %>')"
-            style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
-            ☆
-          </button>
-        <% } %>
-      </div>
-    </div>
-  <% } %>
-<% } %>
+            <% if (req.status === 'Completed') { %>
+              <p style="font-size:13px;color:#6b7280;">
+                Completed on <%= new Date(req.updatedAt).toDateString() %>
+              </p>
+              <% if (req.acceptedVolunteer) { %>
+                <div class="rating-box" id="rating-<%= req._id %>"
+                  style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
+                  <p style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:6px;">
+                    ⭐ Rate your volunteer:
+                  </p>
+                  <div style="display:flex; gap:6px;">
+                    <% var volId = req.acceptedVolunteer._id; %>
+                    <% var reqId = req._id; %>
+                    <% for(var s = 1; s <= 5; s++) { %>
+                      <button type="button"
+                       onclick="submitRating('<%= reqId %>', '<%= volId %>', '<%= s %>')"
+                        style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
+                        ☆
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+              <% } %>
+            <% } %>
 
             <% if (req.pendingOffers && req.pendingOffers.length > 0) { %>
               <div style="margin-top:12px;">
@@ -164,7 +162,6 @@
             <div class="my-req-actions">
               <% if (req.status === 'Open') { %>
                 <button class="btn-ghost" onclick="editRequest(this)">Edit</button>
-                <!-- Cancel: removes from DOM permanently, server stores as Cancelled (never shown again) -->
                 <button class="btn-danger" onclick="cancelRequest(this, '<%= req._id %>')">Cancel Request</button>
               <% } %>
               <% if (req.status === 'In Progress') { %>
@@ -175,7 +172,6 @@
         <% }) %>
       </div>
 
-      <!-- TAB: HELPING -->
       <div id="panel-helping" style="display:none; flex-direction:column; gap:16px;">
 
         <% if (helpingRequests.length === 0) { %>
@@ -279,7 +275,6 @@
           try {
             const data = await fetch(`/requests/${id}`, { method: 'DELETE' }).then(r => r.json());
             if (data.success) {
-              // Permanently remove from DOM — matches server-side filter (status !== Cancelled)
               Object.assign(item.style, { transition:'all .4s ease', opacity:'0', transform:'scale(0.95)' });
               setTimeout(() => {
                 item.remove();
@@ -357,45 +352,52 @@
       form.remove();
     }
 
-   function saveEdit(btn) {
-  const form    = btn.closest('.edit-form');
-  const item    = form.closest('.my-req-item');
-const reqId   = item.id.replace('req-', '');   // relies on id="req-id_here"  const title   = form.querySelector('#edit-title')?.value.trim();
-  const loc     = form.querySelector('#edit-location')?.value.trim();
+    function saveEdit(btn) {
+      const form    = btn.closest('.edit-form');
+      const item    = form.closest('.my-req-item');
+      const reqId   = item.id.replace('req-', '');
+      
+      const title   = form.querySelector('#edit-title')?.value.trim();
+      const loc     = form.querySelector('#edit-location')?.value.trim();
 
-  if (!title) {
-    showToast('Title cannot be empty.');
-    return;
-  }
+      if (!title) {
+        showToast('Title cannot be empty.');
+        return;
+      }
 
-  btn.disabled    = true;
-  btn.textContent = 'Saving...';
+      btn.disabled    = true;
+      btn.textContent = 'Saving...';
 
-  fetch('/requests/' + reqId, {
-    method:  'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ title: title, location: loc || '' })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.success) {
-      if (form._titleEl    && title) form._titleEl.textContent    = title;
-      if (form._locationEl && loc)   form._locationEl.textContent = loc;
-      form._originalActions.style.display = '';
-      showToast('Request updated!');
-      form.remove();
-    } else {
-      showToast('Error: ' + (data.message || 'Could not update.'));
-      btn.disabled    = false;
-      btn.textContent = 'Save Changes';
+      fetch('/requests/' + reqId, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ title: title, location: loc || '' })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          if (form._titleEl    && title) form._titleEl.textContent    = title;
+          if (form._locationEl && loc)   form._locationEl.textContent = loc;
+          form._originalActions.style.display = '';
+          showToast('Request updated!');
+          form.remove();
+          
+          // Force structural reload so browse and grid views receive clean data states immediately
+          setTimeout(() => {
+            location.reload();
+          }, 400);
+        } else {
+          showToast('Error: ' + (data.message || 'Could not update.'));
+          btn.disabled    = false;
+          btn.textContent = 'Save Changes';
+        }
+      })
+      .catch(function() {
+        showToast('Network error. Please try again.');
+        btn.disabled    = false;
+        btn.textContent = 'Save Changes';
+      });
     }
-  })
-  .catch(function() {
-    showToast('Network error. Please try again.');
-    btn.disabled    = false;
-    btn.textContent = 'Save Changes';
-  });
-}
 
     function showToast(msg) {
       const t = document.createElement('div');
@@ -407,31 +409,30 @@ const reqId   = item.id.replace('req-', '');   // relies on id="req-id_here"  co
     }
 
     async function submitRating(requestId, volunteerId, star) {
-    const box   = document.getElementById('rating-' + requestId);
-    const stars = box.querySelectorAll('button');
+      const box   = document.getElementById('rating-' + requestId);
+      const stars = box.querySelectorAll('button');
 
-    // Highlight selected stars
-    stars.forEach((btn, i) => {
-      btn.textContent = i < star ? '★' : '☆';
-      btn.disabled = true;
-    });
-
-    try {
-      const res  = await fetch(`/users/${volunteerId}/rate`, {
-        method:  'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ rating: star })
+      stars.forEach((btn, i) => {
+        btn.textContent = i < star ? '★' : '☆';
+        btn.disabled = true;
       });
-      const data = await res.json();
-      if (data.success) {
-        box.innerHTML = `<p style="font-size:13px;color:#10B981;font-weight:600;">
-          ✅ Rated ${star}/5 — thank you!
-        </p>`;
+
+      try {
+        const res  = await fetch(`/users/${volunteerId}/rate`, {
+          method:  'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ rating: star })
+        });
+        const data = await res.json();
+        if (data.success) {
+          box.innerHTML = `<p style="font-size:13px;color:#10B981;font-weight:600;">
+            ✅ Rated ${star}/5 — thank you!
+          </p>`;
+        }
+      } catch {
+        box.innerHTML = `<p style="font-size:13px;color:red;">Failed to submit rating.</p>`;
       }
-    } catch {
-      box.innerHTML = `<p style="font-size:13px;color:red;">Failed to submit rating.</p>`;
-    }
-  } 
+    } 
   </script>
 </body>
 </html>

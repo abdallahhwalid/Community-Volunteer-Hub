@@ -161,11 +161,10 @@ exports.createRequest = asyncHandler(async (req, res) => {
 
   const errors = [];
   if (!title || title.trim().length < 5)       errors.push('Title must be at least 5 characters');
-  if (!category)                                errors.push('Category is required');
+  if (!category)                               errors.push('Category is required');
   if (!description || description.trim().length < 20) errors.push('Description must be at least 20 characters');
 
-  // Online categories don't need a real location
-   // Online requests don't need a location
+  // Online requests don't need a location
   const isOnlineReq = req.body.requestType === 'online';
   if (!isOnlineReq && !location) {
     errors.push('Location is required for in-person requests');
@@ -207,7 +206,7 @@ exports.createRequest = asyncHandler(async (req, res) => {
     imagePath = `/uploads/${fileName}`;
   }
 
- const isOnlineRequest = req.body.requestType === 'online';
+  const isOnlineRequest = req.body.requestType === 'online';
   await Request.create({
     title,
     category,
@@ -242,7 +241,7 @@ exports.submitOffer = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Request is not available' });
   }
 
-   if (request.postedBy.toString() === volunteerId.toString()) {
+  if (request.postedBy.toString() === volunteerId.toString()) {
     return res.status(400).json({ success: false, message: 'You cannot offer help on your own request' });
   }
  
@@ -251,7 +250,7 @@ exports.submitOffer = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Please select a future date and time' });
   }
 
- await Offer.findOneAndUpdate(
+  await Offer.findOneAndUpdate(
     { request: requestId, volunteer: volunteerId },
     { suggestedTime: suggestedTime || null, status: 'Pending' },
     { upsert: true, new: true }
@@ -291,16 +290,20 @@ exports.updateRequest = asyncHandler(async (req, res) => {
 
   const { title, category, description, location, desiredDate, desiredTime, flexible } = req.body;
 
-  request.title       = title       || request.title;
-  request.category    = category    || request.category;
-  request.description = description || request.description;
-  request.location    = location    || request.location;
-  request.desiredDate = desiredDate || request.desiredDate;
-  request.desiredTime = desiredTime || request.desiredTime;
-  request.flexible    = flexible === 'on';
+  // Safely modify fields ONLY if they are explicitly sent in the payload body
+  if (title !== undefined)       request.title       = title;
+  if (category !== undefined)    request.category    = category;
+  if (description !== undefined) request.description = description;
+  if (location !== undefined)    request.location    = location;
+  if (desiredDate !== undefined) request.desiredDate = desiredDate;
+  if (desiredTime !== undefined) request.desiredTime = desiredTime;
+  
+  if (flexible !== undefined) {
+    request.flexible = flexible === 'on' || flexible === true;
+  }
 
   await request.save();
-  res.json({ success: true, message: 'Request updated' });
+  res.json({ success: true, message: 'Request updated successfully', request });
 });
 
 // ─────────────────────────────────────────────
