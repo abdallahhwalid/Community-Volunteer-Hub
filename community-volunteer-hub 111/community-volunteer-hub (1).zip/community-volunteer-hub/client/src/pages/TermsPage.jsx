@@ -1,10 +1,10 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/*import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';*/
 
 function TermsPage() {
   return (
-    <>
-      <Navbar />
+   
+     
       <main className="main-content">
         <div className="page-header">
           <h1>Terms of Service</h1>
@@ -27,8 +27,8 @@ function TermsPage() {
           <p>We may update these terms from time to time. If we make significant changes, we will notify users via email or a prominent notice on the website. Continued use of the platform after changes implies your acceptance of the new terms.</p>
         </div>
       </main>
-      <Footer />
-    </>
+     
+   
   );
 }
 

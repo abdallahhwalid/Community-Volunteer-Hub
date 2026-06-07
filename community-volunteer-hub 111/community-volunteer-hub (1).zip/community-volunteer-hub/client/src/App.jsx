@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MessagesPage from './pages/MessagesPage';
@@ -11,13 +13,26 @@ import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SafetyPage from './pages/SafetyPage';
+
 import AdminPage from './pages/AdminPage';
 
 
+
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/profile', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.success) setUser(data.user); })
+      .catch(() => {});
+  }, []);
+
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
+        <Route path="/" element={<HomePage user={user} />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/messages" element={<MessagesPage />} />
@@ -33,6 +48,7 @@ function App() {
         <Route path="*" element={<div>404 - Page Not Found</div>} />
      <Route path="/admin" element={<AdminPage />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

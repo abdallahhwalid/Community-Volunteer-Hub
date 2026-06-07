@@ -41,11 +41,9 @@ function Navbar() {
         </div>
         <span className="nav-logo-text">Community Help Hub</span>
       </Link>
-      <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
+       <li><Link to="/">Home</Link></li>
         <li><Link to="/requests">Browse</Link></li>
-        <li><Link to="/my-requests">My Requests</Link></li>
-      </ul>
+        {user && <li><Link to="/requests/my">My Requests</Link></li>}
       <div className="nav-icons">
         <button className="nav-icon-btn dark-toggle" onClick={toggleDark} aria-label="Toggle dark mode" title="Toggle dark mode">
           {isDark ? '☀️' : '🌙'}

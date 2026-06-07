@@ -1,10 +1,10 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/*import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';*/
 
 function PrivacyPage() {
   return (
-    <>
-      <Navbar />
+   
+    
       <main className="main-content">
         <div className="page-header">
           <h1>Privacy Policy</h1>
@@ -27,8 +27,8 @@ function PrivacyPage() {
           <p>If you have any questions about this Privacy Policy, please reach out at <strong>support@communityhelpub.org</strong>.</p>
         </div>
       </main>
-      <Footer />
-    </>
+      
+    
   );
 }
 

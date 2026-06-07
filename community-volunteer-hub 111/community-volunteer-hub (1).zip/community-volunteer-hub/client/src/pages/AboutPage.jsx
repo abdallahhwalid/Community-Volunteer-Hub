@@ -1,10 +1,10 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/*import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';*/
 
 function AboutPage() {
   return (
-    <>
-      <Navbar />
+  
+    
       <main className="main-content">
         <div className="page-header">
           <h1>About Us</h1>
@@ -30,8 +30,8 @@ function AboutPage() {
           </div>
         </div>
       </main>
-      <Footer />
-    </>
+    
+    
   );
 }
 
