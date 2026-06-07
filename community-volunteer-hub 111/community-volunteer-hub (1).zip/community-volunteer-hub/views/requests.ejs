@@ -132,12 +132,14 @@
         <label>Requested by</label>
         <div class="user-info"><span id="modal-user"></span></div>
       </div>
-      <div class="modal-section time-picker-box">
+        <div class="modal-section time-picker-box">
         <label>Set your convenient time</label>
         <input type="datetime-local" id="suggested-time" class="form-control">
+        <span id="time-error" style="color:#dc2626; font-size:12px; margin-top:4px; display:none;">
+          ⚠ Please select a future date and time.
+        </span>
       </div>
-      <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div>
-      <div class="modal-footer">
+      <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div> <div class="modal-footer">
         <button class="btn-secondary" onclick="closeOfferModal()">Cancel</button>
         <button class="btn-primary" id="confirm-help-btn" onclick="confirmHelp()">Contact to Help</button>
       </div>
@@ -182,9 +184,14 @@
       document.getElementById('modal-category').textContent = category;
       document.getElementById('modal-location').textContent = location;
       document.getElementById('modal-user').textContent     = user;
-      document.getElementById('offer-msg').style.display    = 'none';
+       document.getElementById('offer-msg').style.display    = 'none';
       document.getElementById('suggested-time').value       = '';
       document.getElementById('suggested-time').style.borderColor = '';
+      // Set min to now so the date picker blocks past times
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('suggested-time').min = now.toISOString().slice(0, 16);
+      if (document.getElementById('time-error')) document.getElementById('time-error').style.display = 'none';document.getElementById('suggested-time').style.borderColor = '';
       document.getElementById('confirm-help-btn').disabled    = false;
       document.getElementById('confirm-help-btn').textContent = 'Contact to Help';
       document.getElementById('offer-modal').style.display  = 'flex';
@@ -194,11 +201,23 @@
       document.getElementById('offer-modal').style.display = 'none';
     }
 
-    async function confirmHelp() {
+  async function confirmHelp() {
       const suggestedTime = document.getElementById('suggested-time').value;
+      const timeErr = document.getElementById('time-error');
+      timeErr.style.display = 'none';
+      document.getElementById('suggested-time').style.borderColor = '';
+ 
       if (!suggestedTime) {
         document.getElementById('suggested-time').style.borderColor = '#dc2626';
+        timeErr.textContent = '⚠ Please select a date and time.';
+        timeErr.style.display = 'block';
         document.getElementById('suggested-time').focus();
+        return;
+      }
+      if (new Date(suggestedTime) <= new Date()) {
+        document.getElementById('suggested-time').style.borderColor = '#dc2626';
+        timeErr.textContent = '⚠ Please select a future date and time.';
+        timeErr.style.display = 'block';
         return;
       }
       document.getElementById('suggested-time').style.borderColor = '';
