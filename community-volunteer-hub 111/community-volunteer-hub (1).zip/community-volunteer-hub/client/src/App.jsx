@@ -11,6 +11,8 @@ import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import SafetyPage from './pages/SafetyPage';
+import AdminPage from './pages/AdminPage';
+
 
 function App() {
   return (

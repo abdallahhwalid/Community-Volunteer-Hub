@@ -57,13 +57,18 @@ function Navbar() {
           <img src="/images/profile.png" alt="profile" className="nav-icon-img-md" />
         </Link>
         {user ? (
-          <>
-            <span style={{ fontSize: '14px', fontWeight: '600' }}>Hi, {user.name.split(' ')[0]}</span>
-            <button onClick={handleLogout} className="btn-nav-login" style={{ cursor: 'pointer', border: 'none', background: 'none' }}>
-              Logout
-            </button>
-          </>
-        ) : ( 
+  <>
+    <span style={{ fontSize: '14px', fontWeight: '600' }}>Hi, {user.name.split(' ')[0]}</span>
+    
+    {user?.role === 'admin' && (
+      <Link to="/admin" className="btn-nav-signup">Admin</Link>
+    )}
+    
+    <button onClick={handleLogout} className="btn-nav-login" style={{ cursor: 'pointer', border: 'none', background: 'none' }}>
+      Logout
+    </button>
+  </>
+) : (
           <>
             <Link to="/login" className="btn-nav-login">Login</Link>
             <Link to="/register" className="btn-nav-signup">Sign Up</Link>   

@@ -262,30 +262,59 @@ function cancelReply(btn) {
 
 // ── Send reply ────────────────────────────────────────
 function sendReply(btn) {
-  const card       = btn.closest('.inbox-card');
-  const input      = card.querySelector('.inbox-reply-input');
-  const text       = input.value.trim();
+  const card      = btn.closest('.inbox-card');
+  const input     = card.querySelector('.inbox-reply-input');
+  const text      = input.value.trim();
   if (!text) return;
 
-  const replyArea  = card.querySelector('.inbox-reply-area');
-  const replySent  = card.querySelector('.inbox-reply-sent');
-  const now        = new Date();
-  const timeStr    = now.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-                   + ' at ' + now.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
-
-  replySent.innerHTML = `<div class="reply-label">✅ Replied by Community Help Hub Support Team · ${timeStr}</div>${text}`;
-  replySent.style.display = 'block';
-  input.value = '';
-  replyArea.style.display = 'none';
-
-  // Also mark as read automatically after replying
-  const badge = card.querySelector('.badge');
-  if (badge && badge.textContent === 'Unread') {
-    badge.className = 'badge badge-completed';
-    badge.textContent = 'Read';
-    card.classList.remove('unread');
-    card.setAttribute('data-status', 'read');
-    const markReadBtn = card.querySelector('.btn-ghost');
-    if (markReadBtn && markReadBtn.textContent === 'Mark Read') markReadBtn.remove();
+  // Get the contact message ID from the card
+  const msgId = card.dataset.msgid;
+  if (!msgId) {
+    alert('Cannot find message ID');
+    return;
   }
+
+  btn.disabled    = true;
+  btn.textContent = 'Sending...';
+
+  fetch(`/admin/contact/${msgId}/reply`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ replyText: text })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const replyArea  = card.querySelector('.inbox-reply-area');
+      const replySent  = card.querySelector('.inbox-reply-sent');
+      const now        = new Date();
+      const timeStr    = now.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' })
+                       + ' at ' + now.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit', hour12:true });
+
+      replySent.innerHTML = `<div class="reply-label">✅ Sent to user's Messages inbox · ${timeStr}</div>${text}`;
+      replySent.style.display = 'block';
+      input.value = '';
+      replyArea.style.display = 'none';
+
+      // Mark as read
+      const badge = card.querySelector('.badge');
+      if (badge && badge.textContent === 'Unread') {
+        badge.className   = 'badge badge-completed';
+        badge.textContent = 'Read';
+        card.classList.remove('unread');
+        card.setAttribute('data-status', 'read');
+        const markReadBtn = card.querySelector('.btn-ghost');
+        if (markReadBtn && markReadBtn.textContent === 'Mark Read') markReadBtn.remove();
+      }
+    } else {
+      alert('Failed: ' + data.error);
+      btn.disabled    = false;
+      btn.textContent = 'Send Reply';
+    }
+  })
+  .catch(() => {
+    alert('Network error. Please try again.');
+    btn.disabled    = false;
+    btn.textContent = 'Send Reply';
+  });
 }

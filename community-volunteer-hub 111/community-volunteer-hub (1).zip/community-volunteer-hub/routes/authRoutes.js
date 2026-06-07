@@ -63,12 +63,16 @@ router.get('/api/profile', protect, authController.apiGetProfile);
 router.put('/api/profile', protect, authController.apiUpdateProfile);
 
 // Contact GET
-router.get('/contact', (req, res) => {
-  res.render('contact', {
-    user: req.session.userId ? { name: req.session.name, role: req.session.role } : null,
-    success: null,
-    error: null
-  });
+router.get('/contact', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = req.session.userId 
+      ? await User.findById(req.session.userId).select('name role email')
+      : null;
+    res.render('contact', { user, success: null, error: null });
+  } catch(err) {
+    res.render('contact', { user: null, success: null, error: null });
+  }
 });
 
 // Contact POST
