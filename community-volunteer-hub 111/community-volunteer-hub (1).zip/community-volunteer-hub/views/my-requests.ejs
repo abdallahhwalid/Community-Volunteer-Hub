@@ -127,7 +127,7 @@
         <% var volId = req.acceptedVolunteer._id; %>
         <% var reqId = req._id; %>
         <% for(var s = 1; s <= 5; s++) { %>
-          <button type="button"
+          <button type="button">
             onclick="submitRating('<%= reqId %>', '<%= volId %>', <%= s %>)"
             style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
             ☆
