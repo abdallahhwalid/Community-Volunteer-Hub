@@ -1,6 +1,7 @@
-const User   = require('../models/User');
-//const bcrypt = require('bcrypt');
-const bcrypt = require('bcryptjs');
+const User     = require('../models/User');
+const bcrypt   = require('bcryptjs');
+const crypto   = require('crypto');
+const nodemailer = require('nodemailer');
 // REGISTER
 exports.showRegister = (req, res) => {
   res.render('register', { error: null });
@@ -218,6 +219,119 @@ exports.apiGetProfile = async (req, res) => {
     res.status(200).json({ success: true, user });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Something went wrong' });
+  }
+};
+
+// FORGOT PASSWORD - show form
+exports.showForgotPassword = (req, res) => {
+  const user = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+  res.render('forgot-password', { error: null, success: null, user });
+};
+
+// FORGOT PASSWORD - handle form
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !email.includes('@')) {
+      return res.render('forgot-password', { error: 'Please enter a valid email address', success: null });
+    }
+
+    const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.render('forgot-password', { error: null, success: 'If that email exists, a reset link has been sent.', user: sessionUser });
+    }
+
+    // Generate random token
+    const token = crypto.randomBytes(32).toString('hex');
+    user.resetToken       = token;
+    user.resetTokenExpiry = Date.now() + 1000 * 60 * 60; // 1 hour
+    await user.save();
+
+    // Send email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: 'Community Help Hub — Password Reset',
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Hi ${user.name},</p>
+        <p>Click the link below to reset your password. This link expires in 1 hour.</p>
+        <a href="${resetLink}" style="background:#1E3A8A;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin:16px 0;">Reset My Password</a>
+        <p>If you did not request this, ignore this email.</p>
+      `
+    });
+
+    res.render('forgot-password', { error: null, success: 'A password reset link has been sent to your email.', user: sessionUser });
+
+  } catch (err) {
+    console.error(err);
+    res.render('forgot-password', { error: 'Something went wrong. Please try again.', success: null, user: null });
+  }
+};
+
+// RESET PASSWORD - show form
+exports.showResetPassword = async (req, res) => {
+  const { token } = req.params;
+  const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+  const user = await User.findOne({
+    resetToken: token,
+    resetTokenExpiry: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    return res.render('reset-password', { error: 'This reset link is invalid or has expired.', token: null, user: sessionUser });
+  }
+
+  res.render('reset-password', { error: null, token, user: sessionUser });
+};
+
+// RESET PASSWORD - handle form
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.render('reset-password', { error: 'Password must be at least 6 characters', token });
+    }
+    if (password !== confirmPassword) {
+      return res.render('reset-password', { error: 'Passwords do not match', token });
+    }
+
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: Date.now() }
+    });
+
+    const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+
+    if (!user) {
+      return res.render('reset-password', { error: 'This reset link is invalid or has expired.', token: null, user: sessionUser });
+    }
+
+    user.password         = await bcrypt.hash(password, 10);
+    user.resetToken       = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.redirect('/login');
+
+  } catch (err) {
+    console.error(err);
+    res.render('reset-password', { error: 'Something went wrong. Please try again.', token: req.params.token, user: null });
   }
 };
 

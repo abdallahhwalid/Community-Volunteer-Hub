@@ -25,7 +25,9 @@ const userSchema = new mongoose.Schema({
     default: 'user' 
   },
   rating: { type: Number, default: 0 },
-  joinedAt: { type: Date, default: Date.now }
+  joinedAt: { type: Date, default: Date.now },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date }
 });
 
 module.exports = mongoose.model('User', userSchema);

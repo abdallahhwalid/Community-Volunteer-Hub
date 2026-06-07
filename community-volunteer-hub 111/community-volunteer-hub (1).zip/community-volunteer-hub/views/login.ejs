@@ -62,41 +62,13 @@
           <label class="checkbox-label">
             <input type="checkbox" id="remember"/> Remember me
           </label>
-          <a href="#" id="forgot-password-link" class="forgot-link">Forgot password?</a>
+          <a href="/forgot-password" class="forgot-link">Forgot password?</a>
         </div>
         <button type="submit" class="btn-primary btn-full">Sign In</button>
         <div class="alert-success" id="success-msg">✅ Login successful! Redirecting...</div>
       </form>
     </div>
 
-    <div id="recovery-modal" class="modal-overlay hidden">
-      <div class="auth-card modal-card">
-        <button id="close-modal" class="modal-close">&times;</button>
-        <h2>Reset Password</h2>
-        <p id="recovery-desc" class="modal-desc">Enter your email for a verification code.</p>
-        <div id="step-1-email">
-          <div class="form-group">
-            <input type="email" id="recovery-email" class="form-control" placeholder="enter your email"/>
-            <span class="error-msg form-error-text text-red" id="recovery-email-error"></span>
-          </div>
-          <button id="send-recovery-btn" class="btn-primary btn-full">Send Code</button>
-        </div>
-        <div id="step-2-reset" class="hidden">
-          <div class="form-group">
-            <label class="form-label-sm">Verification Code</label>
-            <input type="text" id="recovery-code" class="form-control" placeholder="Enter code"/>
-            <span class="error-msg form-error-text text-red" id="recovery-code-error"></span>
-          </div>
-          <div class="form-group">
-            <label class="form-label-sm">New Password</label>
-            <input type="password" id="new-password" class="form-control" placeholder="Min 6 characters"/>
-            <span class="error-msg form-error-text text-red" id="new-password-error"></span>
-          </div>
-          <button id="confirm-reset-btn" class="btn-primary btn-full">Reset Password</button>
-        </div>
-        <div id="recovery-success-msg" class="modal-success-text hidden">✅ Password reset successfully! You can now log in.</div>
-      </div>
-    </div>
   </main>
 
   <footer class="simple-footer">
