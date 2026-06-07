@@ -1,10 +1,10 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/*import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';*/
 
 function SafetyPage() {
   return (
-    <>
-      <Navbar />
+    
+      
       <main className="main-content">
         <div className="page-header">
           <h1>Safety Guidelines</h1>
@@ -26,8 +26,7 @@ function SafetyPage() {
           <p>If you encounter a user who makes you feel unsafe, please report them immediately at <strong>support@communityhelpub.org</strong>. In the event of an immediate emergency, contact your local emergency services first.</p>
         </div>
       </main>
-      <Footer />
-    </>
+      
   );
 }
 

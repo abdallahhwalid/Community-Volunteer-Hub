@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+/*import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';*/
 
 const SUGGESTED_SKILLS = [
   'IT Repair', 'Gardening', 'Tutoring', 'Home Tasks', 'Cooking',
@@ -93,7 +93,7 @@ function ProfilePage() {
 
   return (
     <>
-      <Navbar />
+      
       <main className="main-content">
         <div className="page-header">
           <h1>My Profile</h1>
@@ -173,7 +173,7 @@ function ProfilePage() {
           </form>
         </div>
       </main>
-      <Footer />
+     
     </>
   );
 }

@@ -50,6 +50,19 @@ router.get('/privacy', (req, res) => res.render('privacy', { user: req.session.u
 router.get('/safety', (req, res) => res.render('safety', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
 router.get('/about', (req, res) => res.render('about', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
 
+// Volunteers endpoint for homepage
+router.get('/api/volunteers', async (req, res) => {
+  try {
+    const volunteers = await User.find({ skills: { $exists: true, $ne: [] } })
+      .sort({ rating: -1 })
+      .limit(4)
+      .select('name skills rating');
+    res.json({ success: true, volunteers });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
 // API routes for React
 router.post('/api/register', authController.apiRegister);
 router.post('/api/login', authController.apiLogin);
