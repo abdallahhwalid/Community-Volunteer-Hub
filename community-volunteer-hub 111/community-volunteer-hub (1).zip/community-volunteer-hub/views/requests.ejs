@@ -94,11 +94,19 @@
               <% } else { %>
                 <span class="meta-info">🕐 Flexible</span>
               <% } %>
-            </div>
+         </div>
             <% if (req.status === 'In Progress') { %>
               <button class="btn-offer" disabled style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">In Progress</button>
             <% } else if (user) { %>
-              <button class="btn-offer" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Unknown' %>')">Offer Help</button>
+              <button class="btn-offer"
+                data-id="<%= req._id %>"
+                data-title="<%= req.title %>"
+                data-category="<%= req.category %>"
+                data-location="<%= req.location %>"
+                data-user="<%= req.postedBy ? req.postedBy.name : 'Unknown' %>"
+                onclick="openOfferModal(this.dataset.id, this.dataset.title, this.dataset.category, this.dataset.location, this.dataset.user)">
+                Offer Help
+              </button>
             <% } else { %>
               <button class="btn-offer" onclick="showLoginPrompt()">Offer Help</button>
             <% } %>
@@ -208,11 +216,11 @@
         msgEl.style.display = 'block';
         msgEl.style.color   = data.success ? 'green' : 'red';
         msgEl.textContent   = data.message;
-        if (data.success) {
+      if (data.success) {
           btn.textContent = '✓ Sent!';
           setTimeout(() => {
             closeOfferModal();
-            window.location.href = `/messages?autoMsg=true&datetime=${encodeURIComponent(suggestedTime)}&user=${encodeURIComponent(currentRequestUser)}&requestTitle=${encodeURIComponent(currentRequestTitle)}`;
+            window.location.href = `/messages`;
           }, 1200);
         } else {
           btn.disabled    = false;

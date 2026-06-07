@@ -56,24 +56,29 @@ exports.getDashboard = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.redirect('/admin');
+    res.json({ success: true });          // CHANGE from res.redirect('/admin')
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ success: false });
   }
 };
 
-// ─────────────────────────────────────────────
-// DELETE /admin/requests/:id
-// ─────────────────────────────────────────────
 exports.deleteRequest = async (req, res) => {
   try {
     await Request.findByIdAndDelete(req.params.id);
-    res.redirect('/admin');
+    res.json({ success: true });          // CHANGE from res.redirect('/admin')
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ success: false });
   }
 };
 
+exports.deleteMessage = async (req, res) => {
+  try {
+    await Message.findByIdAndDelete(req.params.id);
+    res.json({ success: true });          // CHANGE from res.redirect('/admin')
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+};
 // ─────────────────────────────────────────────
 // GET /admin/messages  —  alias, redirects to dashboard
 // ─────────────────────────────────────────────
@@ -81,18 +86,6 @@ exports.getMessages = async (req, res) => {
   res.redirect('/admin');
 };
 
-// ─────────────────────────────────────────────
-// DELETE /admin/messages/:id
-// ─────────────────────────────────────────────
-exports.deleteMessage = async (req, res) => {
-  try {
-    await Message.findByIdAndDelete(req.params.id);
-    res.redirect('/admin');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-};
 // ─────────────────────────────────────────────
 // ADD THIS to adminController.js
 // GET /admin/api  —  JSON data for React AdminPage

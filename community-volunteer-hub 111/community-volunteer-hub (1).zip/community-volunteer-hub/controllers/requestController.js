@@ -1,5 +1,7 @@
 const Request = require('../models/Request');
 const Offer   = require('../models/Offer');
+const Message = require('../models/Message');
+const User    = require('../models/User');
 const path    = require('path');
 const fs      = require('fs');
 const { asyncHandler, createError } = require('../middleware/errorMiddleware');
@@ -241,11 +243,24 @@ exports.submitOffer = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'You cannot offer help on your own request' });
   }
 
-  await Offer.findOneAndUpdate(
+ await Offer.findOneAndUpdate(
     { request: requestId, volunteer: volunteerId },
     { suggestedTime: suggestedTime || null, status: 'Pending' },
     { upsert: true, new: true }
   );
+
+  // Send a message to the request owner
+  const volunteer = await User.findById(volunteerId).select('name');
+  const timeStr = suggestedTime
+    ? new Date(suggestedTime).toLocaleString()
+    : 'flexible';
+
+  await Message.create({
+    sender:   volunteerId,
+    receiver: request.postedBy,
+    content:  `Hi! I'd like to help with your request "${request.title}" (${request.category} — ${request.location}). I'm available on ${timeStr}. Looking forward to hearing from you!`,
+    request:  requestId
+  });
 
   res.json({ success: true, message: 'Your offer has been sent!' });
 });

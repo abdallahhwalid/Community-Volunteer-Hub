@@ -111,11 +111,12 @@
       <p style="font-size:13px;font-weight:600;margin-bottom:6px;">Rate your volunteer:</p>
       <div style="display:flex;gap:6px;">
         <% [1,2,3,4,5].forEach(star => { %>
-         <button
+      <button>
   class="star-btn"
   data-request-id="<%= req._id %>"
-  data-volunteer-id="<%= req.acceptedVolunteer?._id %>"
+  data-volunteer-id="<%= req.acceptedVolunteer && req.acceptedVolunteer._id ? req.acceptedVolunteer._id : '' %>"
   data-star="<%= star %>"
+  onclick="submitRating('<%= req._id %>', '<%= req.acceptedVolunteer && req.acceptedVolunteer._id ? req.acceptedVolunteer._id : "" %>', <%= star %>)"
   style="font-size:24px;background:none;border:none;cursor:pointer;">
   ☆
 </button>

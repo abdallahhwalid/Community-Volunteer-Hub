@@ -5,6 +5,7 @@ const adminController = require('../controllers/adminController');
 const { protect, isAdmin } = require('../middleware/authMiddleware');
 
 router.get('/',          protect, isAdmin, adminController.getDashboard);
+router.get('/api',       protect, isAdmin, adminController.getDashboardApi);  // line 8
 router.get('/messages',  protect, isAdmin, adminController.getMessages);
 router.delete('/users/:id',    protect, isAdmin, adminController.deleteUser);
 router.delete('/requests/:id', protect, isAdmin, adminController.deleteRequest);

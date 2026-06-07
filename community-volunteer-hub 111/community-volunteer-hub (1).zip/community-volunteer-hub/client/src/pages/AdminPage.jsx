@@ -53,18 +53,18 @@ export default function AdminPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const deleteItem = async (url, id, setter, list) => {
-    try {
-      const res  = await fetch(`${url}/${id}?_method=DELETE`, { method: "POST" });
-      if (res.ok || res.redirected) {
-        setter(list.filter(i => i._id !== id));
-        showToast("Deleted successfully.");
-      }
-    } catch {
-      showToast("Error deleting item.");
+ const deleteItem = async (url, id, setter, list) => {
+  try {
+    const res = await fetch(`${url}/${id}`, { method: "DELETE" });  // CHANGE THIS LINE
+    if (res.ok) {
+      setter(list.filter(i => i._id !== id));
+      showToast("Deleted successfully.");
     }
-    setConfirmModal(null);
-  };
+  } catch {
+    showToast("Error deleting item.");
+  }
+  setConfirmModal(null);
+};
 
   const confirm = (title, message, onConfirm) => {
     setConfirmModal({ title, message, onConfirm });

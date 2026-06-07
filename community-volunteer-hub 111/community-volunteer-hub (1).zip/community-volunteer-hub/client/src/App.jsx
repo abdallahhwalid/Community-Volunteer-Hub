@@ -31,6 +31,7 @@ function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/safety" element={<SafetyPage />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
+     <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   );
