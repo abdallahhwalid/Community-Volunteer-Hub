@@ -27,6 +27,15 @@
       color:#4338CA; border-radius:6px; padding:2px 8px; margin-left:6px;
     }
   </style>
+  <script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
 </head>
 <body>
 
@@ -104,23 +113,26 @@
               </div>
             <% } %>
 
-            <% if (req.status === 'Completed') { %>
-  <p style="font-size:13px;color:#6b7280;">Completed on <%= new Date(req.updatedAt).toDateString() %></p>
-  <% if (req.acceptedVolunteer && !req.rated) { %>
-    <div class="rating-box" id="rating-<%= req._id %>">
-      <p style="font-size:13px;font-weight:600;margin-bottom:6px;">Rate your volunteer:</p>
-      <div style="display:flex;gap:6px;">
-        <% [1,2,3,4,5].forEach(star => { %>
-      <button>
-  class="star-btn"
-  data-request-id="<%= req._id %>"
-  data-volunteer-id="<%= req.acceptedVolunteer && req.acceptedVolunteer._id ? req.acceptedVolunteer._id : '' %>"
-  data-star="<%= star %>"
-  onclick="submitRating('<%= req._id %>', '<%= req.acceptedVolunteer && req.acceptedVolunteer._id ? req.acceptedVolunteer._id : "" %>', <%= star %>)"
-  style="font-size:24px;background:none;border:none;cursor:pointer;">
-  ☆
-</button>
-        <% }) %>
+          <% if (req.status === 'Completed') { %>
+  <p style="font-size:13px;color:#6b7280;">
+    Completed on <%= new Date(req.updatedAt).toDateString() %>
+  </p>
+  <% if (req.acceptedVolunteer) { %>
+    <div class="rating-box" id="rating-<%= req._id %>"
+      style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
+      <p style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:6px;">
+        ⭐ Rate your volunteer:
+      </p>
+      <div style="display:flex; gap:6px;">
+        <% var volId = req.acceptedVolunteer._id; %>
+        <% var reqId = req._id; %>
+        <% for(var s = 1; s <= 5; s++) { %>
+          <button type="button"
+            onclick="submitRating('<%= reqId %>', '<%= volId %>', <%= s %>)"
+            style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
+            ☆
+          </button>
+        <% } %>
       </div>
     </div>
   <% } %>
@@ -345,15 +357,45 @@
       form.remove();
     }
 
-    function saveEdit(btn) {
-      const form = btn.closest('.edit-form');
-      const val  = id => { const el = form.querySelector(id); return el ? el.value.trim() : ''; };
-      if (form._titleEl    && val('#edit-title'))    form._titleEl.textContent    = val('#edit-title');
-      if (form._locationEl && val('#edit-location')) form._locationEl.textContent = val('#edit-location');
+   function saveEdit(btn) {
+  const form    = btn.closest('.edit-form');
+  const item    = form.closest('.my-req-item');
+const reqId   = item.id.replace('req-', '');   // relies on id="req-id_here"  const title   = form.querySelector('#edit-title')?.value.trim();
+  const loc     = form.querySelector('#edit-location')?.value.trim();
+
+  if (!title) {
+    showToast('Title cannot be empty.');
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Saving...';
+
+  fetch('/requests/' + reqId, {
+    method:  'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ title: title, location: loc || '' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      if (form._titleEl    && title) form._titleEl.textContent    = title;
+      if (form._locationEl && loc)   form._locationEl.textContent = loc;
       form._originalActions.style.display = '';
       showToast('Request updated!');
       form.remove();
+    } else {
+      showToast('Error: ' + (data.message || 'Could not update.'));
+      btn.disabled    = false;
+      btn.textContent = 'Save Changes';
     }
+  })
+  .catch(function() {
+    showToast('Network error. Please try again.');
+    btn.disabled    = false;
+    btn.textContent = 'Save Changes';
+  });
+}
 
     function showToast(msg) {
       const t = document.createElement('div');

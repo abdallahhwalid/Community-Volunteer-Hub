@@ -6,6 +6,17 @@
   <title>Post a Request – Community Help Hub</title>
   <link rel="stylesheet" href="/css/style.css"/>
   <link rel="stylesheet" href="/css/forms.css"/>
+
+  <script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+
 </head>
 <body>
 
@@ -31,6 +42,40 @@
         <% } %>
 
         <form id="post-request-form" method="POST" action="/requests" enctype="multipart/form-data" novalidate>
+
+<div class="form-group">
+  <label>Request Type *</label>
+  <div style="display:flex; gap:12px; margin-top:4px;">
+    <label id="inperson-label" style="flex:1; display:flex; align-items:center; gap:10px;
+      padding:12px 16px; border-radius:8px; cursor:pointer;
+      border:2px solid var(--navy); background:var(--blue-light); transition:all 0.2s;">
+      <input type="radio" name="requestType" value="in-person" checked
+        onchange="setRequestType('in-person')" style="accent-color:var(--navy)"/>
+      <span>
+        <span style="font-size:16px;">📍</span>
+        <strong style="font-size:14px; margin-left:6px;">In-Person</strong><br/>
+        <span style="font-size:12px; color:var(--text-gray);">Volunteer comes to you or you meet locally</span>
+      </span>
+    </label>
+
+    <label id="online-label" style="flex:1; display:flex; align-items:center; gap:10px;
+      padding:12px 16px; border-radius:8px; cursor:pointer;
+      border:2px solid var(--border); background:white; transition:all 0.2s;">
+      <input type="radio" name="requestType" value="online"
+        onchange="setRequestType('online')" style="accent-color:#4338CA"/>
+      <span>
+        <span style="font-size:16px;">🌐</span>
+        <strong style="font-size:14px; margin-left:6px;">Online</strong><br/>
+        <span style="font-size:12px; color:var(--text-gray);">Help via video call, chat, or remote access</span>
+      </span>
+    </label>
+  </div>
+
+  <div id="online-notice" style="display:none; margin-top:10px; padding:10px 14px;
+    background:#EEF2FF; border-radius:8px; font-size:13px; color:#4338CA; font-weight:500;">
+    🌐 <strong>Online request</strong> — no physical location needed.
+  </div>
+</div>
 
           <div class="form-group">
             <label for="title">Request Title *</label>
@@ -61,14 +106,13 @@
             <span class="error-msg" id="description-error"></span>
           </div>
 
-          <div class="form-group">
-            <label for="location">📍 Location *</label>
-            <input type="text" id="location" name="location" class="form-control"
-              placeholder="e.g., Downtown, 123 Main St"
-              value="<%= old.location || '' %>"/>
-            <span class="error-msg" id="location-error"></span>
-          </div>
-
+         <div class="form-group" id="location-group">
+  <label for="location">📍 Location *</label>
+  <input type="text" id="location" name="location" class="form-control"
+    placeholder="e.g., Downtown, 123 Main St"
+    value="<%= old.location || '' %>"/>
+  <span class="error-msg" id="location-error"></span>
+</div>
           <div class="form-row">
             <div class="form-group">
               <label for="desired-date">📅 Desired Date</label>
@@ -151,6 +195,24 @@
       document.getElementById('image-preview').src = '';
       document.getElementById('image-preview-wrap').style.display = 'none';
     }
+
+ function setRequestType(type) {
+    const isOnline = type === 'online';
+    const inpersonLabel = document.getElementById('inperson-label');
+    const onlineLabel   = document.getElementById('online-label');
+    const locationGroup = document.getElementById('location-group');
+    const onlineNotice  = document.getElementById('online-notice');
+    const safetyItems   = document.getElementById('safety-items');
+
+    inpersonLabel.style.border     = isOnline ? '2px solid var(--border)' : '2px solid var(--navy)';
+    inpersonLabel.style.background = isOnline ? 'white' : 'var(--blue-light)';
+    onlineLabel.style.border       = isOnline ? '2px solid #4338CA' : '2px solid var(--border)';
+    onlineLabel.style.background   = isOnline ? '#EEF2FF' : 'white';
+
+    locationGroup.style.display = isOnline ? 'none' : '';
+    onlineNotice.style.display  = isOnline ? 'block' : 'none';
+  }
+
   </script>
 
   <script src="/js/validation.js"></script>

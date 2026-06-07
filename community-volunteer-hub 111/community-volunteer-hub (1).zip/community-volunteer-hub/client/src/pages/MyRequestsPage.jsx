@@ -38,17 +38,11 @@ function RatingBox({ volunteerId }) {
             onMouseEnter={() => setHovered(star)}
             onMouseLeave={() => setHovered(0)}
             style={{
-              fontSize:"28px",
-              background:"none",
-              border:"none",
-              cursor:"pointer",
+              fontSize:"28px", background:"none", border:"none", cursor:"pointer",
               color: star <= (hovered || selected) ? "#F59E0B" : "#D1D5DB",
-              transition:"color 0.15s",
-              padding:"0 2px",
+              transition:"color 0.15s", padding:"0 2px",
             }}
-          >
-            ★
-          </button>
+          >★</button>
         ))}
       </div>
     </div>
@@ -60,18 +54,14 @@ export default function MyRequestsPage() {
   const [tab, setTab]                     = useState("posted");
   const [postedRequests, setPosted]       = useState([]);
   const [helpingRequests, setHelping]     = useState([]);
-  const [user, setUser]                   = useState(null);
   const [loading, setLoading]             = useState(true);
   const [confirmModal, setConfirmModal]   = useState(null);
   const [editingId, setEditingId]         = useState(null);
   const [editForm, setEditForm]           = useState({});
+  const [editSaving, setEditSaving]       = useState(false); // NEW: loading state for save
   const [toast, setToast]                 = useState(null);
 
-  const ONLINE_CATEGORIES = ["IT Repair", "Tutoring"];
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -82,7 +72,7 @@ export default function MyRequestsPage() {
       ]);
       const profileData = await profileRes.json();
       const reqData     = await reqRes.json();
-      if (profileData.success) setUser(profileData.user);
+      if (!profileData.success) { window.location.href = "/login"; return; }
       if (reqData.success) {
         setPosted(reqData.postedRequests);
         setHelping(reqData.helpingRequests);
@@ -105,7 +95,8 @@ export default function MyRequestsPage() {
       confirmBg: "#dc2626", confirmHover: "#b91c1c",
       onConfirm: async () => {
         try {
-          const data = await fetch(`/requests/${id}`, { method: "DELETE" }).then(r => r.json());
+          const res  = await fetch(`/requests/${id}`, { method: "DELETE" });
+          const data = await res.json();
           if (data.success) {
             setPosted(prev => prev.filter(r => r._id !== id));
             showToast("Request cancelled and removed.");
@@ -120,7 +111,8 @@ export default function MyRequestsPage() {
   };
 
   const markCompleted = async (id) => {
-    const data = await fetch(`/requests/${id}/complete`, { method: "PUT" }).then(r => r.json());
+    const res  = await fetch(`/requests/${id}/complete`, { method: "PUT" });
+    const data = await res.json();
     if (data.success) {
       setPosted(prev => prev.map(r => r._id === id ? { ...r, status: "Completed" } : r));
       showToast("Request marked as completed!");
@@ -128,7 +120,8 @@ export default function MyRequestsPage() {
   };
 
   const respondOffer = async (offerId, action) => {
-    const data = await fetch(`/requests/offers/${offerId}/${action}`, { method: "PUT" }).then(r => r.json());
+    const res  = await fetch(`/requests/offers/${offerId}/${action}`, { method: "PUT" });
+    const data = await res.json();
     if (data.success) {
       await loadData();
       showToast(action === "accept" ? "Offer accepted!" : "Offer rejected.");
@@ -143,7 +136,8 @@ export default function MyRequestsPage() {
       cancelLabel: "Stay", confirmLabel: "Withdraw",
       confirmBg: "#ea580c", confirmHover: "#c2410c",
       onConfirm: async () => {
-        const data = await fetch(`/requests/offers/${offerId}/withdraw`, { method: "PUT" }).then(r => r.json());
+        const res  = await fetch(`/requests/offers/${offerId}/withdraw`, { method: "PUT" });
+        const data = await res.json();
         if (data.success) {
           setHelping(prev => prev.filter(o => o._id !== offerId));
           showToast("Offer withdrawn.");
@@ -152,22 +146,57 @@ export default function MyRequestsPage() {
     });
   };
 
+  // ── EDIT: open form with current values ──
   const startEdit = (req) => {
     setEditingId(req._id);
-    setEditForm({ title: req.title, location: req.location, description: req.description });
+    setEditForm({
+      title:       req.title       || "",
+      location:    req.location    || "",
+      description: req.description || "",
+    });
   };
 
+  // ── EDIT: send PUT to backend and update local state ──
   const saveEdit = async (id) => {
-    const data = await fetch(`/requests/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(editForm),
-    }).then(r => r.json());
-    if (data.success) {
-      setPosted(prev => prev.map(r => r._id === id ? { ...r, ...editForm } : r));
-      setEditingId(null);
-      showToast("Request updated!");
-    } else showToast("Error: " + data.message);
+    if (!editForm.title.trim()) {
+      showToast("Title cannot be empty.");
+      return;
+    }
+
+    setEditSaving(true);
+    try {
+      const res  = await fetch(`/requests/${id}`, {
+        method:  "PUT",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          title:       editForm.title.trim(),
+          location:    editForm.location.trim(),
+          description: editForm.description.trim(),
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Update local state so UI reflects change immediately
+        setPosted(prev => prev.map(r =>
+          r._id === id
+            ? { ...r, title: editForm.title.trim(), location: editForm.location.trim(), description: editForm.description.trim() }
+            : r
+        ));
+        setEditingId(null);
+        showToast("Request updated successfully!");
+      } else {
+        showToast("Error: " + (data.message || "Could not update request."));
+      }
+    } catch {
+      showToast("Network error. Please try again.");
+    }
+    setEditSaving(false);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
   };
 
   const badgeClass = (status) =>
@@ -175,7 +204,7 @@ export default function MyRequestsPage() {
     status === "In Progress" ? "badge-progress"  :
     status === "Completed"   ? "badge-completed" : "badge-cancelled";
 
-  const isOnline = (category) => ONLINE_CATEGORIES.includes(category);
+  const isOnline = (req) => req && (req.requestType === "online" || req.location === "Online");
 
   if (loading) return (
     <main className="main-content">
@@ -223,15 +252,16 @@ export default function MyRequestsPage() {
                     <div className="my-req-header-top">
                       <span className={`badge ${badgeClass(req.status)}`}>{req.status}</span>
                       <span style={{ fontSize:"13px", color:"#6b7280" }}>{req.category}</span>
-                      {isOnline(req.category) && (
+                      {isOnline(req) && (
                         <span style={{ fontSize:"11px", fontWeight:700, background:"#EEF2FF", color:"#4338CA", borderRadius:"6px", padding:"2px 8px" }}>🌐 Online</span>
                       )}
                     </div>
-                    <h3 className="req-title">{req.title}</h3>
+                    {/* Title — shows edited value immediately */}
+                    <h3 className="req-title" style={{ margin:"6px 0 0" }}>{req.title}</h3>
                   </div>
 
                   <div className="my-req-meta">
-                    {isOnline(req.category)
+                    {isOnline(req)
                       ? <span className="meta-info">🌐 Online Meeting</span>
                       : <span className="meta-info">📍 <span className="req-location">{req.location}</span></span>
                     }
@@ -250,7 +280,6 @@ export default function MyRequestsPage() {
                     </div>
                   )}
 
-                  {/* ── COMPLETED: date + rating box ── */}
                   {req.status === "Completed" && (
                     <>
                       <p style={{ fontSize:"13px", color:"#6b7280" }}>
@@ -271,7 +300,7 @@ export default function MyRequestsPage() {
                             <span className="helper-name">{offer.volunteer.name}</span>
                             {offer.suggestedTime && (
                               <span style={{ fontSize:"12px", color:"#6b7280" }}>
-                                {isOnline(req.category) ? "📅 Meeting:" : "⏰ Available:"} {new Date(offer.suggestedTime).toLocaleString()}
+                                {isOnline(req) ? "📅 Meeting:" : "⏰ Available:"} {new Date(offer.suggestedTime).toLocaleString()}
                               </span>
                             )}
                           </div>
@@ -284,21 +313,48 @@ export default function MyRequestsPage() {
                     </div>
                   )}
 
+                  {/* ── EDIT FORM (inline) ── */}
                   {editingId === req._id && (
-                    <div className="edit-form-inner" style={{ display:"flex", flexDirection:"column", gap:"10px", marginTop:"12px", padding:"16px", background:"#f9fafb", borderRadius:"12px", border:"1px solid #e5e7eb" }}>
-                      <label className="edit-label">Title</label>
-                      <input className="edit-input" value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}/>
-                      {!isOnline(req.category) && (
+                    <div style={{ marginTop:"12px", padding:"16px", background:"#f9fafb", borderRadius:"12px", border:"1px solid #e5e7eb", display:"flex", flexDirection:"column", gap:"10px" }}>
+                      <label style={{ fontSize:"13px", fontWeight:600, color:"#374151" }}>Title</label>
+                      <input
+                        className="form-control"
+                        value={editForm.title}
+                        onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                        placeholder="Request title"
+                      />
+
+                      {!isOnline(req) && (
                         <>
-                          <label className="edit-label">Location</label>
-                          <input className="edit-input" value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}/>
+                          <label style={{ fontSize:"13px", fontWeight:600, color:"#374151" }}>Location</label>
+                          <input
+                            className="form-control"
+                            value={editForm.location}
+                            onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
+                            placeholder="Location"
+                          />
                         </>
                       )}
-                      <label className="edit-label">Description</label>
-                      <textarea className="edit-input" rows={3} value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}/>
+
+                      <label style={{ fontSize:"13px", fontWeight:600, color:"#374151" }}>Description</label>
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        value={editForm.description}
+                        onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                        placeholder="Description"
+                        style={{ resize:"vertical" }}
+                      />
+
                       <div style={{ display:"flex", gap:"10px", marginTop:"4px" }}>
-                        <button className="btn-ghost" onClick={() => setEditingId(null)}>Cancel</button>
-                        <button className="btn-blue" onClick={() => saveEdit(req._id)}>Save Changes</button>
+                        <button className="btn-ghost" onClick={cancelEdit} disabled={editSaving}>Cancel</button>
+                        <button
+                          className="btn-blue"
+                          onClick={() => saveEdit(req._id)}
+                          disabled={editSaving}
+                        >
+                          {editSaving ? "Saving..." : "Save Changes"}
+                        </button>
                       </div>
                     </div>
                   )}
@@ -332,24 +388,25 @@ export default function MyRequestsPage() {
                 const req = offer.request;
                 if (!req) return null;
                 const offerBadge = offer.status === "Accepted" ? "badge-progress" : offer.status === "Rejected" ? "badge-cancelled" : "badge-open";
+                const reqIsOnline = isOnline(req);
                 return (
                   <div key={offer._id} className="my-req-item">
                     <div className="my-req-header">
                       <div className="my-req-header-top">
                         <span className={`badge ${offerBadge}`}>Offer: {offer.status}</span>
                         <span style={{ fontSize:"13px", color:"#6b7280" }}>{req.category}</span>
-                        {isOnline(req.category) && (
+                        {reqIsOnline && (
                           <span style={{ fontSize:"11px", fontWeight:700, background:"#EEF2FF", color:"#4338CA", borderRadius:"6px", padding:"2px 8px" }}>🌐 Online</span>
                         )}
                       </div>
-                      <h3 className="req-title">{req.title}</h3>
+                      <h3 className="req-title" style={{ margin:"6px 0 0" }}>{req.title}</h3>
                     </div>
 
                     <div className="my-req-meta">
-                      {isOnline(req.category) ? <span className="meta-info">🌐 Online Meeting</span> : <span className="meta-info">📍 {req.location}</span>}
+                      {reqIsOnline ? <span className="meta-info">🌐 Online Meeting</span> : <span className="meta-info">📍 {req.location}</span>}
                       {offer.suggestedTime && (
                         <span className="meta-info">
-                          {isOnline(req.category) ? "📅 Meeting time:" : "🕐 Your time:"} {new Date(offer.suggestedTime).toLocaleString()}
+                          {reqIsOnline ? "📅 Meeting time:" : "🕐 Your time:"} {new Date(offer.suggestedTime).toLocaleString()}
                         </span>
                       )}
                     </div>
@@ -378,8 +435,10 @@ export default function MyRequestsPage() {
         </div>
       </main>
 
+      {/* ── CONFIRM MODAL ── */}
       {confirmModal && (
-        <div style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.45)", backdropFilter:"blur(4px)", display:"flex", alignItems:"center", justifyContent:"center" }} onClick={() => setConfirmModal(null)}>
+        <div style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.45)", backdropFilter:"blur(4px)", display:"flex", alignItems:"center", justifyContent:"center" }}
+          onClick={() => setConfirmModal(null)}>
           <div onClick={e => e.stopPropagation()} style={{ background:"#fff", borderRadius:"20px", padding:"40px 36px", maxWidth:"420px", width:"90%", textAlign:"center", boxShadow:"0 24px 60px rgba(0,0,0,0.18)" }}>
             <div style={{ width:"64px", height:"64px", borderRadius:"50%", background: confirmModal.iconBg, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px", fontSize:"30px" }}>{confirmModal.icon}</div>
             <h3 style={{ fontSize:"20px", fontWeight:700, color:"#111827", margin:"0 0 10px" }}>{confirmModal.title}</h3>
@@ -392,6 +451,7 @@ export default function MyRequestsPage() {
         </div>
       )}
 
+      {/* ── TOAST ── */}
       {toast && (
         <div style={{ position:"fixed", bottom:"24px", left:"50%", transform:"translateX(-50%)", background:"#1E3A8A", color:"#fff", padding:"12px 24px", borderRadius:"12px", fontSize:"14px", fontWeight:600, boxShadow:"0 8px 24px rgba(0,0,0,0.2)", zIndex:9999 }}>{toast}</div>
       )}
