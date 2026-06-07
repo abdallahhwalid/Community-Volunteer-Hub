@@ -928,3 +928,57 @@ footer {
 :root.dark .inbox-reply-btn:hover { border-color: #93C5FD; color: #93C5FD; }
 :root.dark .inbox-name         { color: #F1F5F9; }
 :root.dark .inbox-body         { color: #CBD5E1; }
+
+
+/*dark mode*/
+
+/*
+body.dark .nav-logo-icon {
+  position: relative;
+}
+
+body.dark .nav-logo-icon img {
+  display: none;
+}
+
+body.dark .nav-logo-icon::before {
+  content: url('/images/dark-mode/logo-dark.png');
+  display: block;
+  height: 90px;
+  width: auto;
+}
+
+
+body.dark .nav-icon-btn img[alt="messages"],
+body.dark .nav-icon-btn img[alt="Messages"] {
+  content: url('images/dark-mode/msgs-dark.png');
+}
+
+
+body.dark .nav-icon-btn img[alt="profile"],
+body.dark .nav-icon-btn img[alt="Profile"] {
+  content: url('/images/profile-dark.png');
+}
+
+
+body.dark .how-icon img[alt="Sign Up"] {
+  content: url('/images/sign-up-dark.PNG');
+}
+
+
+body.dark .how-icon img[alt="Post and Browse"] {
+  content: url('/images/post-browse-dark.PNG');
+}
+
+
+body.dark .how-icon img[alt="Connect and Help"] {
+  content: url('/images/connect-help-dark.PNG');
+}
+
+html.dark .nav-logo-text {
+  color: #fbfeff;
+}*/
+
+:root.dark .nav-logo-text {
+  color: #9ed2eb;
+}
