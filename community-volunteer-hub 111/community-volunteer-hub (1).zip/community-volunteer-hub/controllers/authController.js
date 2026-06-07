@@ -20,6 +20,9 @@ exports.register = async (req, res) => {
     if (!password || password.length < 6) {
       return res.render('register', { error: 'Password must be at least 6 characters' });
     }
+    if (password !== confirmPassword) {
+  return res.render('register', { error: 'Passwords do not match' });
+}
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

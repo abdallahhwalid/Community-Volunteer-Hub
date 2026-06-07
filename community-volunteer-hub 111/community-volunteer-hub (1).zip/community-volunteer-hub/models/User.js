@@ -15,18 +15,20 @@ const userSchema = new mongoose.Schema({
     type: String, 
     required: [true, 'Password is required'] 
   },
-  location: { type: String, default: '' },
-  bio: { type: String, default: '' },
-  skills: [String],
-  photo: { type: String, default: '/images/default-avatar.png' },
+  location:    { type: String, default: '' },
+  bio:         { type: String, default: '' },
+  skills:      [String],
+  photo:       { type: String, default: '/images/default-avatar.png' },
   role: { 
-    type: String, 
-    enum: ['user', 'admin'], 
+    type:    String, 
+    enum:    ['user', 'admin'], 
     default: 'user' 
   },
-  rating: { type: Number, default: 0 },
-  joinedAt: { type: Date, default: Date.now },
-  resetToken: { type: String },
+  ratingSum:   { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 },
+  rating:      { type: Number, default: 0 },
+  joinedAt:    { type: Date,   default: Date.now },
+  resetToken:      { type: String },
   resetTokenExpiry: { type: Date }
 });
 

@@ -105,8 +105,25 @@
             <% } %>
 
             <% if (req.status === 'Completed') { %>
-              <p style="font-size:13px; color:#6b7280;">Completed on <%= new Date(req.updatedAt).toDateString() %></p>
-            <% } %>
+  <p style="font-size:13px;color:#6b7280;">Completed on <%= new Date(req.updatedAt).toDateString() %></p>
+  <% if (req.acceptedVolunteer && !req.rated) { %>
+    <div class="rating-box" id="rating-<%= req._id %>">
+      <p style="font-size:13px;font-weight:600;margin-bottom:6px;">Rate your volunteer:</p>
+      <div style="display:flex;gap:6px;">
+        <% [1,2,3,4,5].forEach(star => { %>
+         <button
+  class="star-btn"
+  data-request-id="<%= req._id %>"
+  data-volunteer-id="<%= req.acceptedVolunteer?._id %>"
+  data-star="<%= star %>"
+  style="font-size:24px;background:none;border:none;cursor:pointer;">
+  ☆
+</button>
+        <% }) %>
+      </div>
+    </div>
+  <% } %>
+<% } %>
 
             <% if (req.pendingOffers && req.pendingOffers.length > 0) { %>
               <div style="margin-top:12px;">
@@ -345,6 +362,33 @@
       requestAnimationFrame(() => t.classList.add('visible'));
       setTimeout(() => { t.classList.remove('visible'); setTimeout(() => t.remove(), 400); }, 3000);
     }
+
+    async function submitRating(requestId, volunteerId, star) {
+    const box   = document.getElementById('rating-' + requestId);
+    const stars = box.querySelectorAll('button');
+
+    // Highlight selected stars
+    stars.forEach((btn, i) => {
+      btn.textContent = i < star ? '★' : '☆';
+      btn.disabled = true;
+    });
+
+    try {
+      const res  = await fetch(`/users/${volunteerId}/rate`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ rating: star })
+      });
+      const data = await res.json();
+      if (data.success) {
+        box.innerHTML = `<p style="font-size:13px;color:#10B981;font-weight:600;">
+          ✅ Rated ${star}/5 — thank you!
+        </p>`;
+      }
+    } catch {
+      box.innerHTML = `<p style="font-size:13px;color:red;">Failed to submit rating.</p>`;
+    }
+  } 
   </script>
 </body>
 </html>
