@@ -9,7 +9,7 @@ const ContactMessage = require('../models/ContactMessage');
 // HOME ROUTE
 router.get('/', async (req, res) => {
   try {
-    const recentRequests = await Request.find({ status: 'Open' })
+   const recentRequests = await Request.find({ status: { $in: ['Open', 'In Progress', 'Completed'] } })
       .populate('postedBy', 'name')
       .sort({ createdAt: -1 })
       .limit(3);

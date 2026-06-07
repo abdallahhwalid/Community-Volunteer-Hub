@@ -78,7 +78,7 @@
             <% recentRequests.forEach(function(req) { %>
               <div class="card card-full">
                 <div class="card-top-row">
-                  <span class="badge badge-open"><%= req.status %></span>
+                  <span class="badge <%= req.status === 'Open' ? 'badge-open' : req.status === 'In Progress' ? 'badge-progress' : 'badge-completed' %>"><%= req.status %></span>
                   <span class="card-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
                 </div>
 
@@ -95,7 +95,11 @@
                 </p>
                 <div class="meta-info">📍 <%= req.location %></div>
                 
-           <% if (user) { %>
+          <% if (req.status === 'In Progress') { %>
+              <a href="/requests" class="btn-offer btn-offer-full" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;text-align:center;pointer-events:none;">🔄 In Progress</a>
+           <% } else if (req.status === 'Completed') { %>
+              <a href="/requests" class="btn-offer btn-offer-full" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;text-align:center;pointer-events:none;">✅ Completed</a>
+           <% } else if (user) { %>
           <% var posterName = req.postedBy ? req.postedBy.name : "Someone"; %>
         <button class="btn-offer btn-offer-full"
           data-id="<%= req._id %>"
@@ -257,9 +261,13 @@ document.getElementById('offer-modal').style.pointerEvents = 'all';
         msgEl.style.display = 'block';
         msgEl.style.color = data.success ? 'green' : 'red';
         msgEl.textContent = data.message;
-        if (data.success) {
+
+       if (data.success) {
           btn.textContent = '✓ Sent!';
-          setTimeout(closeOfferModal, 1500);
+          const posterName = document.getElementById('modal-user').textContent;
+          const requestTitle = document.getElementById('modal-title').textContent;
+          closeOfferModal();
+          window.location.href = `/messages?autoMsg=true&datetime=${encodeURIComponent(suggestedTime)}&user=${encodeURIComponent(posterName)}&requestTitle=${encodeURIComponent(requestTitle)}`;
         } else {
           btn.disabled = false;
           btn.textContent = 'Contact to Help';
