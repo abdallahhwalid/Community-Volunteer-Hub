@@ -1,12 +1,68 @@
 import { useState, useEffect } from "react";
 
+// ── Rating Component ──────────────────────────────────
+function RatingBox({ volunteerId }) {
+  const [selected, setSelected] = useState(0);
+  const [hovered, setHovered]   = useState(0);
+  const [done, setDone]         = useState(false);
+
+  const submit = async (star) => {
+    setSelected(star);
+    try {
+      const res  = await fetch(`/users/${volunteerId}/rate`, {
+        method:  "PUT",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ rating: star }),
+      });
+      const data = await res.json();
+      if (data.success) setDone(true);
+    } catch { /* silent */ }
+  };
+
+  if (done) return (
+    <p style={{ fontSize:"13px", color:"#10B981", fontWeight:600, marginTop:"8px" }}>
+      ✅ Rated {selected}/5 — thank you!
+    </p>
+  );
+
+  return (
+    <div style={{ marginTop:"10px", padding:"12px", background:"#FFFBEB", borderRadius:"10px", border:"1px solid #FDE68A" }}>
+      <p style={{ fontSize:"13px", fontWeight:600, color:"#92400E", marginBottom:"6px" }}>
+        ⭐ Rate your volunteer:
+      </p>
+      <div style={{ display:"flex", gap:"4px" }}>
+        {[1,2,3,4,5].map(star => (
+          <button
+            key={star}
+            onClick={() => submit(star)}
+            onMouseEnter={() => setHovered(star)}
+            onMouseLeave={() => setHovered(0)}
+            style={{
+              fontSize:"28px",
+              background:"none",
+              border:"none",
+              cursor:"pointer",
+              color: star <= (hovered || selected) ? "#F59E0B" : "#D1D5DB",
+              transition:"color 0.15s",
+              padding:"0 2px",
+            }}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────
 export default function MyRequestsPage() {
-  const [tab, setTab]                       = useState("posted");
+  const [tab, setTab]                     = useState("posted");
   const [postedRequests, setPosted]       = useState([]);
   const [helpingRequests, setHelping]     = useState([]);
   const [user, setUser]                   = useState(null);
   const [loading, setLoading]             = useState(true);
-  const [confirmModal, setConfirmModal]   = useState(null); 
+  const [confirmModal, setConfirmModal]   = useState(null);
   const [editingId, setEditingId]         = useState(null);
   const [editForm, setEditForm]           = useState({});
   const [toast, setToast]                 = useState(null);
@@ -115,8 +171,8 @@ export default function MyRequestsPage() {
   };
 
   const badgeClass = (status) =>
-    status === "Open" ? "badge-open" :
-    status === "In Progress" ? "badge-progress" :
+    status === "Open"        ? "badge-open"      :
+    status === "In Progress" ? "badge-progress"  :
     status === "Completed"   ? "badge-completed" : "badge-cancelled";
 
   const isOnline = (category) => ONLINE_CATEGORIES.includes(category);
@@ -194,8 +250,16 @@ export default function MyRequestsPage() {
                     </div>
                   )}
 
+                  {/* ── COMPLETED: date + rating box ── */}
                   {req.status === "Completed" && (
-                    <p style={{ fontSize:"13px", color:"#6b7280" }}>Completed on {new Date(req.updatedAt).toDateString()}</p>
+                    <>
+                      <p style={{ fontSize:"13px", color:"#6b7280" }}>
+                        Completed on {new Date(req.updatedAt).toDateString()}
+                      </p>
+                      {req.acceptedVolunteer && (
+                        <RatingBox volunteerId={req.acceptedVolunteer._id} />
+                      )}
+                    </>
                   )}
 
                   {req.pendingOffers?.length > 0 && (

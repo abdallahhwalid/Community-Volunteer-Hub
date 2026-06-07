@@ -20,6 +20,39 @@
       from { transform: scale(0.88) translateY(12px); opacity: 0; }
       to   { transform: scale(1) translateY(0); opacity: 1; }
     }
+    .online-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #EEF2FF;
+      color: #4338CA;
+      border: 1px solid #C7D2FE;
+      border-radius: 6px;
+      padding: 2px 8px;
+      margin-bottom: 6px;
+    }
+    .inperson-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1px solid #6EE7B7;
+      border-radius: 6px;
+      padding: 2px 8px;
+      margin-bottom: 6px;
+    }
+    .time-error-msg {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+    .time-error-msg.show { display: block; }
   </style>
 </head>
 <body>
@@ -62,6 +95,13 @@
           <option value="Open"        <%= filters.status === 'Open'        ? 'selected' : '' %>>Open</option>
           <option value="In Progress" <%= filters.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
         </select>
+
+        <!-- NEW: Filter by request type -->
+        <select name="requestType" id="type-filter" class="filter-select" onchange="this.form.submit()">
+          <option value="">All Types</option>
+          <option value="online"    <%= filters.requestType === 'online'    ? 'selected' : '' %>>🌐 Online</option>
+          <option value="in-person" <%= filters.requestType === 'in-person' ? 'selected' : '' %>>📍 In-Person</option>
+        </select>
       </form>
 
       <p id="results-count" style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">
@@ -75,11 +115,27 @@
         <% } %>
 
         <% requests.forEach(req => { %>
-          <div class="req-card" data-id="<%= req._id %>" data-category="<%= req.category %>" data-status="<%= req.status %>">
+          <%
+            // A request is "online" if it was posted with requestType=online OR location==='Online'
+            const isOnline = req.requestType === 'online' || req.location === 'Online';
+          %>
+          <div class="req-card"
+               data-id="<%= req._id %>"
+               data-category="<%= req.category %>"
+               data-status="<%= req.status %>"
+               data-type="<%= isOnline ? 'online' : 'in-person' %>">
             <div class="req-card-top">
               <span class="badge <%= req.status === 'Open' ? 'badge-open' : 'badge-progress' %>"><%= req.status %></span>
               <span class="req-time"><%= new Date(req.createdAt).toLocaleDateString() %></span>
             </div>
+
+            <!-- Online / In-Person tag -->
+            <% if (isOnline) { %>
+              <span class="online-tag">🌐 Online</span>
+            <% } else { %>
+              <span class="inperson-tag">📍 In-Person</span>
+            <% } %>
+
             <% if (req.image) { %>
               <img src="<%= req.image %>" alt="Request image"
                 style="width:100%; height:140px; object-fit:cover; border-radius:8px; margin-bottom:10px;"/>
@@ -88,17 +144,44 @@
             <p class="req-category"><%= req.category %></p>
             <p class="req-desc"><%= req.description.substring(0, 100) %>...</p>
             <div class="req-meta">
-              <span class="meta-info">📍 <%= req.location %></span>
+              <% if (isOnline) { %>
+                <span class="meta-info">🌐 Online Meeting</span>
+              <% } else { %>
+                <span class="meta-info">📍 <%= req.location %></span>
+              <% } %>
               <% if (req.desiredDate) { %>
                 <span class="meta-info">🕐 <%= new Date(req.desiredDate).toDateString() %></span>
               <% } else { %>
                 <span class="meta-info">🕐 Flexible</span>
               <% } %>
             </div>
+
+            <%
+              // Disable offer button if In Progress OR if current user is the poster
+              const isOwner = user && req.postedBy && req.postedBy._id.toString() === user._id.toString();
+            %>
             <% if (req.status === 'In Progress') { %>
-              <button class="btn-offer" disabled style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">In Progress</button>
+              <button class="btn-offer" disabled
+                style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;opacity:1;">
+                🔄 In Progress
+              </button>
+            <% } else if (user && isOwner) { %>
+              <button class="btn-offer" disabled
+                style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;opacity:1;"
+                title="This is your own request">
+                Your Request
+              </button>
             <% } else if (user) { %>
-              <button class="btn-offer" onclick="openOfferModal('<%= req._id %>', '<%= req.title %>', '<%= req.category %>', '<%= req.location %>', '<%= req.postedBy ? req.postedBy.name : 'Unknown' %>')">Offer Help</button>
+              <button class="btn-offer"
+                data-id="<%= req._id %>"
+                data-title="<%= req.title %>"
+                data-category="<%= req.category %>"
+                data-location="<%= isOnline ? 'Online Meeting' : req.location %>"
+                data-user="<%= req.postedBy ? req.postedBy.name : 'Unknown' %>"
+                data-online="<%= isOnline ? '1' : '0' %>"
+                onclick="openOfferModal(this.dataset.id, this.dataset.title, this.dataset.category, this.dataset.location, this.dataset.user, this.dataset.online === '1')">
+                Offer Help
+              </button>
             <% } else { %>
               <button class="btn-offer" onclick="showLoginPrompt()">Offer Help</button>
             <% } %>
@@ -109,26 +192,40 @@
     </div>
   </main>
 
-  <!-- Offer Modal -->
+  <!-- ══ Offer Modal ══ -->
   <div id="offer-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h2 id="modal-title"></h2>
       <p id="modal-category" class="modal-cat"></p>
+
+      <!-- Online badge shown when request is online -->
+      <div id="modal-online-badge" style="display:none; margin-bottom:12px;">
+        <span class="online-tag" style="font-size:13px; padding:4px 12px;">🌐 Online Meeting — no location needed</span>
+      </div>
+
       <div class="modal-grid">
-        <div class="modal-item">
+        <div class="modal-item" id="modal-location-wrap">
           <label>Location</label>
           <p id="modal-location"></p>
         </div>
       </div>
+
       <div class="modal-section">
         <label>Requested by</label>
         <div class="user-info"><span id="modal-user"></span></div>
       </div>
+
       <div class="modal-section time-picker-box">
-        <label>Set your convenient time</label>
+        <label id="time-label">Set your convenient time</label>
+        <p id="time-sublabel" style="font-size:12px; color:#6b7280; margin-bottom:8px; display:none;">
+          Pick a time for your video/voice session. You'll coordinate the link via messages.
+        </p>
         <input type="datetime-local" id="suggested-time" class="form-control">
+        <span class="time-error-msg" id="time-error"></span>
       </div>
+
       <div id="offer-msg" style="display:none; margin-top:10px; font-size:14px;"></div>
+
       <div class="modal-footer">
         <button class="btn-secondary" onclick="closeOfferModal()">Cancel</button>
         <button class="btn-primary" id="confirm-help-btn" onclick="confirmHelp()">Contact to Help</button>
@@ -136,7 +233,7 @@
     </div>
   </div>
 
-  <!-- Login Prompt Modal -->
+  <!-- ══ Login Prompt Modal ══ -->
   <div id="login-prompt-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(15,23,42,0.5); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:20px;">
     <div style="background:#fff; border-radius:16px; padding:32px 28px; max-width:360px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.18); animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
       <div style="width:56px; height:56px; border-radius:50%; background:#EEF2FF; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:24px;">🔒</div>
@@ -155,6 +252,14 @@
     let currentRequestId    = null;
     let currentRequestTitle = null;
     let currentRequestUser  = null;
+    let currentIsOnline     = false;
+
+    /* ─── Helper: get min datetime string (now, local timezone) ─── */
+    function getNowLocal() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      return now.toISOString().slice(0, 16);
+    }
 
     function showLoginPrompt() {
       const modal = document.getElementById('login-prompt-modal');
@@ -166,20 +271,50 @@
       document.getElementById('login-prompt-modal').style.display = 'none';
     }
 
-    function openOfferModal(id, title, category, location, user) {
+    function openOfferModal(id, title, category, location, user, isOnline) {
       currentRequestId    = id;
       currentRequestTitle = title;
       currentRequestUser  = user;
+      currentIsOnline     = !!isOnline;
+
       document.getElementById('modal-title').textContent    = title;
       document.getElementById('modal-category').textContent = category;
-      document.getElementById('modal-location').textContent = location;
       document.getElementById('modal-user').textContent     = user;
-      document.getElementById('offer-msg').style.display    = 'none';
-      document.getElementById('suggested-time').value       = '';
+
+      /* Online-specific UI */
+      const onlineBadge   = document.getElementById('modal-online-badge');
+      const locationWrap  = document.getElementById('modal-location-wrap');
+      const timeLabel     = document.getElementById('time-label');
+      const timeSub       = document.getElementById('time-sublabel');
+      const confirmBtn    = document.getElementById('confirm-help-btn');
+
+      if (currentIsOnline) {
+        onlineBadge.style.display  = 'block';
+        locationWrap.style.display = 'none';
+        timeLabel.textContent      = '📅 Schedule Online Meeting Time';
+        timeSub.style.display      = 'block';
+        confirmBtn.textContent     = '📅 Schedule Meeting';
+      } else {
+        onlineBadge.style.display  = 'none';
+        locationWrap.style.display = '';
+        document.getElementById('modal-location').textContent = location;
+        timeLabel.textContent      = 'Set your convenient time';
+        timeSub.style.display      = 'none';
+        confirmBtn.textContent     = 'Contact to Help';
+      }
+
+      /* Reset state */
+      document.getElementById('offer-msg').style.display          = 'none';
+      document.getElementById('suggested-time').value             = '';
       document.getElementById('suggested-time').style.borderColor = '';
-      document.getElementById('confirm-help-btn').disabled    = false;
-      document.getElementById('confirm-help-btn').textContent = 'Contact to Help';
-      document.getElementById('offer-modal').style.display  = 'flex';
+      document.getElementById('time-error').textContent           = '';
+      document.getElementById('time-error').classList.remove('show');
+      confirmBtn.disabled = false;
+
+      /* Set min to now so the native picker blocks past times */
+      document.getElementById('suggested-time').min = getNowLocal();
+
+      document.getElementById('offer-modal').style.display = 'flex';
     }
 
     function closeOfferModal() {
@@ -188,64 +323,97 @@
 
     async function confirmHelp() {
       const suggestedTime = document.getElementById('suggested-time').value;
+      const timeErr       = document.getElementById('time-error');
+      const timeInput     = document.getElementById('suggested-time');
+
+      /* Reset error state */
+      timeInput.style.borderColor = '';
+      timeErr.textContent = '';
+      timeErr.classList.remove('show');
+
+      /* Validation: field required */
       if (!suggestedTime) {
-        document.getElementById('suggested-time').style.borderColor = '#dc2626';
-        document.getElementById('suggested-time').focus();
+        timeInput.style.borderColor = '#dc2626';
+        timeErr.textContent = '⚠ Please select a date and time.';
+        timeErr.classList.add('show');
+        timeInput.focus();
         return;
       }
-      document.getElementById('suggested-time').style.borderColor = '';
+
+      /* Validation: must be in the future */
+      if (new Date(suggestedTime) <= new Date()) {
+        timeInput.style.borderColor = '#dc2626';
+        timeErr.textContent = '⚠ Please select a future date and time.';
+        timeErr.classList.add('show');
+        return;
+      }
+
       const btn = document.getElementById('confirm-help-btn');
-      btn.disabled = true;
+      btn.disabled    = true;
       btn.textContent = 'Sending...';
+
       try {
         const res  = await fetch(`/requests/${currentRequestId}/offer`, {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ suggestedTime }),
+          body:    JSON.stringify({ suggestedTime }),
         });
         const data = await res.json();
         const msgEl = document.getElementById('offer-msg');
         msgEl.style.display = 'block';
         msgEl.style.color   = data.success ? 'green' : 'red';
         msgEl.textContent   = data.message;
+
         if (data.success) {
           btn.textContent = '✓ Sent!';
           setTimeout(() => {
             closeOfferModal();
-            window.location.href = `/messages?autoMsg=true&datetime=${encodeURIComponent(suggestedTime)}&user=${encodeURIComponent(currentRequestUser)}&requestTitle=${encodeURIComponent(currentRequestTitle)}`;
+            window.location.href = '/messages';
           }, 1200);
         } else {
           btn.disabled    = false;
-          btn.textContent = 'Contact to Help';
+          btn.textContent = currentIsOnline ? '📅 Schedule Meeting' : 'Contact to Help';
         }
       } catch (err) {
         btn.disabled    = false;
-        btn.textContent = 'Contact to Help';
+        btn.textContent = currentIsOnline ? '📅 Schedule Meeting' : 'Contact to Help';
       }
     }
 
+    /* ─── Client-side filter (supplements server-side) ─── */
     function filterRequests() {
       const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
       const catVal    = document.getElementById('category-filter').value;
       const statusVal = document.getElementById('status-filter').value;
+      const typeVal   = document.getElementById('type-filter').value;
       let count = 0;
       document.querySelectorAll('.req-card').forEach(card => {
         const title       = card.querySelector('h3').textContent.toLowerCase();
         const matchSearch = !searchVal || title.includes(searchVal);
         const matchCat    = !catVal    || card.dataset.category === catVal;
         const matchStatus = !statusVal || card.dataset.status   === statusVal;
-        const show = matchSearch && matchCat && matchStatus;
+        const matchType   = !typeVal   || card.dataset.type     === typeVal;
+        const show = matchSearch && matchCat && matchStatus && matchType;
         card.style.display = show ? '' : 'none';
         if (show) count++;
       });
-      document.getElementById('results-count').textContent = `Showing ${count} request${count !== 1 ? 's' : ''}`;
+      document.getElementById('results-count').textContent =
+        `Showing ${count} request${count !== 1 ? 's' : ''}`;
     }
 
     document.getElementById('search-input').addEventListener('input',   filterRequests);
-    document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); filterRequests(); }});
+    document.getElementById('search-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); filterRequests(); }
+    });
     document.getElementById('search-btn').addEventListener('click',     filterRequests);
     document.getElementById('category-filter').addEventListener('change', filterRequests);
     document.getElementById('status-filter').addEventListener('change',   filterRequests);
+    document.getElementById('type-filter').addEventListener('change',     filterRequests);
+
+    /* Close offer modal on backdrop click */
+    document.getElementById('offer-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeOfferModal();
+    });
   </script>
 </body>
 </html>

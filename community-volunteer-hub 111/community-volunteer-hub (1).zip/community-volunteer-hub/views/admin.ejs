@@ -236,8 +236,9 @@
         <div id="inbox-list">
           <% if (typeof contactMessages !== 'undefined' && contactMessages.length > 0) { %>
             <% contactMessages.forEach(cm => { %>
-              <div class="inbox-card <%= cm.isRead ? '' : 'unread' %>" data-status="<%= cm.isRead ? 'read' : 'unread' %>">
-                <div class="inbox-card-header">
+<div class="inbox-card <%= cm.isRead ? '' : 'unread' %>" 
+     data-status="<%= cm.isRead ? 'read' : 'unread' %>"
+     data-msgid="<%= cm._id %>">                <div class="inbox-card-header">
                   <div style="display:flex;align-items:center;gap:12px;">
                     <div class="avatar" style="width:40px;height:40px;font-size:14px;flex-shrink:0;">
                       <%= cm.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() %>

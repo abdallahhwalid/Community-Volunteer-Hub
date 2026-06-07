@@ -91,17 +91,11 @@ export default function RequestsPage() {
         body: JSON.stringify({ suggestedTime }),
       });
       const data = await res.json();
-      if (data.success) {
+     if (data.success) {
         setOfferStatus({ type: "success", msg: "✓ Offer sent! Redirecting to messages..." });
         setTimeout(() => {
           closeModal();
-          const q = new URLSearchParams({
-            autoMsg: "true",
-            datetime: suggestedTime,
-            user: selectedRequest.postedBy?.name || "",
-            requestTitle: selectedRequest.title,
-          });
-          window.location.href = `/messages?${q}`;
+          window.location.href = `/messages`;
         }, 1400);
       } else {
         setOfferStatus({ type: "error", msg: data.message });
