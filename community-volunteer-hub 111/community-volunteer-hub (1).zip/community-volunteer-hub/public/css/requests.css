@@ -121,3 +121,7 @@
 .time-picker-box { background: #fff9e6; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; margin-top: 5px; box-sizing: border-box; }
+.modal-content h2 {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
