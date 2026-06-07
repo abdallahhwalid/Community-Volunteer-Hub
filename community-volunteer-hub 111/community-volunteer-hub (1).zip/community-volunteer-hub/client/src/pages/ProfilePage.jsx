@@ -117,7 +117,10 @@ function ProfilePage() {
                   <h3>{name}</h3>
                   <div className="meta-info">📍 <span>{location || 'Location'}</span></div>
                   <div className="meta-info">📅 Joined {joinedDate}</div>
-                  <div className="stars">★★★★☆ <span className="rating-text">{user?.rating || 4.8}</span></div>
+                  <div className="stars">
+                    {[1, 2, 3, 4, 5].map(n => (n <= Math.floor(user?.rating || 0) ? "★" : "☆")).join("")}{" "}
+                    <span className="rating-text">{user?.rating || 0}</span>
+                  </div>
                 </div>
               </div>
               <p className="photo-hint">Click the 📷 icon to upload a profile photo (JPG, PNG — max 5MB)</p>

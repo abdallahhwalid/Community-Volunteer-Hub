@@ -94,6 +94,24 @@ exports.showProfile = async (req, res) => {
   }
 };
 
+// VIEW ANOTHER USER'S PROFILE (read-only)
+exports.showVolunteerProfile = async (req, res) => {
+  try {
+    if (req.params.id === String(req.session.userId)) {
+      return res.redirect('/profile');
+    }
+
+    const volunteer = await User.findById(req.params.id)
+      .select('name location bio skills photo rating joinedAt');
+    if (!volunteer) return res.status(404).render('404', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null });
+
+    const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+    res.render('volunteer-profile', { volunteer, user: sessionUser });
+  } catch (err) {
+    res.redirect('/');
+  }
+};
+
 exports.updateProfile = async (req, res) => {
   try {
     const { name, location, bio, skills } = req.body;

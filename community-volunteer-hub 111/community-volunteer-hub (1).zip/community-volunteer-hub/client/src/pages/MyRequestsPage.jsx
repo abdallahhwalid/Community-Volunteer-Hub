@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 // ── Rating Component ──────────────────────────────────
-function RatingBox({ volunteerId }) {
+function RatingBox({ volunteerId, requestId, alreadyRated }) {
   const [selected, setSelected] = useState(0);
   const [hovered, setHovered]   = useState(0);
-  const [done, setDone]         = useState(false);
+  const [done, setDone]         = useState(alreadyRated);
 
   const submit = async (star) => {
     setSelected(star);
@@ -12,7 +12,7 @@ function RatingBox({ volunteerId }) {
       const res  = await fetch(`/users/${volunteerId}/rate`, {
         method:  "PUT",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ rating: star }),
+        body:    JSON.stringify({ rating: star, requestId }),
       });
       const data = await res.json();
       if (data.success) setDone(true);
@@ -21,7 +21,7 @@ function RatingBox({ volunteerId }) {
 
   if (done) return (
     <p style={{ fontSize:"13px", color:"#10B981", fontWeight:600, marginTop:"8px" }}>
-      ✅ Rated {selected}/5 — thank you!
+      ✅ {selected ? `Rated ${selected}/5` : "You've rated this volunteer"} — thank you!
     </p>
   );
 
@@ -286,7 +286,7 @@ export default function MyRequestsPage() {
                         Completed on {new Date(req.updatedAt).toDateString()}
                       </p>
                       {req.acceptedVolunteer && (
-                        <RatingBox volunteerId={req.acceptedVolunteer._id} />
+                        <RatingBox volunteerId={req.acceptedVolunteer._id} requestId={req._id} alreadyRated={req.volunteerRated} />
                       )}
                     </>
                   )}

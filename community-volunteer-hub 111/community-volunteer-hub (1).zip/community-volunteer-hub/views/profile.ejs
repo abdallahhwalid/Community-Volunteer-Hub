@@ -26,7 +26,7 @@
     <ul class="nav-links">
       <li><a href="/">Home</a></li>
       <li><a href="/requests">Browse</a></li>
-      <li><a href="/my-requests">My Requests</a></li>
+      <li><a href="/requests/my">My Requests</a></li>
     </ul>
     <div class="nav-icons">
       <button class="nav-icon-btn dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
@@ -68,7 +68,11 @@
               <h3 id="display-name"><%= user.name %></h3>
               <div class="meta-info">📍 <span id="display-location"><%= user.location || 'Location' %></span></div>
               <div class="meta-info">📅 Joined <%= user.joinedAt.toDateString() %></div>
-              <div class="stars">★★★★☆ <span class="rating-text"><%= user.rating || 4.8 %></span></div>
+              <div class="stars">
+                <% var filled = Math.floor(user.rating || 0); %>
+                <% for (var i = 1; i <= 5; i++) { %><%= i <= filled ? '★' : '☆' %><% } %>
+                <span class="rating-text"><%= user.rating || 0 %></span>
+              </div>
             </div>
           </div>
 

@@ -62,6 +62,10 @@ const requestSchema = new mongoose.Schema(
       ref: 'User',
       default: null,
     },
+    volunteerRated: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

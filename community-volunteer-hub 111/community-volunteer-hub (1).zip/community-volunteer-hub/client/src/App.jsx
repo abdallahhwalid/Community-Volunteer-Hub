@@ -9,6 +9,7 @@ import RequestsPage from './pages/RequestsPage';
 import MyRequestsPage from './pages/MyRequestsPage';
 import PostRequestPage from './pages/PostRequestPage';
 import ProfilePage from './pages/ProfilePage';
+import VolunteerProfilePage from './pages/VolunteerProfilePage';
 import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -41,6 +42,7 @@ function App() {
         <Route path="/requests/my" element={<MyRequestsPage />} />
         <Route path="/my-requests" element={<MyRequestsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/:id" element={<VolunteerProfilePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />

@@ -49,6 +49,7 @@ router.get('/logout', authController.logout);
 // Profile routes
 router.get('/profile', protect, authController.showProfile);
 router.post('/profile', protect, authController.updateProfile);
+router.get('/profile/:id', protect, authController.showVolunteerProfile);
 
 // Static pages
 router.get('/terms', (req, res) => res.render('terms', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));

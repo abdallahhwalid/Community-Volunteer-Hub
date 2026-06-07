@@ -132,8 +132,12 @@
                 </div>
                 <h4 class="volunteer-name"><%= volunteer.name %></h4>
                 <p class="volunteer-skill"><%= volunteer.skills && volunteer.skills[0] ? volunteer.skills[0] : 'Volunteer' %></p>
-                <div class="stars">★★★★☆ <span class="volunteer-rating"><%= volunteer.rating || '4.8' %></span></div>
-                <a href="/profile" class="btn-primary btn-profile">View Profile</a>
+                <div class="stars">
+                  <% var vFilled = Math.floor(volunteer.rating || 0); %>
+                  <% for (var i = 1; i <= 5; i++) { %><%= i <= vFilled ? '★' : '☆' %><% } %>
+                  <span class="volunteer-rating"><%= volunteer.rating || 0 %></span>
+                </div>
+                <a href="/profile/<%= volunteer._id %>" class="btn-primary btn-profile">View Profile</a>
               </div>
             <% }); %>
           <% } else { %>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= volunteer.name %>'s Profile – Community Help Hub</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/profile.css"/>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'dark' || (!saved && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <%- include('partials/nav') %>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1><%= volunteer.name %>'s Profile</h1>
+      <p>Volunteer information</p>
+    </div>
+
+    <div class="profile-page">
+      <div class="profile-card">
+        <h2 class="profile-card-title">Profile Information</h2>
+
+        <div class="profile-avatar-row">
+          <div class="avatar-wrap">
+            <% if (volunteer.photo && volunteer.photo !== '/images/default-avatar.png') { %>
+              <img src="<%= volunteer.photo %>" alt="<%= volunteer.name %>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;"/>
+            <% } else { %>
+              <div class="avatar avatar-lg"><%= volunteer.name.charAt(0).toUpperCase() %></div>
+            <% } %>
+          </div>
+
+          <div class="profile-info">
+            <h3><%= volunteer.name %></h3>
+            <div class="meta-info">📍 <span><%= volunteer.location || 'Location not set' %></span></div>
+            <div class="meta-info">📅 Joined <%= volunteer.joinedAt.toDateString() %></div>
+            <div class="stars">
+              <% var filled = Math.floor(volunteer.rating || 0); %>
+              <% for (var i = 1; i <= 5; i++) { %><%= i <= filled ? '★' : '☆' %><% } %>
+              <span class="rating-text"><%= volunteer.rating || 0 %></span>
+            </div>
+          </div>
+        </div>
+
+        <% if (volunteer.bio) { %>
+          <p class="profile-card-sub"><%= volunteer.bio %></p>
+        <% } %>
+      </div>
+
+      <div class="profile-card">
+        <h2 class="profile-card-title">Skills</h2>
+        <div class="skills-container">
+          <% if (volunteer.skills && volunteer.skills.length > 0) { %>
+            <% volunteer.skills.forEach(function(skill) { %>
+              <span class="skill-tag"><%= skill %></span>
+            <% }); %>
+          <% } else { %>
+            <span class="no-skills-text">No skills added yet.</span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

@@ -116,23 +116,32 @@
                 Completed on <%= new Date(req.updatedAt).toDateString() %>
               </p>
               <% if (req.acceptedVolunteer) { %>
-                <div class="rating-box" id="rating-<%= req._id %>"
-                  style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
-                  <p style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:6px;">
-                    ⭐ Rate your volunteer:
-                  </p>
-                  <div style="display:flex; gap:6px;">
-                    <% var volId = req.acceptedVolunteer._id; %>
-                    <% var reqId = req._id; %>
-                    <% for(var s = 1; s <= 5; s++) { %>
-                      <button type="button"
-                       onclick="submitRating('<%= reqId %>', '<%= volId %>', '<%= s %>')"
-                        style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
-                        ☆
-                      </button>
-                    <% } %>
+                <% if (req.volunteerRated) { %>
+                  <div class="rating-box" id="rating-<%= req._id %>"
+                    style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
+                    <p style="font-size:13px;color:#10B981;font-weight:600;">
+                      ✅ You've rated this volunteer — thank you!
+                    </p>
                   </div>
-                </div>
+                <% } else { %>
+                  <div class="rating-box" id="rating-<%= req._id %>"
+                    style="margin-top:10px; padding:12px; background:#FFFBEB; border-radius:10px; border:1px solid #FDE68A;">
+                    <p style="font-size:13px; font-weight:600; color:#92400E; margin-bottom:6px;">
+                      ⭐ Rate your volunteer:
+                    </p>
+                    <div style="display:flex; gap:6px;">
+                      <% var volId = req.acceptedVolunteer._id; %>
+                      <% var reqId = req._id; %>
+                      <% for(var s = 1; s <= 5; s++) { %>
+                        <button type="button"
+                         onclick="submitRating('<%= reqId %>', '<%= volId %>', '<%= s %>')"
+                          style="font-size:24px; background:none; border:none; cursor:pointer; color:#D1D5DB;">
+                          ☆
+                        </button>
+                      <% } %>
+                    </div>
+                  </div>
+                <% } %>
               <% } %>
             <% } %>
 
@@ -421,7 +430,7 @@
         const res  = await fetch(`/users/${volunteerId}/rate`, {
           method:  'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ rating: star })
+          body:    JSON.stringify({ rating: star, requestId: requestId })
         });
         const data = await res.json();
         if (data.success) {

@@ -412,10 +412,10 @@ export default function HomePage({ user }) {
                     {vol.skills && vol.skills[0] ? vol.skills[0] : "Volunteer"}
                   </p>
                   <div className="stars">
-                    ★★★★☆{" "}
-                    <span className="volunteer-rating">{vol.rating || "4.8"}</span>
+                    {[1, 2, 3, 4, 5].map(n => (n <= Math.floor(vol.rating || 0) ? "★" : "☆")).join("")}{" "}
+                    <span className="volunteer-rating">{vol.rating || 0}</span>
                   </div>
-                  <Link to="/profile" className="btn-primary btn-profile">
+                  <Link to={`/profile/${vol._id}`} className="btn-primary btn-profile">
                     View Profile
                   </Link>
                 </div>
