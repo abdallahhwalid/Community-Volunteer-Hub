@@ -6,6 +6,17 @@
   <title>Contact Us – Community Help Hub</title>
   <link rel="stylesheet" href="/css/style.css"/>
   <link rel="stylesheet" href="/css/forms.css"/>
+
+  <script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+
 </head>
 <body>
 
