@@ -60,6 +60,7 @@ body {
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  flex: 1;
 }
 
 .nav-logo img {
@@ -85,8 +86,10 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   list-style: none;
+  flex: 1;
 }
 
 .nav-links a {
@@ -108,7 +111,9 @@ body {
 .nav-icons {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  flex: 1;
 }
 
 .nav-icon-btn {
