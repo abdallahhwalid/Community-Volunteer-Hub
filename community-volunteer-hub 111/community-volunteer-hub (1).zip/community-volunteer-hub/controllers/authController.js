@@ -304,19 +304,19 @@ exports.resetPassword = async (req, res) => {
     const { token } = req.params;
     const { password, confirmPassword } = req.body;
 
+    const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
+
     if (!password || password.length < 6) {
-      return res.render('reset-password', { error: 'Password must be at least 6 characters', token });
+      return res.render('reset-password', { error: 'Password must be at least 6 characters', token, user: sessionUser });
     }
     if (password !== confirmPassword) {
-      return res.render('reset-password', { error: 'Passwords do not match', token });
+      return res.render('reset-password', { error: 'Passwords do not match', token, user: sessionUser });
     }
 
     const user = await User.findOne({
       resetToken: token,
       resetTokenExpiry: { $gt: Date.now() }
     });
-
-    const sessionUser = req.session.userId ? { name: req.session.name, role: req.session.role } : null;
 
     if (!user) {
       return res.render('reset-password', { error: 'This reset link is invalid or has expired.', token: null, user: sessionUser });
