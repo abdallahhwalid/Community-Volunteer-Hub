@@ -19,8 +19,14 @@ const requestSchema = new mongoose.Schema(
     },
     location: {
       type: String,
-      required: [true, 'Location is required'],
       trim: true,
+      default: '',
+    },
+    // NEW: explicit online vs in-person flag
+    requestType: {
+      type: String,
+      enum: ['online', 'in-person'],
+      default: 'in-person',
     },
     desiredDate: {
       type: Date,

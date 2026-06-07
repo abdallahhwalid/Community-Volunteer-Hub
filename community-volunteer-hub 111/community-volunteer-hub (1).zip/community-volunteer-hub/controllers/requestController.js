@@ -165,9 +165,10 @@ exports.createRequest = asyncHandler(async (req, res) => {
   if (!description || description.trim().length < 20) errors.push('Description must be at least 20 characters');
 
   // Online categories don't need a real location
-  const onlineCategories = ['IT Repair', 'Tutoring'];
-  if (!onlineCategories.includes(category) && !location) {
-    errors.push('Location is required');
+   // Online requests don't need a location
+  const isOnlineReq = req.body.requestType === 'online';
+  if (!isOnlineReq && !location) {
+    errors.push('Location is required for in-person requests');
   }
 
   if (errors.length > 0) {
@@ -206,11 +207,13 @@ exports.createRequest = asyncHandler(async (req, res) => {
     imagePath = `/uploads/${fileName}`;
   }
 
+ const isOnlineRequest = req.body.requestType === 'online';
   await Request.create({
     title,
     category,
     description,
-    location:    location || 'Online',
+    location:    isOnlineRequest ? 'Online' : (location || ''),
+    requestType: isOnlineRequest ? 'online' : 'in-person',
     desiredDate: desiredDate  || null,
     desiredTime: desiredTime  || null,
     flexible:    flexible === 'on',
@@ -239,8 +242,13 @@ exports.submitOffer = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Request is not available' });
   }
 
-  if (request.postedBy.toString() === volunteerId.toString()) {
+   if (request.postedBy.toString() === volunteerId.toString()) {
     return res.status(400).json({ success: false, message: 'You cannot offer help on your own request' });
+  }
+ 
+  // Validate that suggestedTime is in the future
+  if (suggestedTime && new Date(suggestedTime) <= new Date()) {
+    return res.status(400).json({ success: false, message: 'Please select a future date and time' });
   }
 
  await Offer.findOneAndUpdate(
