@@ -154,7 +154,11 @@
     <section class="cta-banner">
       <h2>Ready to Make a Difference?</h2>
       <p>Join thousands of community members helping each other every day.</p>
-      <a href="/register" class="btn-primary btn-cta">Get Started Today</a>
+     <% if (user) { %>
+  <a href="/requests" class="btn-primary btn-cta">Get Started Today</a>
+<% } else { %>
+  <a href="/login" class="btn-primary btn-cta">Get Started Today</a>
+<% } %>
     </section>
 
   </main>
