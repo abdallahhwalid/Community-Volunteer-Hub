@@ -96,12 +96,7 @@
           <option value="In Progress" <%= filters.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
         </select>
 
-        <!-- NEW: Filter by request type -->
-        <select name="requestType" id="type-filter" class="filter-select" onchange="this.form.submit()">
-          <option value="">All Types</option>
-          <option value="online"    <%= filters.requestType === 'online'    ? 'selected' : '' %>>🌐 Online</option>
-          <option value="in-person" <%= filters.requestType === 'in-person' ? 'selected' : '' %>>📍 In-Person</option>
-        </select>
+        
       </form>
 
       <p id="results-count" style="font-size:14px; color:var(--text-gray); margin-bottom:20px;">
@@ -386,16 +381,13 @@
       const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
       const catVal    = document.getElementById('category-filter').value;
       const statusVal = document.getElementById('status-filter').value;
-      const typeVal   = document.getElementById('type-filter').value;
       let count = 0;
       document.querySelectorAll('.req-card').forEach(card => {
         const title       = card.querySelector('h3').textContent.toLowerCase();
         const matchSearch = !searchVal || title.includes(searchVal);
         const matchCat    = !catVal    || card.dataset.category === catVal;
         const matchStatus = !statusVal || card.dataset.status   === statusVal;
-        const matchType   = !typeVal   || card.dataset.type     === typeVal;
-        const show = matchSearch && matchCat && matchStatus && matchType;
-        card.style.display = show ? '' : 'none';
+const show = matchSearch && matchCat && matchStatus;        card.style.display = show ? '' : 'none';
         if (show) count++;
       });
       document.getElementById('results-count').textContent =
@@ -409,7 +401,6 @@
     document.getElementById('search-btn').addEventListener('click',     filterRequests);
     document.getElementById('category-filter').addEventListener('change', filterRequests);
     document.getElementById('status-filter').addEventListener('change',   filterRequests);
-    document.getElementById('type-filter').addEventListener('change',     filterRequests);
 
     /* Close offer modal on backdrop click */
     document.getElementById('offer-modal').addEventListener('click', function(e) {
