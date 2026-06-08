@@ -41,21 +41,21 @@
         <div class="grid-3">
           <div class="how-card">
             <div class="how-icon">
-              <img src="/images/sign up.PNG" alt="Sign Up">                                                                      
+              <img src="/images/dark-mode/sign_up-dark.png" alt="Sign Up">                                                                      
             </div>
             <h3>1. Sign Up</h3>
             <p>Create your free account and add your skills if you want to volunteer.</p>
           </div>
           <div class="how-card">
             <div class="how-icon">
-              <img src="/images/post and browse.PNG" alt="Post and Browse">
+              <img src="/images/dark-mode/post_and_browse-dark.png" alt="Post and Browse">
             </div>
             <h3>2. Post or Browse</h3>
             <p>Post a help request or browse existing requests to find someone to help.</p>
           </div>
           <div class="how-card">
             <div class="how-icon">
-              <img src="/images/connect and help.PNG" alt="Connect and Help">
+              <img src="/images/dark-mode/connect_and_help-dark.png" alt="Connect and Help">
             </div>
             <h3>3. Connect & Help</h3>
             <p>Message each other to coordinate, complete the task, and rate your experience.</p>
@@ -295,9 +295,20 @@ document.getElementById('offer-modal').style.pointerEvents = 'all';
       });
     }
 
+    function applyHowIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.querySelectorAll('.how-icon-img').forEach(function(img) {
+        img.src = isDark ? img.dataset.dark : img.dataset.light;
+      });
+    }
+
+    applyHowIcons();
     applyDarkModeImages();
 
-    const observer = new MutationObserver(applyDarkModeImages);
+    const observer = new MutationObserver(function() {
+      applyDarkModeImages();
+      applyHowIcons();
+    });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   </script>
 
