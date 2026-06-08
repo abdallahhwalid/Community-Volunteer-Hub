@@ -189,6 +189,7 @@
 
         <% helpingRequests.forEach(offer => { %>
           <% const req = offer.request; %>
+          <% if (!req) { return; } // skip offers whose original request was deleted %>
           <%
             const isOnlineHelp = req && ['IT Repair', 'Tutoring'].includes(req.category);
           %>
