@@ -546,6 +546,7 @@ const deleteItem = async (url, id, setter, list) => {
     </div>
   </div>
 </div>
+)}
 
       {/* ── VIEW MODAL ── */}
       {viewModal && (
