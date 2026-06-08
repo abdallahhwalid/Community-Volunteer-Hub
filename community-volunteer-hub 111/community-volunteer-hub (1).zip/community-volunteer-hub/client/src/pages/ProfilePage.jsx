@@ -61,6 +61,20 @@ function ProfilePage() {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Only JPG and PNG images are allowed.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be under 5MB.');
+      e.target.value = '';
+      return;
+    }
+
+    setError('');
     setPhotoFile(file);
     setAvatarPreview(URL.createObjectURL(file));
   };
@@ -110,7 +124,7 @@ function ProfilePage() {
                     ? <img src={photoSrc} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
                     : <div className="avatar avatar-lg">{initials}</div>
                   }
-                  <input type="file" ref={fileInputRef} accept="image/*" className="d-none" onChange={handlePhotoChange} />
+                  <input type="file" ref={fileInputRef} accept=".jpg,.jpeg,.png,image/jpeg,image/png" className="d-none" onChange={handlePhotoChange} />
                   <button type="button" className="avatar-edit-btn" onClick={() => fileInputRef.current.click()}>📷</button>
                 </div>
                 <div className="profile-info">
