@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import MapView from "../components/MapView";
 import FilterBar from "../components/FilterBar";
- 
+
 const OUTDOOR_CATEGORIES = ["Home Tasks", "Gardening", "Transportation", "Pet Care"];
- 
+
 export default function RequestsPage() {
   const [requests, setRequests]           = useState([]);
- 
-  const [filters, setFilters]             = useState({ search: "", category: "", status: "", requestType: "" });
+  const [filters, setFilters]             = useState({ search: "", category: "", status: "" });
   const [loading, setLoading]             = useState(true);
   const [user, setUser]                   = useState(null);
   const [selectedRequest, setSelected]    = useState(null);
@@ -19,31 +18,40 @@ export default function RequestsPage() {
   const [weatherLoading, setWxLoading]    = useState(false);
   const [loginPrompt, setLoginPrompt]     = useState(false);
   const [showMap, setShowMap]             = useState(false);
- 
-  
+
+
+  const isOnline = (req) => {
+    if (!req) return false;
+    const type = req.requestType?.toLowerCase();
+    const loc  = req.location?.toLowerCase();
+    return type === "online" || loc === "online";
+  };
+
+  // Fetch requests from API with active filters
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
+    
     if (filters.search)   params.set("search",   filters.search);
     if (filters.category) params.set("category", filters.category);
     if (filters.status)   params.set("status",   filters.status);
+
     try {
       const res  = await fetch(`http://localhost:3000/requests/api?${params}`);
       const data = await res.json();
       if (data.success) setRequests(data.requests);
-    } catch { /* network err */ }
+    } catch { /* network error handle */ }
     setLoading(false);
   }, [filters]);
- 
+
   useEffect(() => { fetchRequests(); }, [fetchRequests]);
- 
+
   useEffect(() => {
     fetch("/api/profile")
       .then(r => r.json())
       .then(d => { if (d.success) setUser(d.user); })
       .catch(() => {});
   }, []);
- 
 
   const fetchWeather = async (location) => {
     if (!OUTDOOR_CATEGORIES.includes(selectedRequest?.category)) return;
@@ -62,10 +70,10 @@ export default function RequestsPage() {
       const wxData = await wxRes.json();
       const cw     = wxData.current_weather;
       setWeather({ temp: Math.round(cw.temperature), wind: Math.round(cw.windspeed), city: name, code: cw.weathercode });
-    } catch { /* weather unavailable */ }
+    } catch { /* weather service down fallback */ }
     setWxLoading(false);
   };
- 
+
   const weatherEmoji = (code) => {
     if (code === 0)  return "☀️";
     if (code <= 3)   return "⛅";
@@ -73,7 +81,7 @@ export default function RequestsPage() {
     if (code <= 77)  return "❄️";
     return "🌩️";
   };
- 
+
   const openModal = (req) => {
     if (!user) { setLoginPrompt(true); return; }
     setSelected(req);
@@ -83,7 +91,7 @@ export default function RequestsPage() {
     setWeather(null);
     if (!isOnline(req)) fetchWeather(req.location);
   };
- 
+
   const closeModal = () => {
     setSelected(null);
     setWeather(null);
@@ -91,19 +99,19 @@ export default function RequestsPage() {
     setTimeError("");
     setOfferStatus(null);
   };
- 
+
   const validateTime = (val) => {
     if (!val)                         { setTimeError("Please select a date and time.");        return false; }
     if (new Date(val) <= new Date())  { setTimeError("Please select a future date and time."); return false; }
     setTimeError("");
     return true;
   };
- 
+
   const handleTimeChange = (val) => {
     setSuggestedTime(val);
     if (val) validateTime(val);
   };
- 
+
   const confirmHelp = async () => {
     if (!validateTime(suggestedTime)) return;
     setSendingOffer(true);
@@ -112,7 +120,7 @@ export default function RequestsPage() {
       const res  = await fetch(`/requests/${selectedRequest._id}/offer`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ suggestedTime }),
+        body: JSON.stringify({ suggestedTime }), 
       });
       const data = await res.json();
       if (data.success) {
@@ -126,37 +134,29 @@ export default function RequestsPage() {
     }
     setSendingOffer(false);
   };
- 
-  const isOnline    = (req) => req && (req.requestType === "online" || req.location === "Online");
+
   const badgeClass  = (status) =>
     status === "Open"        ? "badge-open"     :
     status === "In Progress" ? "badge-progress" : "badge-completed";
- 
+
   const nowLocal = () => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, 16);
   };
- 
-  
+
+  // Completely robust client-side case-insensitive filtering
   const filtered = requests.filter(r => {
     const s = filters.search.toLowerCase();
-    const reqIsOnline = r.requestType === "online" || r.location === "Online";
-    const typeMatch =
-      !filters.requestType ||
-      (filters.requestType === "online"    &&  reqIsOnline) ||
-      (filters.requestType === "in-person" && !reqIsOnline);
-    return (
-      (!s || r.title.toLowerCase().includes(s) || r.description?.toLowerCase().includes(s)) &&
-      (!filters.category || r.category === filters.category) &&
-      (!filters.status   || r.status   === filters.status)   &&
-      typeMatch
-    );
+    const matchesSearch = !s || r.title?.toLowerCase().includes(s) || r.description?.toLowerCase().includes(s);
+    const matchesCategory = !filters.category || r.category === filters.category;
+    const matchesStatus = !filters.status || r.status === filters.status;
+
+    return matchesSearch && matchesCategory && matchesStatus;
   });
- 
-  
+
   const mappableRequests = filtered.filter(r => !isOnline(r));
- 
+
   return (
     <>
       <main className="main-content">
@@ -167,16 +167,14 @@ export default function RequestsPage() {
           </div>
           <a href="/requests/new" className="btn-primary">+ Post a Request</a>
         </div>
- 
+
         <div className="section" style={{ paddingTop:"32px" }}>
- 
-  
           <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", marginBottom: "20px" }}>
             <FilterBar
               filters={filters}
               onFilterChange={(key, value) => setFilters(f => ({ ...f, [key]: value }))}
             />
- 
+
             <div style={{
               display:"flex", border:"1.5px solid var(--border)", borderRadius:"8px",
               overflow:"hidden", marginLeft:"auto", flexShrink:0,
@@ -207,7 +205,7 @@ export default function RequestsPage() {
               </button>
             </div>
           </div>
- 
+
           <p style={{ fontSize:"14px", color:"var(--text-gray)", marginBottom:"20px" }}>
             Showing {filtered.length} request{filtered.length !== 1 ? "s" : ""}
             {showMap && mappableRequests.length < filtered.length && (
@@ -216,8 +214,7 @@ export default function RequestsPage() {
               </span>
             )}
           </p>
- 
-          
+
           {showMap && (
             <div style={{ marginBottom:"32px" }}>
               {loading ? (
@@ -240,7 +237,7 @@ export default function RequestsPage() {
                   onMarkerClick={(req) => openModal(req)}
                 />
               )}
- 
+
               {!loading && mappableRequests.length > 0 && (
                 <div style={{ marginTop:"24px" }}>
                   <h3 style={{ fontSize:"15px", fontWeight:700, marginBottom:"12px", color:"var(--text-dark)" }}>
@@ -282,8 +279,7 @@ export default function RequestsPage() {
               )}
             </div>
           )}
- 
-          
+
           {!showMap && (
             loading ? (
               <div style={{ textAlign:"center", padding:"60px 0", color:"var(--text-gray)" }}>
@@ -300,14 +296,14 @@ export default function RequestsPage() {
                   const isOwner    = user && req.postedBy &&
                     (req.postedBy._id || req.postedBy) === user._id;
                   const inProgress = req.status === "In Progress";
- 
+
                   return (
                     <div key={req._id} className="req-card">
                       <div className="req-card-top">
                         <span className={`badge ${badgeClass(req.status)}`}>{req.status}</span>
                         <span className="req-time">{new Date(req.createdAt).toLocaleDateString()}</span>
                       </div>
- 
+
                       <span style={{
                         display:"inline-block", fontSize:"11px", fontWeight:700,
                         background: online ? "#EEF2FF" : "#D1FAE5",
@@ -317,18 +313,18 @@ export default function RequestsPage() {
                       }}>
                         {online ? "🌐 Online" : "📍 In-Person"}
                       </span>
- 
+
                       {req.image && (
                         <img src={req.image} alt="Request"
                           style={{ width:"100%", height:"140px", objectFit:"cover",
                             borderRadius:"8px", marginBottom:"10px" }}
                         />
                       )}
- 
+
                       <h3>{req.title}</h3>
                       <p className="req-category">{req.category}</p>
                       <p className="req-desc">{req.description?.substring(0, 100)}...</p>
- 
+
                       <div className="req-meta">
                         {online
                           ? <span className="meta-info">🌐 Online Meeting</span>
@@ -339,7 +335,7 @@ export default function RequestsPage() {
                           : <span className="meta-info">🕐 Flexible</span>
                         }
                       </div>
- 
+
                       {inProgress ? (
                         <button className="btn-offer" disabled
                           style={{ background:"#e5e7eb", color:"#9ca3af", cursor:"not-allowed" }}>
@@ -363,8 +359,7 @@ export default function RequestsPage() {
           )}
         </div>
       </main>
- 
-      
+
       {loginPrompt && (
         <div style={{ position:"fixed", inset:0, zIndex:999, background:"rgba(15,23,42,0.5)",
           backdropFilter:"blur(4px)", display:"flex", alignItems:"center",
@@ -397,13 +392,12 @@ export default function RequestsPage() {
           </div>
         </div>
       )}
- 
-      {/* ── OFFER MODAL ── */}
+
       {selectedRequest && (
         <div className="modal-overlay" style={{ display:"flex" }} onClick={closeModal}>
           <div className="modal-content" onClick={e => e.stopPropagation()}
             style={{ maxHeight:"90vh", overflowY:"auto" }}>
- 
+
             <div style={{ display:"flex", justifyContent:"space-between",
               alignItems:"flex-start", marginBottom:"4px" }}>
               <div>
@@ -419,7 +413,7 @@ export default function RequestsPage() {
                 {isOnline(selectedRequest) ? "🌐 Online" : "📍 In-Person"}
               </span>
             </div>
- 
+
             <div className="modal-grid">
               <div className="modal-item">
                 <label>{isOnline(selectedRequest) ? "Format" : "Location"}</label>
@@ -432,8 +426,7 @@ export default function RequestsPage() {
                 </div>
               )}
             </div>
- 
-            {/* Weather widget (outdoor in-person only) */}
+
             {!isOnline(selectedRequest) &&
               OUTDOOR_CATEGORIES.includes(selectedRequest.category) && (
               <div style={{ margin:"12px 0", padding:"12px 14px", borderRadius:"10px",
@@ -457,14 +450,14 @@ export default function RequestsPage() {
                 )}
               </div>
             )}
- 
+
             <div className="modal-section">
               <label>Requested by</label>
               <div className="user-info">
                 <span>{selectedRequest.postedBy?.name || "Unknown"}</span>
               </div>
             </div>
- 
+
             <div className="modal-section time-picker-box">
               <label>
                 {isOnline(selectedRequest) ? "📅 Schedule Online Meeting Time" : "Set your convenient time"}
@@ -488,7 +481,7 @@ export default function RequestsPage() {
                 </span>
               )}
             </div>
- 
+
             {offerStatus && (
               <div style={{ marginTop:"10px", fontSize:"14px", padding:"10px 14px",
                 borderRadius:"8px",
@@ -498,7 +491,7 @@ export default function RequestsPage() {
                 {offerStatus.msg}
               </div>
             )}
- 
+
             <div className="modal-footer">
               <button className="btn-secondary" onClick={closeModal}>Cancel</button>
               <button className="btn-primary" onClick={confirmHelp}

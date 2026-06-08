@@ -42,10 +42,15 @@ export default function RequestForm() {
     setErrors(e => ({ ...e, image: "" }));
   };
 
+  const clearImage = () => {
+    setImage(null);
+    setPreview(null);
+  };
+
   const validate = () => {
     const e = {};
     if (!form.title.trim())       e.title       = "Title is required";
-    if (!form.category)            e.category    = "Category is required";
+    if (!form.category)           e.category    = "Category is required";
     if (!form.description.trim()) e.description = "Description is required";
     if (!isOnline && !form.location.trim())
       e.location = "Location is required for in-person requests";
@@ -63,40 +68,36 @@ export default function RequestForm() {
     setAiGenerated(false);
 
     try {
-      // ⚠️ REPLACE THIS URL WITH YOUR WORKING EXTERNAL AI SERVICE ENDPOINT
-      const response = await fetch("https://api.your-external-ai-provider.com/v1/completions", {
+      // ✅ Now pointing securely to your proxy-forwarded Express Backend Router
+      const response = await fetch("/requests/api/generate-description", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          // Uncomment and add your token if calling an external API directly:
-          // "Authorization": "Bearer YOUR_API_KEY"
         },
         body: JSON.stringify({
-          prompt: `Write a short description for a help request titled "${form.title}" under the category "${form.category}".`,
-          max_tokens: 150
+          title: form.title,
+          category: form.category
         }),
       });
 
       const data = await response.json();
 
-      // Adjusting checks for standard external API response flows
-      if (!response.ok) {
-        setAiError(data.error?.message || data.error || "External generation failed.");
+      if (!response.ok || !data.success) {
+        setAiError(data.message || "External description generation failed.");
         return;
       }
 
-      // Read common text return locations from standard external provider configurations
-      const parsedText = data.text || data.generated_text || data.choices?.[0]?.text;
-
-      if (parsedText) {
-        setForm(f => ({ ...f, description: parsedText.trim() }));
+      // Read text safely from your backend's layout signature response
+      if (data.description) {
+        setForm(f => ({ ...f, description: data.description }));
         setErrors(e => ({ ...e, description: "" }));
         setAiGenerated(true);
       } else {
-        setAiError("API answered successfully, but the expected text field could not be found.");
+        setAiError("API answered successfully, but the description field was empty.");
       }
-    } catch {
-      setAiError("Network error. Please check your connection or cross-origin restrictions.");
+    } catch (err) {
+      console.error(err);
+      setAiError("An error occurred while communicating with the server.");
     } finally {
       setAiLoading(false);
     }
@@ -221,7 +222,7 @@ export default function RequestForm() {
 
         {/* ── DESCRIPTION ── */}
         <div className="form-group">
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"6px" }}>
+          <div style={{ display:"flex", justifycontent:"space-between", alignItems:"center", marginBottom:"6px" }}>
             <label htmlFor="description" style={{ margin:0 }}>
               Description *
               {aiGenerated && (
@@ -254,7 +255,7 @@ export default function RequestForm() {
 
           <p style={{ fontSize:"12px", color:"#7c3aed", marginBottom:"8px",
             background:"#faf5ff", padding:"8px 12px", borderRadius:"6px", border:"1px solid #e9d5ff" }}>
-            💡 Fill in the <strong>title</strong> and <strong>category</strong> above, then click <strong> Generate with AI</strong> to auto-write a description.
+            💡 Fill in the <strong>title</strong> and <strong>category</strong> above, then click <strong>Generate with AI</strong> to auto-write a description.
           </p>
 
           <textarea id="description" className="form-control"
@@ -290,7 +291,7 @@ export default function RequestForm() {
           </div>
         )}
 
-        {/* ── DATE & TIME ── */}
+        {/* ── TIME/DATE ── */}
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="desiredDate">{isOnline ? "📅 Preferred Meeting Date" : "📅 Desired Date"}</label>
@@ -304,7 +305,7 @@ export default function RequestForm() {
           </div>
         </div>
 
-        {/* ── FLEXIBLE CHECKBOX ── */}
+        {/* ── FLEXIBLE TIME ── */}
         <label className="flexible-check" style={{ display:"flex", alignItems:"center", gap:"8px", cursor:"pointer" }}>
           <input type="checkbox" style={{ width:"16px", height:"16px" }}
             checked={form.flexible} onChange={e => set("flexible", e.target.checked)} />
@@ -312,21 +313,25 @@ export default function RequestForm() {
         </label>
 
         {/* ── PHOTO UPLOAD ── */}
-        {!isOnline && (
-          <div className="form-group" style={{ marginTop:"16px" }}>
-            <label>📷 Add Photo (optional)</label>
-            <input type="file" accept="image/*" className="form-control"
-              style={{ padding:"8px" }} onChange={handleImageChange} />
-            {errors.image && <span className="error-msg show">{errors.image}</span>}
-            {imagePreview && (
+        <div className="form-group" style={{ marginTop:"16px" }}>
+          <label>📷 Add Photo (optional)</label>
+          <input type="file" accept="image/*" className="form-control"
+            style={{ padding:"8px" }} onChange={handleImageChange} />
+          {errors.image && <span className="error-msg show">{errors.image}</span>}
+          {imagePreview && (
+            <div style={{ marginTop:"12px", position:"relative" }}>
               <img src={imagePreview} alt="Preview" style={{
-                marginTop:"10px", width:"100%", maxHeight:"200px", objectFit:"cover", borderRadius:"8px",
+                width:"100%", maxHeight:"200px", objectFit:"cover", borderRadius:"8px", border:"1px solid #e5e7eb"
               }} />
-            )}
-          </div>
-        )}
+              <button type="button" onClick={clearImage}
+                style={{ display:"block", marginTop:"6px", fontSize:"13px", color:"#dc2626", background:"none", border:"none", cursor:"pointer" }}>
+                ✕ Remove photo
+              </button>
+            </div>
+          )}
+        </div>
 
-        {/* ── SAFETY REMINDERS ── */}
+        {/* ── SAFETY ── */}
         <div className="safety-box" style={{ marginTop:"20px" }}>
           <h4>⚠ Safety Reminders</h4>
           <ul>

@@ -15,6 +15,7 @@ const {
   acceptOffer,
   rejectOffer,
   withdrawOffer,
+  generateDescription, 
 } = require('../controllers/requestController');
  
 // ── EJS routes (keep for non-React fallback) ──────────────────────
@@ -23,8 +24,9 @@ router.get('/my',  protect, getMyRequests);
 router.get('/new', protect, getPostRequestForm);
  
 // ── JSON API routes for React pages ──────────────────────────────
-router.get('/api',    getAllRequestsApi);          // GET /requests/api
-router.get('/api/my', protect, getMyRequestsApi); // GET /requests/api/my
+router.get('/api',    getAllRequestsApi);         
+router.get('/api/my', protect, getMyRequestsApi); 
+router.post('/api/generate-description', protect, generateDescription); 
  
 // ── Shared routes (used by both EJS and React) ────────────────────
 router.post('/',   protect, createRequest);

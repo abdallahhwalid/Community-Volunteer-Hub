@@ -1,8 +1,10 @@
+import React from "react";
+
 function FilterBar({ filters, onFilterChange }) {
   return (
     <div className="filters-bar">
       
-      
+      {/* Search Input */}
       <div className="search-wrap">
         <span className="search-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -19,7 +21,7 @@ function FilterBar({ filters, onFilterChange }) {
         />
       </div>
 
-      
+      {/* Category Dropdown */}
       <select
         className="filter-select"
         value={filters.category}
@@ -34,7 +36,7 @@ function FilterBar({ filters, onFilterChange }) {
         <option value="Other">Other</option>
       </select>
 
-      
+      {/* Status Dropdown */}
       <select
         className="filter-select"
         value={filters.status}
@@ -42,16 +44,6 @@ function FilterBar({ filters, onFilterChange }) {
         <option value="">All Statuses</option>
         <option value="Open">Open</option>
         <option value="In Progress">In Progress</option>
-      </select>
-
-     
-      <select
-        className="filter-select"
-        value={filters.requestType}
-        onChange={e => onFilterChange("requestType", e.target.value)}>
-        <option value="">All Types</option>
-        <option value="online">🌐 Online</option>
-        <option value="in-person">📍 In-Person</option>
       </select>
 
     </div>

@@ -410,3 +410,72 @@ exports.withdrawOffer = asyncHandler(async (req, res) => {
   await offer.deleteOne();
   res.json({ success: true, message: 'Offer withdrawn' });
 });
+
+// ─────────────────────────────────────────────
+// POST /requests/api/generate-description
+// Generates a request description using Gemini AI
+// ─────────────────────────────────────────────
+exports.generateDescription = asyncHandler(async (req, res) => {
+  const { title, category } = req.body;
+
+  if (!title || !category) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Title and category are required context fields.' 
+    });
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Gemini API key is not configured on the server environment.' 
+    });
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const promptText = `You are an assistant for a community volunteering platform. 
+Write a clear, realistic, and compelling request description based on the following details. 
+Keep it concise (between 3 to 5 sentences), warm, and outline what the volunteer will be doing and any typical requirements. Do not use markdown bolding.
+
+Request Title: ${title}
+Category: ${category}`;
+
+  const apiResponse = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: promptText }]
+      }]
+    })
+  });
+
+  const data = await apiResponse.json();
+
+  if (!apiResponse.ok) {
+    console.error('Gemini API Error details:', data);
+    return res.status(502).json({ 
+      success: false, 
+      message: 'Failed to communicate with external AI service.' 
+    });
+  }
+
+  try {
+    const generatedText = data.candidates[0].content.parts[0].text;
+    
+    return res.json({
+      success: true,
+      description: generatedText.trim()
+    });
+  } catch (error) {
+    console.error('Parsing breakdown error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'AI responded, but structural layout parsing failed.' 
+    });
+  }
+});
