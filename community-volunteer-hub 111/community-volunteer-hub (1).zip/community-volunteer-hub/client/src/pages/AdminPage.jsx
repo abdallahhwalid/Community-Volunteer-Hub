@@ -53,16 +53,28 @@ export default function AdminPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
- const deleteItem = async (url, id, setter, list) => {
+const deleteItem = async (url, id, setter, list) => {
   try {
-    const res = await fetch(`${url}/${id}`, { method: "DELETE" });  // CHANGE THIS LINE
-    if (res.ok) {
-      setter(list.filter(i => i._id !== id));
+    const res = await fetch(`${url}/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await res.json();
+
+    if (data.success || res.ok) {
+      setter(prev => prev.filter(item => item._id !== id));
       showToast("Deleted successfully.");
+    } else {
+      showToast(data.message || "Delete failed.");
     }
-  } catch {
+  } catch (err) {
+    console.error(err);
     showToast("Error deleting item.");
   }
+
   setConfirmModal(null);
 };
 
@@ -443,28 +455,97 @@ export default function AdminPage() {
 
       {/* ── CONFIRM MODAL ── */}
       {confirmModal && (
-        <div style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(15,23,42,0.45)",
-          backdropFilter:"blur(3px)", display:"flex", alignItems:"center", justifyContent:"center" }}
-          onClick={() => setConfirmModal(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background:"var(--white)", borderRadius:"16px",
-            padding:"32px 28px 24px", width:"100%", maxWidth:"380px", boxShadow:"0 20px 60px rgba(15,23,42,0.18)",
-            textAlign:"center" }}>
-            <div style={{ fontSize:"36px", marginBottom:"12px" }}>⚠️</div>
-            <h3 style={{ fontSize:"17px", fontWeight:700, color:"var(--text-dark)", marginBottom:"8px" }}>
-              {confirmModal.title}
-            </h3>
-            <p style={{ fontSize:"14px", color:"var(--text-gray)", marginBottom:"24px", lineHeight:1.5 }}>
-              {confirmModal.message}
-            </p>
-            <div style={{ display:"flex", gap:"10px", justifyContent:"center" }}>
-              <button className="btn-ghost" style={{ flex:1, padding:"10px 0" }}
-                onClick={() => setConfirmModal(null)}>Cancel</button>
-              <button className="btn-danger" style={{ flex:1, padding:"10px 0" }}
-                onClick={confirmModal.onConfirm}>Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+        <div
+  style={{
+    position: "fixed",
+    inset: 0,
+    background: "rgba(15,23,42,0.75)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+    backdropFilter: "blur(8px)"
+  }}
+>
+  <div
+    style={{
+      width: "420px",
+      background: "#162338",
+      borderRadius: "20px",
+      padding: "32px",
+      textAlign: "center",
+      boxShadow: "0 20px 60px rgba(0,0,0,.4)"
+    }}
+  >
+    <div
+      style={{
+        width: "50px",
+        height: "50px",
+        margin: "0 auto 20px",
+        borderRadius: "50%",
+        background: "#ff0000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#fff",
+        fontSize: "24px"
+      }}
+    >
+      🗑️
+    </div>
+
+    <h3
+      style={{
+        color: "#fff",
+        marginBottom: "10px"
+      }}
+    >
+      {confirmModal.title}
+    </h3>
+
+    <p
+      style={{
+        color: "#94A3B8",
+        marginBottom: "24px"
+      }}
+    >
+      {confirmModal.message}
+    </p>
+
+    <div
+      style={{
+        display: "flex",
+        gap: "12px"
+      }}
+    >
+      <button
+        className="btn-ghost"
+        style={{
+          flex: 1
+        }}
+        onClick={() => setConfirmModal(null)}
+      >
+        Cancel
+      </button>
+
+      <button
+        style={{
+          flex: 1,
+          border: "none",
+          borderRadius: "10px",
+          background: "#ff4d4f",
+          color: "#fff",
+          fontWeight: 600,
+          cursor: "pointer",
+          padding: "12px"
+        }}
+        onClick={confirmModal.onConfirm}
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* ── VIEW MODAL ── */}
       {viewModal && (

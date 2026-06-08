@@ -76,7 +76,6 @@
             <input type="text" class="search-input" placeholder="Search users..." id="user-search" oninput="filterUsers()"/>
             <select class="filter-select" id="user-role-filter" onchange="filterUsers()">
               <option value="">All Roles</option>
-              <option value="volunteer">Volunteer</option>
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
@@ -112,9 +111,8 @@
                     <td><%= u.joinedAt ? u.joinedAt.toLocaleDateString() : 'N/A' %></td>
                     <td class="actions-cell">
                       <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
-                      <form action="/admin/users/<%= u._id %>?_method=DELETE" method="POST" style="display:inline">
-                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this user?')">Delete</button>
-                      </form>
+<button class="btn-danger" style="padding:5px 10px;font-size:12px;"
+  onclick="adminDelete('/admin/users/<%= u._id %>', this.closest('tr'))">Delete</button>                        
                     </td>
                   </tr>
                 <% }) %>
@@ -161,8 +159,8 @@
                     <td><%= req.createdAt ? req.createdAt.toLocaleDateString() : 'N/A' %></td>
                     <td class="actions-cell">
                       <button class="btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewRow(this)">View</button>
-                      <form action="/admin/requests/<%= req._id %>?_method=DELETE" method="POST" style="display:inline">
-                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this request?')">Delete</button>
+<button class="btn-danger" style="padding:5px 10px;font-size:12px;"
+  onclick="adminDelete('/admin/requests/<%= req._id %>', this.closest('tr'))">Delete</button>                       
                       </form>
                     </td>
                   </tr>
@@ -209,8 +207,8 @@
                     <td><%= msg.createdAt ? msg.createdAt.toLocaleDateString() : 'N/A' %></td>
                     <td><span class="role-badge <%= msg.isRead ? 'role-user' : 'role-admin' %>"><%= msg.isRead ? 'Read' : 'Unread' %></span></td>
                     <td class="actions-cell">
-                      <form action="/admin/messages/<%= msg._id %>?_method=DELETE" method="POST" style="display:inline">
-                        <button type="submit" class="btn-danger" style="padding:5px 10px;font-size:12px;" onclick="return confirm('Delete this message?')">Delete</button>
+<button class="btn-danger" style="padding:5px 10px;font-size:12px;"
+  onclick="adminDelete('/admin/messages/<%= msg._id %>', this.closest('tr'))">Delete</button>                       
                       </form>
                     </td>
                   </tr>
@@ -283,8 +281,15 @@
   <!-- ── Confirm Modal ── -->
   <div id="confirm-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
-      <div class="modal-icon" id="modal-icon">⚠️</div>
-      <h3 class="modal-title" id="modal-title">Are you sure?</h3>
+
+
+<img
+  src="/images/delete.png"
+  alt="Delete"
+  class="delete-modal-image"
+/>
+
+<h3 class="modal-title" id="modal-title">Are you sure?</h3>
       <p class="modal-message" id="modal-message">This action cannot be undone.</p>
       <div class="modal-actions">
         <button class="btn-ghost modal-btn" id="modal-cancel">Cancel</button>
@@ -352,6 +357,75 @@
         card.style.display = (status === '' || cardStatus === status) ? '' : 'none';
       });
     }
+
+  let deleteAction = null;
+
+async function adminDelete(url, row) {
+
+  const modal = document.getElementById('confirm-modal');
+  const title = document.getElementById('modal-title');
+  const message = document.getElementById('modal-message');
+
+  title.textContent = 'Delete Item?';
+  message.textContent = 'This action cannot be undone.';
+
+  modal.style.display = 'flex';
+
+  deleteAction = async () => {
+    try {
+      const res = await fetch(url, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        row.style.transition = 'opacity .3s';
+        row.style.opacity = '0';
+        setTimeout(() => row.remove(), 300);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+
+    modal.style.display = 'none';
+  };
+}
+
+document.getElementById('modal-cancel').onclick = () => {
+  document.getElementById('confirm-modal').style.display = 'none';
+};
+
+function deleteMessage(btn) {
+
+  const card = btn.closest('.inbox-card');
+
+  const modal = document.getElementById('confirm-modal');
+
+  document.getElementById('modal-title').textContent =
+    'Delete Message?';
+
+  document.getElementById('modal-message').textContent =
+    'This contact message will be permanently deleted.';
+
+  modal.style.display = 'flex';
+
+  deleteAction = () => {
+    card.remove();
+    modal.style.display = 'none';
+  };
+}
+
+
+document.getElementById('modal-continue').onclick = async () => {
+
+  if (deleteAction) {
+    await deleteAction();
+    deleteAction = null;
+  }
+
+};
   </script>
 
 </body>
