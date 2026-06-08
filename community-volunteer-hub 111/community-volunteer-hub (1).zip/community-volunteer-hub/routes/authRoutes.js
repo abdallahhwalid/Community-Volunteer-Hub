@@ -1,4 +1,4 @@
-const express = require('express');
+ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
@@ -9,7 +9,7 @@ const ContactMessage = require('../models/ContactMessage');
 // HOME ROUTE
 router.get('/', async (req, res) => {
   try {
-   const recentRequests = await Request.find({ status: { $in: ['Open', 'In Progress', 'Completed'] } })
+    const recentRequests = await Request.find({ status: 'Open' })
       .populate('postedBy', 'name')
       .sort({ createdAt: -1 })
       .limit(3);
@@ -49,7 +49,6 @@ router.get('/logout', authController.logout);
 // Profile routes
 router.get('/profile', protect, authController.showProfile);
 router.post('/profile', protect, authController.updateProfile);
-router.get('/profile/:id', protect, authController.showVolunteerProfile);
 
 // Static pages
 router.get('/terms', (req, res) => res.render('terms', { user: req.session.userId ? { name: req.session.name, role: req.session.role } : null }));
@@ -75,7 +74,43 @@ router.post('/api/register', authController.apiRegister);
 router.post('/api/login', authController.apiLogin);
 router.get('/api/profile', protect, authController.apiGetProfile);
 router.put('/api/profile', protect, authController.apiUpdateProfile);
+router.post('/api/ai/description', protect, async (req, res) => {
+  try {
+    const { title, category, requestType, location } = req.body;
 
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Write a clear, friendly help request description for:
+- Title: "${title}"
+- Category: "${category}"
+- Type: "${requestType === 'online' ? 'Online (remote)' : 'In-person'}"
+${location && requestType !== 'online' ? `- Location: "${location}"` : ''}
+
+3-5 sentences. Explain what help is needed, any requirements, and what the volunteer can expect. Write ONLY the description text.`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const description = data.content?.[0]?.text?.trim();
+
+    if (!description) return res.status(500).json({ success: false, error: 'No description generated' });
+
+    res.json({ success: true, description });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
 // Contact GET
 router.get('/contact', async (req, res) => {
   try {

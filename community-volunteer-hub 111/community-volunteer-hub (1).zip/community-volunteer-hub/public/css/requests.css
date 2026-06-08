@@ -1,4 +1,4 @@
-
+                                                     
 .requests-grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
@@ -35,7 +35,34 @@
   font-weight: bold; 
   margin-top: auto; 
 }
+.view-toggle {
+  display: flex;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-left: auto;
+}
 
+.view-toggle button {
+  padding: 12px 16px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  color: #374151;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.view-toggle button.active {
+  background: #1E3A8A;
+  color: white;
+}
+
+.view-toggle button:last-child {
+  border-left: 1.5px solid #ccc;
+}
 
 .filters-bar { display: flex; gap: 15px; margin-bottom: 30px; align-items: center; flex-wrap: wrap; }
 .search-wrap { position: relative; flex-grow: 1; max-width: 400px; }
@@ -121,7 +148,3 @@
 .time-picker-box { background: #fff9e6; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; margin-top: 5px; box-sizing: border-box; }
-.modal-content h2 {
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}

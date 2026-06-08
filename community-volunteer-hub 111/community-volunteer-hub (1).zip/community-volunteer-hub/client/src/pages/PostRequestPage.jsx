@@ -1,18 +1,26 @@
-import { useState, useEffect } from "react";
+    import { useState, useEffect } from "react";
 
-const ALL_CATEGORIES = ["Home Tasks", "IT Repair", "Gardening", "Tutoring", "Pet Care", "Transportation", "Other"];
+const ALL_CATEGORIES = [
+  "Home Tasks", "IT Repair", "Gardening", "Tutoring",
+  "Pet Care", "Transportation", "Other",
+];
 
 export default function PostRequestPage() {
   const [form, setForm] = useState({
     title: "", category: "", description: "",
-    location: "", desiredDate: "", desiredTime: "", flexible: false,
-    requestType: "in-person", // NEW: explicit toggle
+    location: "", desiredDate: "", desiredTime: "",
+    flexible: false, requestType: "in-person",
   });
-  const [errors, setErrors]     = useState({});
-  const [submitting, setSub]    = useState(false);
-  const [success, setSuccess]   = useState(false);
-  const [imageFile, setImage]   = useState(null);
-  const [imagePreview, setPreview] = useState(null);
+  const [errors, setErrors]           = useState({});
+  const [submitting, setSub]          = useState(false);
+  const [success, setSuccess]         = useState(false);
+  const [imageFile, setImage]         = useState(null);
+  const [imagePreview, setPreview]    = useState(null);
+
+  
+  const [aiLoading, setAiLoading]     = useState(false);
+  const [aiError, setAiError]         = useState("");
+  const [aiGenerated, setAiGenerated] = useState(false);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -26,6 +34,7 @@ export default function PostRequestPage() {
   const set = (key, val) => {
     setForm(f => ({ ...f, [key]: val }));
     setErrors(e => ({ ...e, [key]: "" }));
+    if (key === "description") setAiGenerated(false);
   };
 
   const handleImageChange = (e) => {
@@ -45,10 +54,53 @@ export default function PostRequestPage() {
     if (!form.title.trim())       e.title       = "Title is required";
     if (!form.category)            e.category    = "Category is required";
     if (!form.description.trim()) e.description = "Description is required";
-    if (!isOnline && !form.location.trim()) e.location = "Location is required for in-person requests";
+    if (!isOnline && !form.location.trim())
+      e.location = "Location is required for in-person requests";
     return e;
   };
 
+  
+  const generateDescription = async () => {
+    if (!form.title.trim() || !form.category) {
+      setAiError("Please fill in the title and category first.");
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError("");
+    setAiGenerated(false);
+
+    try {
+      // Call our backend proxy endpoint so the API key stays server-side
+      const response = await fetch("/api/ai/description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title:       form.title,
+          category:    form.category,
+          requestType: form.requestType,
+          location:    form.location,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setAiError(data.error || "Generation failed. Please try again.");
+        return;
+      }
+
+      setForm(f => ({ ...f, description: data.description }));
+      setErrors(e => ({ ...e, description: "" }));
+      setAiGenerated(true);
+    } catch {
+      setAiError("Network error. Please check your connection and try again.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
@@ -93,76 +145,76 @@ export default function PostRequestPage() {
           <p className="form-box-sub">Be as specific as possible to help volunteers understand your needs</p>
 
           {errors.general && (
-            <div style={{ padding:"12px 16px", background:"#FEF2F2", color:"#991B1B", border:"1px solid #FECACA", borderRadius:"8px", marginBottom:"16px", fontSize:"14px" }}>{errors.general}</div>
+            <div style={{ padding:"12px 16px", background:"#FEF2F2", color:"#991B1B",
+              border:"1px solid #FECACA", borderRadius:"8px", marginBottom:"16px", fontSize:"14px" }}>
+              {errors.general}
+            </div>
           )}
 
           {success && (
-            <div style={{ padding:"12px 16px", background:"#F0FDF4", color:"#166534", border:"1px solid #BBF7D0", borderRadius:"8px", marginBottom:"16px", fontSize:"14px", fontWeight:600 }}>✅ Your request has been posted! Redirecting to browse...</div>
+            <div style={{ padding:"12px 16px", background:"#F0FDF4", color:"#166534",
+              border:"1px solid #BBF7D0", borderRadius:"8px", marginBottom:"16px",
+              fontSize:"14px", fontWeight:600 }}>
+              ✅ Your request has been posted! Redirecting to browse...
+            </div>
           )}
 
           <form onSubmit={handleSubmit} encType="multipart/form-data" noValidate>
 
-            {/* ── REQUEST TYPE TOGGLE ── */}
+            
             <div className="form-group">
               <label>Request Type *</label>
               <div style={{ display:"flex", gap:"12px", marginTop:"4px" }}>
-                <label style={{
-                  flex:1, display:"flex", alignItems:"center", gap:"10px",
-                  padding:"12px 16px", borderRadius:"8px", cursor:"pointer",
-                  border: `2px solid ${!isOnline ? "var(--navy)" : "var(--border)"}`,
-                  background: !isOnline ? "var(--blue-light)" : "white",
-                  transition:"all 0.2s"
-                }}>
-                  <input
-                    type="radio" name="requestType" value="in-person"
-                    checked={!isOnline}
-                    onChange={() => set("requestType", "in-person")}
-                    style={{ accentColor:"var(--navy)" }}
-                  />
-                  <span>
-                    <span style={{ fontSize:"16px" }}>📍</span>
-                    <span style={{ fontWeight:600, fontSize:"14px", color:"var(--text-dark)", marginLeft:"6px" }}>In-Person</span>
-                    <br/>
-                    <span style={{ fontSize:"12px", color:"var(--text-gray)" }}>Volunteer comes to you or you meet locally</span>
-                  </span>
-                </label>
-
-                <label style={{
-                  flex:1, display:"flex", alignItems:"center", gap:"10px",
-                  padding:"12px 16px", borderRadius:"8px", cursor:"pointer",
-                  border: `2px solid ${isOnline ? "#4338CA" : "var(--border)"}`,
-                  background: isOnline ? "#EEF2FF" : "white",
-                  transition:"all 0.2s"
-                }}>
-                  <input
-                    type="radio" name="requestType" value="online"
-                    checked={isOnline}
-                    onChange={() => set("requestType", "online")}
-                    style={{ accentColor:"#4338CA" }}
-                  />
-                  <span>
-                    <span style={{ fontSize:"16px" }}>🌐</span>
-                    <span style={{ fontWeight:600, fontSize:"14px", color:"var(--text-dark)", marginLeft:"6px" }}>Online</span>
-                    <br/>
-                    <span style={{ fontSize:"12px", color:"var(--text-gray)" }}>Help via video call, chat, or remote access</span>
-                  </span>
-                </label>
+                {[
+                  { value:"in-person", icon:"📍", label:"In-Person",
+                    sub:"Volunteer comes to you or you meet locally" },
+                  { value:"online",    icon:"🌐", label:"Online",
+                    sub:"Help via video call, chat, or remote access" },
+                ].map(opt => (
+                  <label key={opt.value} style={{
+                    flex:1, display:"flex", alignItems:"center", gap:"10px",
+                    padding:"12px 16px", borderRadius:"8px", cursor:"pointer",
+                    border:`2px solid ${form.requestType === opt.value
+                      ? (opt.value === "online" ? "#4338CA" : "var(--navy)")
+                      : "var(--border)"}`,
+                    background: form.requestType === opt.value
+                      ? (opt.value === "online" ? "#EEF2FF" : "var(--blue-light)")
+                      : "white",
+                    transition:"all 0.2s",
+                  }}>
+                    <input type="radio" name="requestType" value={opt.value}
+                      checked={form.requestType === opt.value}
+                      onChange={() => set("requestType", opt.value)}
+                      style={{ accentColor: opt.value === "online" ? "#4338CA" : "var(--navy)" }}
+                    />
+                    <span>
+                      <span style={{ fontSize:"16px" }}>{opt.icon}</span>
+                      <span style={{ fontWeight:600, fontSize:"14px",
+                        color:"var(--text-dark)", marginLeft:"6px" }}>{opt.label}</span>
+                      <br/>
+                      <span style={{ fontSize:"12px", color:"var(--text-gray)" }}>{opt.sub}</span>
+                    </span>
+                  </label>
+                ))}
               </div>
 
               {isOnline && (
-                <div style={{ marginTop:"10px", padding:"10px 14px", background:"#EEF2FF", borderRadius:"8px", fontSize:"13px", color:"#4338CA", fontWeight:500 }}>
-                  🌐 <strong>Online request</strong> — no physical location needed. Coordinate a video call or chat link via messages.
+                <div style={{ marginTop:"10px", padding:"10px 14px", background:"#EEF2FF",
+                  borderRadius:"8px", fontSize:"13px", color:"#4338CA", fontWeight:500 }}>
+                  🌐 <strong>Online request</strong> — no physical location needed.
+                  Coordinate a video call or chat link via messages.
                 </div>
               )}
             </div>
 
-            {/* ── TITLE ── */}
+          
             <div className="form-group">
               <label htmlFor="title">Request Title *</label>
               <input id="title" type="text" className="form-control"
                 placeholder="e.g., Need help moving furniture"
                 value={form.title} onChange={e => set("title", e.target.value)}
-                style={{ borderColor: errors.title ? "#dc2626" : "" }} />
+                style={{ borderColor: errors.title ? "#dc2626" : "" }}
+              />
               {errors.title && <span className="error-msg show">{errors.title}</span>}
             </div>
 
@@ -178,32 +230,88 @@ export default function PostRequestPage() {
               {errors.category && <span className="error-msg show">{errors.category}</span>}
             </div>
 
-            {/* ── DESCRIPTION ── */}
+            
             <div className="form-group">
-              <label htmlFor="description">Description *</label>
-              <textarea id="description" className="form-control"
-                placeholder="Provide detailed information about what you need help with..."
-                value={form.description} onChange={e => set("description", e.target.value)}
-                style={{ borderColor: errors.description ? "#dc2626" : "" }} />
-              <p style={{ fontSize:"12px", color:"var(--text-gray)", marginTop:"6px" }}>
-                Include important details like the scope of work and any special requirements
+              <div style={{ display:"flex", justifyContent:"space-between",
+                alignItems:"center", marginBottom:"6px" }}>
+                <label htmlFor="description" style={{ margin:0 }}>
+                  Description *
+                  {aiGenerated && (
+                    <span style={{
+                      marginLeft:"8px", fontSize:"11px", fontWeight:700,
+                      background:"linear-gradient(135deg,#667eea,#764ba2)",
+                      color:"white", padding:"2px 8px", borderRadius:"99px",
+                      verticalAlign:"middle",
+                    }}>
+                      ✨ AI-generated
+                    </span>
+                  )}
+                </label>
+
+                <button
+                  type="button"
+                  onClick={generateDescription}
+                  disabled={aiLoading}
+                  style={{
+                    display:"flex", alignItems:"center", gap:"6px",
+                    padding:"7px 14px",
+                    background: aiLoading
+                      ? "#e5e7eb"
+                      : "linear-gradient(135deg,#667eea 0%,#764ba2 100%)",
+                    color:  aiLoading ? "#9ca3af" : "white",
+                    border:"none", borderRadius:"8px",
+                    fontSize:"13px", fontWeight:600,
+                    cursor: aiLoading ? "not-allowed" : "pointer",
+                    transition:"all 0.2s",
+                    boxShadow: aiLoading ? "none" : "0 2px 8px rgba(102,126,234,0.4)",
+                    flexShrink:0,
+                  }}
+                >
+                  {aiLoading ? "⏳ Generating..." : "✨ Generate with AI"}
+                </button>
+              </div>
+
+              <p style={{ fontSize:"12px", color:"#7c3aed", marginBottom:"8px",
+                background:"#faf5ff", padding:"8px 12px", borderRadius:"6px",
+                border:"1px solid #e9d5ff" }}>
+                💡 Fill in the <strong>title</strong> and <strong>category</strong> above, then click
+                <strong> Generate with AI</strong> to auto-write a description. You can edit it afterward.
               </p>
+
+              <textarea id="description" className="form-control"
+                placeholder="Describe what help you need, any requirements, and what the volunteer can expect..."
+                value={form.description}
+                onChange={e => set("description", e.target.value)}
+                style={{
+                  borderColor: errors.description ? "#dc2626" : aiGenerated ? "#7c3aed" : "",
+                  minHeight:"120px",
+                }}
+              />
+
+              {aiError && (
+                <div style={{ marginTop:"6px", padding:"8px 12px", background:"#FEF2F2",
+                  color:"#991B1B", border:"1px solid #FECACA", borderRadius:"6px", fontSize:"13px" }}>
+                  ⚠ {aiError}
+                </div>
+              )}
+
               {errors.description && <span className="error-msg show">{errors.description}</span>}
             </div>
 
-            {/* ── LOCATION (hidden when online) ── */}
+            
             {!isOnline && (
               <div className="form-group">
                 <label htmlFor="location">📍 Location *</label>
                 <input id="location" type="text" className="form-control"
                   placeholder="e.g., Downtown, 123 Main St"
                   value={form.location} onChange={e => set("location", e.target.value)}
-                  style={{ borderColor: errors.location ? "#dc2626" : "" }} />
+                  style={{ borderColor: errors.location ? "#dc2626" : "" }}
+                />
                 {errors.location && <span className="error-msg show">{errors.location}</span>}
               </div>
             )}
 
-            {/* ── DATE & TIME ── */}
+            
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="desiredDate">
@@ -221,14 +329,15 @@ export default function PostRequestPage() {
               </div>
             </div>
 
-            {/* ── FLEXIBLE ── */}
-            <label className="flexible-check" style={{ display:"flex", alignItems:"center", gap:"8px", cursor:"pointer" }}>
+           
+            <label className="flexible-check"
+              style={{ display:"flex", alignItems:"center", gap:"8px", cursor:"pointer" }}>
               <input type="checkbox" style={{ width:"16px", height:"16px" }}
                 checked={form.flexible} onChange={e => set("flexible", e.target.checked)} />
               I&apos;m flexible with timing and can coordinate with the volunteer
             </label>
 
-            {/* ── PHOTO (only for in-person) ── */}
+            
             {!isOnline && (
               <div className="form-group" style={{ marginTop:"16px" }}>
                 <label>📷 Add Photo (optional)</label>
@@ -236,13 +345,15 @@ export default function PostRequestPage() {
                   style={{ padding:"8px" }} onChange={handleImageChange} />
                 {errors.image && <span className="error-msg show">{errors.image}</span>}
                 {imagePreview && (
-                  <img src={imagePreview} alt="Preview"
-                    style={{ marginTop:"10px", width:"100%", maxHeight:"200px", objectFit:"cover", borderRadius:"8px" }}/>
+                  <img src={imagePreview} alt="Preview" style={{
+                    marginTop:"10px", width:"100%", maxHeight:"200px",
+                    objectFit:"cover", borderRadius:"8px",
+                  }} />
                 )}
               </div>
             )}
 
-            {/* ── SAFETY BOX ── */}
+            
             <div className="safety-box" style={{ marginTop:"20px" }}>
               <h4>⚠ Safety Reminders</h4>
               <ul>
