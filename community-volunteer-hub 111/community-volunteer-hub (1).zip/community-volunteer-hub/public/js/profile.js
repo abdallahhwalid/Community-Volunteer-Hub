@@ -1,8 +1,17 @@
 function handlePhotoUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (!allowedTypes.includes(file.type)) {
+    alert('Only JPG and PNG images are allowed.');
+    event.target.value = ''; // clear the invalid selection
+    return;
+  }
+
   if (file.size > 5 * 1024 * 1024) {
     alert('Photo is too large. Please choose an image under 5MB.');
+    event.target.value = ''; // clear the invalid selection
     return;
   }
   const reader = new FileReader();

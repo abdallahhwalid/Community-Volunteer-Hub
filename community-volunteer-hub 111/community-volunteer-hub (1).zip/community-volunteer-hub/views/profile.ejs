@@ -60,7 +60,7 @@
                 <div class="avatar avatar-lg" id="avatar-initials"><%= user.name.charAt(0).toUpperCase() %></div>
                 <img id="avatar-img" src="" alt="Profile photo" class="d-none"/>
               <% } %>
-              <input type="file" id="photo-upload" name="photo" accept="image/*" class="d-none" onchange="handlePhotoUpload(event)"/>
+              <input type="file" id="photo-upload" name="photo" accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="d-none" onchange="handlePhotoUpload(event)"/>
               <button type="button" class="avatar-edit-btn" title="Upload photo" onclick="document.getElementById('photo-upload').click()">📷</button>
             </div>
 
