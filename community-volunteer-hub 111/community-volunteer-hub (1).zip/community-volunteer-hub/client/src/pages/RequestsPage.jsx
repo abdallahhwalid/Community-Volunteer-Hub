@@ -1,5 +1,6 @@
-  import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import MapView from "../components/MapView";
+import FilterBar from "../components/FilterBar";
 
 const OUTDOOR_CATEGORIES = ["Home Tasks", "Gardening", "Transportation", "Pet Care"];
 
@@ -26,7 +27,7 @@ export default function RequestsPage() {
     if (filters.category) params.set("category", filters.category);
     if (filters.status)   params.set("status",   filters.status);
     try {
-      const res  = await fetch(`/requests/api?${params}`);
+      const res  = await fetch(`http://localhost:3000/requests/api?${params}`);
       const data = await res.json();
       if (data.success) setRequests(data.requests);
     } catch { /* network err */ }
@@ -161,37 +162,14 @@ export default function RequestsPage() {
 
         <div className="section" style={{ paddingTop:"32px" }}>
 
-          {/* ── FILTERS + VIEW TOGGLE ── */}
-          <div className="filters-bar" style={{ alignItems:"center" }}>
-            <div className="search-wrap">
-              <span className="search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                  fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-              </span>
-              <input
-                type="text" className="search-input" placeholder="Search requests..."
-                value={filters.search}
-                onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
-              />
-            </div>
+          {/* ── REFACTORED FILTER BAR + VIEW TOGGLE CONTROLS ── */}
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", marginBottom: "20px" }}>
+            <FilterBar
+              filters={filters}
+              onFilterChange={(key, value) => setFilters(f => ({ ...f, [key]: value }))}
+            />
 
-            <select className="filter-select" value={filters.category}
-              onChange={e => setFilters(f => ({ ...f, category: e.target.value }))}>
-              <option value="">All Categories</option>
-              {["Home Tasks","IT Repair","Gardening","Tutoring","Pet Care","Transportation","Other"]
-                .map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-
-            <select className="filter-select" value={filters.status}
-              onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}>
-              <option value="">All Statuses</option>
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-            </select>
-
-            {/* Grid / Map toggle */}
+            {/* Grid / Map view toggler layout alignment layout block */}
             <div style={{
               display:"flex", border:"1.5px solid var(--border)", borderRadius:"8px",
               overflow:"hidden", marginLeft:"auto", flexShrink:0,
