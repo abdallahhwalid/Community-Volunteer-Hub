@@ -110,8 +110,18 @@
         var isDark = html.classList.toggle('dark');
         icon.textContent = isDark ? '☀️' : '🌙';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyDarkModeImages();
       });
     })();
-  </script> 
+
+    function applyDarkModeImages() {
+      const isDark = document.documentElement.classList.contains('dark');
+
+      const logo = document.querySelector('.nav-logo-icon img');
+      if (logo) logo.src = isDark ? '/images/dark-mode/logo-dark.png' : '/images/logo.png';
+    }
+
+    applyDarkModeImages();
+  </script>
   
 </html>
