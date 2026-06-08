@@ -177,8 +177,27 @@
         var isDark = html.classList.toggle('dark');
         icon.textContent = isDark ? '☀️' : '🌙';
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        applyDarkModeImages();
       });
     })();
+
+    function applyDarkModeImages() {
+      const isDark = document.documentElement.classList.contains('dark');
+
+      const logo = document.querySelector('.nav-logo-icon img');
+      if (logo) logo.src = isDark ? '/images/dark-mode/logo-dark.png' : '/images/logo.png';
+
+      document.querySelectorAll('.nav-icon-btn img').forEach(function(img) {
+        if (img.alt === 'messages') {
+          img.src = isDark ? '/images/dark-mode/msgs-dark.png' : '/images/messages1.png';
+        }
+        if (img.alt === 'profile') {
+          img.src = isDark ? '/images/dark-mode/profile-dark.png' : '/images/profile.png';
+        }
+      });
+    }
+
+    applyDarkModeImages();
   </script>
   <script src="/js/profile.js"></script>
 </body>
